@@ -3,72 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Калькулятор</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+<title>Кислотный калькулятор</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23E6FF00' stroke='black' stroke-width='6'/><circle cx='35' cy='40' r='6'/><circle cx='65' cy='40' r='6'/><path d='M28 58 Q50 82 72 58' stroke='black' stroke-width='6' fill='none'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Glitch&family=Rubik+Mono+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f0a1e;
-    --bg-2: #1a1233;
-    --card: #1e1638;
-    --border: #2e2352;
-    --text: #ece8f7;
-    --muted: #9a90b8;
-    --accent: #8b5cf6;
-    --accent-2: #a78bfa;
-    --green: #22c55e;
-    --red: #f87171;
-    --radius: 16px;
+    --acid: #E6FF00;      /* кислотный жёлтый */
+    --magenta: #FF1FCE;   /* розовый неон */
+    --cyan: #00F0FF;      /* электрический циан */
+    --toxic: #FF5A1F;     /* ядовитый оранжевый */
+    --uv: #2A0060;        /* ультрафиолет */
+    --ink: #0A0014;       /* обводка */
+    --hue: 0deg;          /* сдвиг палитры после каждого «=» */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { min-height: 100%; overflow-x: clip; }
   body {
-    font-family: 'Onest', system-ui, sans-serif;
-    background:
-      radial-gradient(900px 500px at 20% -10%, rgba(139, 92, 246, .25), transparent 60%),
-      radial-gradient(700px 400px at 110% 110%, rgba(34, 197, 94, .10), transparent 60%),
-      var(--bg);
-    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    color: var(--ink);
+    background: var(--uv);
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
+    padding: 24px 16px 40px;
+    overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
   }
-  .calc {
+
+  /* лучи из центра + шахматка — фон рейв-флаера */
+  .rays {
+    position: fixed;
+    inset: -50vmax;
+    z-index: -2;
+    background: repeating-conic-gradient(from 0deg,
+      var(--magenta) 0deg 10deg, var(--uv) 10deg 20deg,
+      var(--cyan) 20deg 30deg, var(--uv) 30deg 40deg);
+    animation: spin 40s linear infinite;
+    filter: hue-rotate(var(--hue));
+    transition: filter .6s;
+  }
+  .checker {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 30vmin, rgba(10, 0, 20, .75) 80vmin),
+      conic-gradient(rgba(10,0,20,.35) 25%, transparent 0 50%, rgba(10,0,20,.35) 0 75%, transparent 0) 0 0 / 56px 56px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .rig {
     width: 100%;
-    max-width: 380px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 20px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+    max-width: 400px;
+    margin: auto;
+    position: relative;
   }
-  .calc__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
+
+  /* заголовок-наклейка */
+  .title {
+    font-family: 'Rubik Glitch', sans-serif;
+    font-size: clamp(28px, 9vw, 52px);
+    line-height: .85;
+    text-align: center;
+    color: var(--acid);
+    text-transform: uppercase;
+    -webkit-text-stroke: 2px var(--ink);
+    text-shadow: 4px 4px 0 var(--magenta), 8px 8px 0 var(--ink);
+    transform: rotate(-4deg);
+    margin-bottom: 18px;
+    animation: wobble 2.4s ease-in-out infinite;
   }
-  .calc__title { font-weight: 600; font-size: 15px; color: var(--muted); }
-  .calc__badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--accent-2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 3px 10px;
+  .title span { display: block; color: var(--cyan); transform: translateX(4%); }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-4deg) scale(1); }
+    50% { transform: rotate(-1deg) scale(1.03); }
   }
+
+  .smiley {
+    position: absolute;
+    top: 64px;
+    right: -14px;
+    width: 76px;
+    height: 76px;
+    z-index: 3;
+    animation: spin 6s linear infinite;
+  }
+
+  .body {
+    background: var(--acid);
+    border: 4px solid var(--ink);
+    border-radius: 34px;
+    padding: 16px;
+    box-shadow: 10px 10px 0 var(--magenta), 20px 20px 0 var(--ink);
+    transform: rotate(1.2deg);
+  }
+
+  /* бегущая строка с историей расчётов */
+  .ticker {
+    background: var(--ink);
+    color: var(--acid);
+    border-radius: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 0;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .ticker__track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: run 14s linear infinite;
+  }
+  @keyframes run { to { transform: translateX(-100%); } }
+
   .display {
-    background: var(--bg-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 4px),
+      var(--ink);
+    border: 4px solid var(--ink);
+    border-radius: 20px;
+    padding: 14px 16px;
     margin-bottom: 16px;
     text-align: right;
-    min-height: 112px;
+    min-height: 126px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -76,115 +136,162 @@
     overflow: hidden;
   }
   .display__expr {
-    font-family: 'JetBrains Mono', monospace;
     font-size: 15px;
-    color: var(--muted);
-    min-height: 20px;
+    color: var(--cyan);
+    min-height: 22px;
     word-break: break-all;
   }
   .display__value {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    font-size: 40px;
-    line-height: 1.1;
+    font-family: 'Rubik Mono One', sans-serif;
+    font-size: 44px;
+    line-height: 1.05;
+    color: var(--acid);
+    text-shadow: -3px 0 var(--magenta), 3px 0 var(--cyan);
     word-break: break-all;
   }
-  .display__value.is-error { color: var(--red); font-size: 26px; }
+  .display__value.is-error { color: var(--toxic); font-size: 22px; }
+  .display__value.is-bump { animation: bump .35s cubic-bezier(.3, 1.8, .5, 1); }
+  @keyframes bump {
+    0% { transform: scale(1.35) rotate(-6deg); text-shadow: -10px 0 var(--magenta), 10px 0 var(--cyan); }
+    100% { transform: none; }
+  }
+
   .keys {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    filter: hue-rotate(var(--hue));
+    transition: filter .6s;
   }
   .key {
-    font-family: 'Onest', sans-serif;
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--text);
-    background: #271d47;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    height: 64px;
+    font-family: 'Rubik Mono One', sans-serif;
+    font-size: 24px;
+    color: var(--ink);
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    height: 66px;
     cursor: pointer;
-    transition: background .12s, transform .06s;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform .08s, box-shadow .08s;
     user-select: none;
   }
-  .key:hover { background: #31265a; }
-  .key:active, .key.is-pressed { transform: scale(.96); }
-  .key:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
-  .key--fn { color: var(--accent-2); background: #221a40; }
-  .key--op { background: rgba(139, 92, 246, .22); color: #d8ccff; font-size: 26px; }
-  .key--op:hover { background: rgba(139, 92, 246, .34); }
-  .key--eq { background: var(--accent); color: #fff; font-size: 26px; }
-  .key--eq:hover { background: #7c4df0; }
-  .key--wide { grid-column: span 2; }
+  /* наклейки налеплены криво */
+  .key:nth-child(3n)   { transform: rotate(-3deg); }
+  .key:nth-child(3n+1) { transform: rotate(2deg); }
+  .key:nth-child(4n)   { border-radius: 50%; }
+  .key:hover { transform: rotate(0) translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .key:active, .key.is-pressed { transform: translate(4px, 4px) rotate(0); box-shadow: 0 0 0 var(--ink); }
+  .key:focus-visible { outline: 4px dashed var(--ink); outline-offset: 3px; }
+  .key--fn { background: var(--cyan); font-size: 18px; }
+  .key--op { background: var(--magenta); color: #fff; font-size: 28px; -webkit-text-stroke: 1px var(--ink); }
+  .key--eq { background: var(--toxic); color: var(--acid); font-size: 34px; -webkit-text-stroke: 1.5px var(--ink); }
+
   .hint {
     margin-top: 14px;
-    font-size: 12px;
-    color: var(--muted);
+    font-size: 11px;
     text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
   }
   .hint kbd {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    border: 1px solid var(--border);
+    font-family: inherit;
+    background: var(--ink);
+    color: var(--acid);
     border-radius: 6px;
-    padding: 1px 5px;
+    padding: 1px 6px;
   }
-  @media (max-width: 360px) {
-    .calc { padding: 14px; }
+
+  /* вспышка экрана на «=» */
+  .flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: var(--acid);
+    mix-blend-mode: difference;
+    opacity: 0;
+    z-index: 10;
+  }
+  .flash.is-on { animation: flash .25s steps(2); }
+  @keyframes flash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+  @media (max-width: 380px) {
+    .body { padding: 12px; box-shadow: 6px 6px 0 var(--magenta), 12px 12px 0 var(--ink); }
     .key { height: 56px; font-size: 20px; }
-    .display__value { font-size: 32px; }
+    .display__value { font-size: 34px; }
+    .smiley { width: 56px; height: 56px; right: -4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
-<main class="calc">
-  <div class="calc__head">
-    <div class="calc__title">Калькулятор</div>
-    <div class="calc__badge">open-sites</div>
+<div class="rays" aria-hidden="true"></div>
+<div class="checker" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
+
+<main class="rig">
+  <h1 class="title">Кислотный <span>калькулятор</span></h1>
+
+  <svg class="smiley" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="#E6FF00" stroke="#0A0014" stroke-width="6"/>
+    <ellipse cx="35" cy="38" rx="6" ry="10" fill="#0A0014"/>
+    <ellipse cx="65" cy="38" rx="6" ry="10" fill="#0A0014"/>
+    <path d="M24 56 Q50 88 76 56" stroke="#0A0014" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </svg>
+
+  <div class="body">
+    <div class="ticker" aria-hidden="true"><span class="ticker__track" id="ticker">посчитай что-нибудь ✺ посчитай что-нибудь ✺</span></div>
+
+    <div class="display" aria-live="polite">
+      <div class="display__expr" id="expr"></div>
+      <div class="display__value" id="value">0</div>
+    </div>
+
+    <div class="keys">
+      <button class="key key--fn" data-action="clear">AC</button>
+      <button class="key key--fn" data-action="back" aria-label="Стереть">⌫</button>
+      <button class="key key--fn" data-action="percent">%</button>
+      <button class="key key--op" data-op="/" aria-label="Разделить">÷</button>
+
+      <button class="key" data-digit="7">7</button>
+      <button class="key" data-digit="8">8</button>
+      <button class="key" data-digit="9">9</button>
+      <button class="key key--op" data-op="*" aria-label="Умножить">×</button>
+
+      <button class="key" data-digit="4">4</button>
+      <button class="key" data-digit="5">5</button>
+      <button class="key" data-digit="6">6</button>
+      <button class="key key--op" data-op="-" aria-label="Минус">−</button>
+
+      <button class="key" data-digit="1">1</button>
+      <button class="key" data-digit="2">2</button>
+      <button class="key" data-digit="3">3</button>
+      <button class="key key--op" data-op="+" aria-label="Плюс">+</button>
+
+      <button class="key key--fn" data-action="sign" aria-label="Сменить знак">±</button>
+      <button class="key" data-digit="0">0</button>
+      <button class="key" data-action="dot">,</button>
+      <button class="key key--eq" data-action="equals" aria-label="Равно">=</button>
+    </div>
+
+    <div class="hint">Клавиатура тоже: <kbd>+ − * /</kbd> <kbd>Enter</kbd> <kbd>⌫</kbd> <kbd>Esc</kbd></div>
   </div>
-
-  <div class="display" aria-live="polite">
-    <div class="display__expr" id="expr"></div>
-    <div class="display__value" id="value">0</div>
-  </div>
-
-  <div class="keys">
-    <button class="key key--fn" data-action="clear">AC</button>
-    <button class="key key--fn" data-action="back" aria-label="Стереть">⌫</button>
-    <button class="key key--fn" data-action="percent">%</button>
-    <button class="key key--op" data-op="/" aria-label="Разделить">÷</button>
-
-    <button class="key" data-digit="7">7</button>
-    <button class="key" data-digit="8">8</button>
-    <button class="key" data-digit="9">9</button>
-    <button class="key key--op" data-op="*" aria-label="Умножить">×</button>
-
-    <button class="key" data-digit="4">4</button>
-    <button class="key" data-digit="5">5</button>
-    <button class="key" data-digit="6">6</button>
-    <button class="key key--op" data-op="-" aria-label="Минус">−</button>
-
-    <button class="key" data-digit="1">1</button>
-    <button class="key" data-digit="2">2</button>
-    <button class="key" data-digit="3">3</button>
-    <button class="key key--op" data-op="+" aria-label="Плюс">+</button>
-
-    <button class="key key--fn" data-action="sign" aria-label="Сменить знак">±</button>
-    <button class="key" data-digit="0">0</button>
-    <button class="key" data-action="dot">,</button>
-    <button class="key key--eq" data-action="equals" aria-label="Равно">=</button>
-  </div>
-
-  <div class="hint">Работает с клавиатуры: цифры, <kbd>+ − * /</kbd>, <kbd>Enter</kbd>, <kbd>Backspace</kbd>, <kbd>Esc</kbd></div>
 </main>
 
 <script>
 (() => {
   const exprEl = document.getElementById('expr');
   const valueEl = document.getElementById('value');
+  const tickerEl = document.getElementById('ticker');
+  const flashEl = document.getElementById('flash');
+  const root = document.documentElement;
   const SYMBOL = { '+': '+', '-': '−', '*': '×', '/': '÷', '=': '=' };
   const PREC = { '+': 1, '-': 1, '*': 2, '/': 2 };
+  const history = [];
+  let hue = 0;
 
   // tokens: числа (строки) и операторы, current — число, которое сейчас набирается
   let tokens = [];
@@ -230,8 +337,10 @@
     return nums[0];
   };
 
+  const exprText = (list) => list.map((t) => (t in SYMBOL ? ` ${SYMBOL[t]} ` : fmt(t))).join('');
+
   const render = () => {
-    exprEl.textContent = tokens.map((t) => (t in SYMBOL ? ` ${SYMBOL[t]} ` : fmt(t))).join('');
+    exprEl.textContent = exprText(tokens);
     valueEl.classList.toggle('is-error', error);
     valueEl.textContent = error ? 'На ноль делить нельзя' : fmt(current);
   };
@@ -262,6 +371,18 @@
     current = '';
   };
 
+  // рейв-реакция на результат: вспышка, прыжок числа, сдвиг палитры
+  const party = () => {
+    hue = (hue + 72) % 360;
+    root.style.setProperty('--hue', hue + 'deg');
+    [flashEl, valueEl].forEach((el) => {
+      const cls = el === flashEl ? 'is-on' : 'is-bump';
+      el.classList.remove(cls);
+      void el.offsetWidth;
+      el.classList.add(cls);
+    });
+  };
+
   const equals = () => {
     if (error || current === '' && !tokens.length) return;
     const list = current === '' ? tokens.slice(0, -1) : [...tokens, current.replace(/\.$/, '')];
@@ -271,6 +392,10 @@
       tokens = list.concat('=');
       current = result;
       justEvaluated = true;
+      history.unshift(exprText(tokens) + fmt(result));
+      history.length = Math.min(history.length, 5);
+      tickerEl.textContent = history.join('  ✺  ') + '  ✺';
+      party();
     } catch {
       tokens = list;
       error = true;
