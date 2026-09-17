@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0a1e;
+    --bg-2: #1a1233;
+    --card: #1e1638;
+    --border: #2e2352;
+    --text: #ece8f7;
+    --muted: #9a90b8;
+    --accent: #8b5cf6;
+    --accent-2: #a78bfa;
+    --green: #22c55e;
+    --red: #f87171;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Onest', system-ui, sans-serif;
+    background:
+      radial-gradient(900px 500px at 20% -10%, rgba(139, 92, 246, .25), transparent 60%),
+      radial-gradient(700px 400px at 110% 110%, rgba(34, 197, 94, .10), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .calc {
+    width: 100%;
+    max-width: 380px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+  }
+  .calc__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .calc__title { font-weight: 600; font-size: 15px; color: var(--muted); }
+  .calc__badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+  }
+  .display {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    text-align: right;
+    min-height: 112px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .display__expr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--muted);
+    min-height: 20px;
+    word-break: break-all;
+  }
+  .display__value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 1.1;
+    word-break: break-all;
+  }
+  .display__value.is-error { color: var(--red); font-size: 26px; }
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .key {
+    font-family: 'Onest', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    background: #271d47;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    height: 64px;
+    cursor: pointer;
+    transition: background .12s, transform .06s;
+    user-select: none;
+  }
+  .key:hover { background: #31265a; }
+  .key:active, .key.is-pressed { transform: scale(.96); }
+  .key:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+  .key--fn { color: var(--accent-2); background: #221a40; }
+  .key--op { background: rgba(139, 92, 246, .22); color: #d8ccff; font-size: 26px; }
+  .key--op:hover { background: rgba(139, 92, 246, .34); }
+  .key--eq { background: var(--accent); color: #fff; font-size: 26px; }
+  .key--eq:hover { background: #7c4df0; }
+  .key--wide { grid-column: span 2; }
+  .hint {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .hint kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1px 5px;
+  }
+  @media (max-width: 360px) {
+    .calc { padding: 14px; }
+    .key { height: 56px; font-size: 20px; }
+    .display__value { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<main class="calc">
+  <div class="calc__head">
+    <div class="calc__title">Калькулятор</div>
+    <div class="calc__badge">open-sites</div>
+  </div>
+
+  <div class="display" aria-live="polite">
+    <div class="display__expr" id="expr"></div>
+    <div class="display__value" id="value">0</div>
+  </div>
+
+  <div class="keys">
+    <button class="key key--fn" data-action="clear">AC</button>
+    <button class="key key--fn" data-action="back" aria-label="Стереть">⌫</button>
+    <button class="key key--fn" data-action="percent">%</button>
+    <button class="key key--op" data-op="/" aria-label="Разделить">÷</button>
+
+    <button class="key" data-digit="7">7</button>
+    <button class="key" data-digit="8">8</button>
+    <button class="key" data-digit="9">9</button>
+    <button class="key key--op" data-op="*" aria-label="Умножить">×</button>
+
+    <button class="key" data-digit="4">4</button>
+    <button class="key" data-digit="5">5</button>
+    <button class="key" data-digit="6">6</button>
+    <button class="key key--op" data-op="-" aria-label="Минус">−</button>
+
+    <button class="key" data-digit="1">1</button>
+    <button class="key" data-digit="2">2</button>
+    <button class="key" data-digit="3">3</button>
+    <button class="key key--op" data-op="+" aria-label="Плюс">+</button>
+
+    <button class="key key--fn" data-action="sign" aria-label="Сменить знак">±</button>
+    <button class="key" data-digit="0">0</button>
+    <button class="key" data-action="dot">,</button>
+    <button class="key key--eq" data-action="equals" aria-label="Равно">=</button>
+  </div>
+
+  <div class="hint">Работает с клавиатуры: цифры, <kbd>+ − * /</kbd>, <kbd>Enter</kbd>, <kbd>Backspace</kbd>, <kbd>Esc</kbd></div>
+</main>
+
+<script>
+(() => {
+  const exprEl = document.getElementById('expr');
+  const valueEl = document.getElementById('value');
+  const SYMBOL = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+  const PREC = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+  // tokens: числа (строки) и операторы, current — число, которое сейчас набирается
+  let tokens = [];
+  let current = '0';
+  let justEvaluated = false;
+  let error = false;
+
+  const fmt = (s) => {
+    if (s === '' || s === '-') return s;
+    const neg = s.startsWith('-');
+    const [int, frac] = s.replace('-', '').split('.');
+    const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return (neg ? '−' : '') + grouped + (frac !== undefined ? ',' + frac : '');
+  };
+
+  const toStr = (n) => {
+    if (!isFinite(n)) throw new Error('div0');
+    const r = parseFloat(n.toPrecision(12));
+    if (Math.abs(r) >= 1e15 || (r !== 0 && Math.abs(r) < 1e-9)) return r.toExponential(6);
+    return String(r);
+  };
+
+  const apply = (a, op, b) => {
+    switch (op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
+      case '/': if (b === 0) throw new Error('div0'); return a / b;
+    }
+  };
+
+  // вычисление с приоритетом операций (без eval)
+  const evaluate = (list) => {
+    const nums = [], ops = [];
+    const reduce = () => { const b = nums.pop(), a = nums.pop(); nums.push(apply(a, ops.pop(), b)); };
+    for (const t of list) {
+      if (t in PREC) {
+        while (ops.length && PREC[ops[ops.length - 1]] >= PREC[t]) reduce();
+        ops.push(t);
+      } else nums.push(parseFloat(t));
+    }
+    while (ops.length) reduce();
+    return nums[0];
+  };
+
+  const render = () => {
+    exprEl.textContent = tokens.map((t) => (t in SYMBOL ? ` ${SYMBOL[t]} ` : fmt(t))).join('');
+    valueEl.classList.toggle('is-error', error);
+    valueEl.textContent = error ? 'На ноль делить нельзя' : fmt(current);
+  };
+
+  const reset = () => { tokens = []; current = '0'; justEvaluated = false; error = false; };
+
+  const inputDigit = (d) => {
+    if (error || justEvaluated) reset();
+    if (current.replace(/[-.]/g, '').length >= 15) return;
+    current = current === '0' ? d : current === '-0' ? '-' + d : current + d;
+  };
+
+  const inputDot = () => {
+    if (error || justEvaluated) reset();
+    if (current === '') current = '0';
+    if (!current.includes('.')) current += '.';
+  };
+
+  const inputOp = (op) => {
+    if (error) reset();
+    justEvaluated = false;
+    if (current === '') {
+      // заменить последний оператор
+      if (tokens.length) tokens[tokens.length - 1] = op;
+      return;
+    }
+    tokens.push(current.replace(/\.$/, ''), op);
+    current = '';
+  };
+
+  const equals = () => {
+    if (error || current === '' && !tokens.length) return;
+    const list = current === '' ? tokens.slice(0, -1) : [...tokens, current.replace(/\.$/, '')];
+    if (list.length < 3) return;
+    try {
+      const result = toStr(evaluate(list));
+      tokens = list.concat('=');
+      current = result;
+      justEvaluated = true;
+    } catch {
+      tokens = list;
+      error = true;
+    }
+  };
+
+  const back = () => {
+    if (error || justEvaluated) { reset(); return; }
+    if (current === '') {
+      if (tokens.length) { tokens.pop(); current = tokens.pop() ?? '0'; }
+      return;
+    }
+    current = current.slice(0, -1);
+    if (current === '' || current === '-') current = tokens.length ? '' : '0';
+  };
+
+  const sign = () => {
+    if (error) return;
+    if (justEvaluated) { tokens = []; justEvaluated = false; }
+    if (current === '' ) return;
+    current = current.startsWith('-') ? current.slice(1) : '-' + current;
+  };
+
+  const percent = () => {
+    if (error || current === '') return;
+    if (justEvaluated) { tokens = []; justEvaluated = false; }
+    const n = parseFloat(current);
+    const last = tokens[tokens.length - 1];
+    // 200 + 10% → 200 + 20; 50 × 10% → 50 × 0,1
+    if ((last === '+' || last === '-') && tokens.length >= 2) {
+      const base = evaluate(tokens.slice(0, -1));
+      current = toStr(base * n / 100);
+    } else {
+      current = toStr(n / 100);
+    }
+  };
+
+  const handle = { clear: reset, back, percent, sign, dot: inputDot, equals };
+
+  const press = (btn) => {
+    if (btn.dataset.digit !== undefined) inputDigit(btn.dataset.digit);
+    else if (btn.dataset.op) inputOp(btn.dataset.op);
+    else handle[btn.dataset.action]();
+    render();
+  };
+
+  document.querySelector('.keys').addEventListener('click', (e) => {
+    const btn = e.target.closest('.key');
+    if (btn) press(btn);
+  });
+
+  const KEYMAP = {
+    Enter: '[data-action="equals"]', '=': '[data-action="equals"]',
+    Backspace: '[data-action="back"]', Escape: '[data-action="clear"]', Delete: '[data-action="clear"]',
+    '.': '[data-action="dot"]', ',': '[data-action="dot"]', '%': '[data-action="percent"]',
+    '+': '[data-op="+"]', '-': '[data-op="-"]', '*': '[data-op="*"]', '/': '[data-op="/"]',
+    x: '[data-op="*"]', 'х': '[data-op="*"]',
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const sel = /^\d$/.test(e.key) ? `[data-digit="${e.key}"]` : KEYMAP[e.key];
+    if (!sel) return;
+    e.preventDefault();
+    const btn = document.querySelector(sel);
+    btn.classList.add('is-pressed');
+    setTimeout(() => btn.classList.remove('is-pressed'), 100);
+    press(btn);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
