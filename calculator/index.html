@@ -183,7 +183,7 @@
 (() => {
   const exprEl = document.getElementById('expr');
   const valueEl = document.getElementById('value');
-  const SYMBOL = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+  const SYMBOL = { '+': '+', '-': '−', '*': '×', '/': '÷', '=': '=' };
   const PREC = { '+': 1, '-': 1, '*': 2, '/': 2 };
 
   // tokens: числа (строки) и операторы, current — число, которое сейчас набирается
