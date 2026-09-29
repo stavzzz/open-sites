@@ -179,6 +179,8 @@
   .header__goal-list li{font-size:17px;color:var(--text-primary);line-height:1.5;display:flex;align-items:flex-start;gap:9px;}
   .header__goal-list li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;line-height:1.5;}
   .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .shot{display:block;width:100%;max-width:280px;height:auto;margin:10px 0 4px;border:1px solid var(--border-accent);border-radius:10px;}
+  .code-line{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--text-primary);background:var(--bg-deep);border:1px solid var(--border);border-radius:6px;padding:2px 7px;word-break:break-all;}
   .reveal{opacity:0;transform:translateY(16px);}
   .reveal.is-in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s ease;}
   @media (prefers-reduced-motion:reduce){.reveal,.reveal.is-in{opacity:1;transform:none;transition:none;}}
@@ -198,6 +200,7 @@
         <li>Виртуальную карту США — ею оплачиваете сервер и&nbsp;подписки</li>
         <li>Собственный сервер в&nbsp;США</li>
         <li>Рабочий VPN на&nbsp;Amnezia со стабильным IP-адресом этого сервера</li>
+        <li>Профиль в&nbsp;Dolphin Anty с&nbsp;прокси США для регистрации и&nbsp;оплаты Claude и&nbsp;ChatGPT</li>
         <li>Оплаченные подписки: Claude Max и&nbsp;ChatGPT Plus или&nbsp;Pro</li>
       </ul>
     </div>
@@ -245,7 +248,7 @@
 <div class="section">
   <div class="section__header"><div class="section__num">02</div><div class="section__title">Виртуальная карта с биллингом США</div></div>
   <div class="section__card">
-    <div class="note note--info"><span class="note__icon">💳</span><span>Виртуальная карта с биллинг-адресом США — ею оплатим сервер и обе подписки, Claude Max и ChatGPT. Выпускается через Telegram-бот за пару минут. Оформляем её до сервера: на шаге 03 он оплачивается уже этой картой.<br><br>Ниже <strong>один проверенный вариант</strong>. <strong>Достаточно одной карты.</strong></span></div>
+    <div class="note note--info"><span class="note__icon">💳</span><span>Виртуальная карта с биллинг-адресом США — ею оплатим сервер и обе подписки, Claude Max и ChatGPT. Выпускается через Telegram-бот за пару минут. Оформляем её до сервера: на шаге 03 он оплачивается уже этой картой.<br><br>Ниже <strong>основной вариант и запасной</strong> на случай, если оплата не проходит. <strong>Достаточно одной карты.</strong></span></div>
     <div class="note note--warn"><span class="note__icon">💬</span><span><strong>Перед выпуском напишите в поддержку сервиса</strong> — <a href="https://t.me/zarub_help_bot" target="_blank" class="tg">@zarub_help_bot</a>. Условия со временем меняются, поэтому уточните три вещи:<br>1. Какой у карты биллинг-адрес и какая это страна.<br>2. Проходят ли оплаты Claude (claude.ai) и ChatGPT.<br>3. Какие комиссии: за выпуск карты, за пополнение и за каждую операцию.</span></div>
 
     <div class="note note--green"><span class="note__icon">👍</span><span><strong>Берите карту у Заруба — <a href="https://t.me/zarub_robot" target="_blank" class="tg">@zarub_robot</a>.</strong> Наш специалист по доступу Алмаз платит ею постоянно, в том числе за сервер DigitalOcean: проходит стабильно. Документы не нужны, баланс пополняется рублями через СБП или криптовалютой.</span></div>
@@ -257,13 +260,28 @@
       </div>
     </div>
 
+    <div class="spoiler">
+      <div class="spoiler__title">🆘 Если карта Заруба не проходит: запасная карта MintCard</div>
+      <div class="spoiler__content">
+        <p><strong>MintCard — запасной вариант.</strong> Берите её, только если оплата картой Заруба не проходит. Баланс пополняется <strong>только криптовалютой</strong>, рублями не получится.</p>
+        <div class="item">
+      <div class="item__body">
+        <div class="item__text">Оформить карту в <a href="https://t.me/mintcardbot" target="_blank" class="tg" onclick="event.stopPropagation()">@mintcardbot</a></div>
+        <div class="item__hint">1. Откройте <a href="https://t.me/mintcardbot" target="_blank" class="tg" onclick="event.stopPropagation()">@mintcardbot</a> в Telegram → «Запустить»<br>2. «Пополнить баланс» → пополните криптовалютой<br>3. «Купить карту» → выберите раздел <strong>«AI»</strong>: это карты под оплату ИИ-сервисов<br>4. Перед покупкой прочитайте условия карты: для подписки нужна карта, которая принимает ежемесячные списания<br>5. Перепишите номер, срок действия, CVV и биллинг-адрес<br><br><strong>Вопросы по карте:</strong> кнопка «Помощь» в боте.</div>
+        <img class="shot" src="img/mintcard-menu.jpg" alt="Меню @mintcardbot: кнопки «Профиль», «AI», «Купить карту», «Пополнить баланс»" loading="lazy">
+        <a href="https://t.me/mintcardbot" target="_blank" class="item__link" onclick="event.stopPropagation()"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v2.69a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0 0 1.5h2.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/></svg> @mintcardbot — запасная карта (Telegram)</a>
+      </div>
+    </div>
+      </div>
+    </div>
+
     <div class="item" data-key="card-save"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Сохранить реквизиты карты и биллинг-адрес</div>
-        <div class="item__hint">Запишите и сохраните: <strong>номер карты</strong> (16 цифр), <strong>срок действия</strong> (MM/YY), <strong>CVV</strong> (3 цифры), <strong>биллинг-адрес</strong> — он указан прямо в боте после выпуска карты. Эти данные понадобятся на шагах 03, 09 и 10.</div>
+        <div class="item__hint">Запишите и сохраните: <strong>номер карты</strong> (16 цифр), <strong>срок действия</strong> (MM/YY), <strong>CVV</strong> (3 цифры), <strong>биллинг-адрес</strong> — он указан прямо в боте после выпуска карты. Эти данные понадобятся на шагах 03, 10 и 11.</div>
       </div>
     </div>
-    <div class="note note--green"><span class="note__icon">💰</span><span><strong>Сколько денег понадобится?</strong> Считайте три суммы отдельно.<br><br><strong>1. Выпуск карты</strong> — разовый платёж сервису, на баланс он не идёт:<br>Точную сумму смотрите в боте перед выпуском.<br><br><strong>2. Сервер</strong> — от $6 в месяц за минимальный план под VPN, $20–24 за план с 2 ядрами и 4 ГБ под OpenClaw. Оплачивается той же картой и списывается каждый месяц, пока сервер работает.<br><br><strong>3. Деньги на баланс карты</strong> — под подписки. Зависит от выбора на шаге 10.<br>• <strong>Claude Max — $100/мес.</strong> Обязательно.<br>• Плюс <strong>ChatGPT</strong> (оформите на шаге 10), тариф на выбор:<br>&nbsp;&nbsp;• Plus за <strong>$20/мес</strong>, либо<br>&nbsp;&nbsp;• Pro за <strong>$100/мес</strong>.<br><br>Пополняйте с запасом ~10% на комиссии. На подписки нужно:<br>• с ChatGPT Plus → <strong>~$135</strong><br>• с ChatGPT Pro → <strong>~$220</strong><br>Сверху добавьте стоимость сервера из пункта 2.</span></div>
+    <div class="note note--green"><span class="note__icon">💰</span><span><strong>Сколько денег понадобится?</strong> Считайте четыре суммы отдельно.<br><br><strong>1. Выпуск карты</strong> — разовый платёж сервису, на баланс он не идёт:<br>Точную сумму смотрите в боте перед выпуском.<br><br><strong>2. Сервер</strong> — от $6 в месяц за минимальный план под VPN, $20–24 за план с 2 ядрами и 4 ГБ под OpenClaw. Оплачивается той же картой и списывается каждый месяц, пока сервер работает.<br><br><strong>3. Прокси США</strong> — около $2 в месяц, для профиля Dolphin на шаге 08.<br><br><strong>4. Деньги на баланс карты</strong> — под подписки. Зависит от выбора на шаге 11.<br>• <strong>Claude Max — $100/мес.</strong> Обязательно.<br>• Плюс <strong>ChatGPT</strong> (оформите на шаге 11), тариф на выбор:<br>&nbsp;&nbsp;• Plus за <strong>$20/мес</strong>, либо<br>&nbsp;&nbsp;• Pro за <strong>$100/мес</strong>.<br><br>Пополняйте с запасом ~10% на комиссии. На подписки нужно:<br>• с ChatGPT Plus → <strong>~$135</strong><br>• с ChatGPT Pro → <strong>~$220</strong><br>Сверху добавьте стоимость сервера и прокси из пунктов 2 и 3.</span></div>
     <div class="note note--info"><span class="note__icon">💡</span><span><strong>Мини-приложение сервиса карт стоит на российских серверах</strong> и под VPN может тормозить. Что делать: на время операций с картой выключить VPN, работать на сайте zarub.io вместо мини-приложения или настроить раздельное туннелирование из секции 04.</span></div>
   </div>
 </div>
@@ -437,22 +455,82 @@
   </div>
 </div>
 
-<!-- ====== 08 CLAUDE ====== -->
+<!-- ====== 08 DOLPHIN + PROXY ====== -->
 <div class="section">
-  <div class="section__header"><div class="section__num">08</div><div class="section__title">Claude</div></div>
+  <div class="section__header"><div class="section__num">08</div><div class="section__title">Dolphin Anty и прокси США</div></div>
+  <div class="section__card">
+    <div class="note note--info"><span class="note__icon">🐬</span><span><strong>Dolphin Anty — отдельный браузер для работы с зарубежными сервисами.</strong> Каждый профиль в нём выходит в интернет через свой прокси. Мы подключим к профилю прокси США: в этом профиле будем регистрировать и оплачивать Claude и ChatGPT, и сервисы увидят американский IP-адрес, как у карты.</span></div>
+    <div class="note note--green"><span class="note__icon">👍</span><span><strong>Эту связку проверил наш специалист по доступу Алмаз:</strong> Dolphin Anty, прокси США и карта Заруба. Оплата подписок через неё проходит.</span></div>
+    <div class="item" data-key="proxy-buy"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="item__body">
+        <div class="item__text">Купить прокси США в ProxyLine</div>
+        <div class="item__hint">1. Откройте <a href="https://panel.proxyline.net/" target="_blank" onclick="event.stopPropagation()">panel.proxyline.net</a> → зарегистрируйтесь → пополните баланс<br>2. <strong>New order</strong> → <strong>IPv4</strong><br>3. Количество: <strong>1</strong><br>4. Period: берите срок подольше. 30 дней стоят около <strong>$1,8</strong><br>5. Country: <strong>USA</strong>. Только США, другие страны не подойдут<br>6. Оплатите заказ</div>
+        <img class="shot" src="img/proxyline-order.jpg" alt="Заказ прокси в ProxyLine: количество 1, срок 30 дней, страна USA" loading="lazy">
+        <a href="https://panel.proxyline.net/" target="_blank" class="item__link" onclick="event.stopPropagation()"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v2.69a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0 0 1.5h2.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/></svg> panel.proxyline.net — покупка прокси</a>
+      </div>
+    </div>
+    <div class="item" data-key="proxy-get"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="item__body">
+        <div class="item__text">Скачать прокси в формате SOCKS5</div>
+        <div class="item__hint">1. В списке ваших прокси отметьте галочкой купленный<br>2. <strong>Get proxies</strong> → нажмите <strong>SOCKS5</strong><br>3. Получите строку вида <span class="code-line">IP:порт:логин:пароль</span>, например <span class="code-line">203.0.113.25:64633:Ab12Cd34:Ef56Gh78</span><br>4. Сохраните строку в заметках: она понадобится в Dolphin</div>
+        <img class="shot" src="img/proxyline-socks5.jpg" alt="ProxyLine: блок Get proxies, кнопка SOCKS5" loading="lazy">
+      </div>
+    </div>
+    <div class="note note--warn"><span class="note__icon">🔑</span><span><strong>Строка прокси — это ваш доступ.</strong> Не публикуйте её в чатах и на скриншотах: по ней любой сможет пользоваться вашим прокси.</span></div>
+    <div class="item" data-key="dolphin-install"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="item__body">
+        <div class="item__text">Установить Dolphin Anty</div>
+        <div class="item__hint">1. Откройте <a href="https://dolphin-anty.net/" target="_blank" onclick="event.stopPropagation()">dolphin-anty.net</a> → скачайте версию для своей системы: macOS или Windows<br>2. Установите и зарегистрируйтесь по почте<br>3. Бесплатного тарифа хватает: в нём до 5 профилей, нам нужен один</div>
+        <a href="https://dolphin-anty.net/" target="_blank" class="item__link" onclick="event.stopPropagation()"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v2.69a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0 0 1.5h2.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/></svg> dolphin-anty.net — скачать Dolphin Anty</a>
+      </div>
+    </div>
+    <div class="item" data-key="dolphin-profile"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="item__body">
+        <div class="item__text">Создать профиль с прокси США</div>
+        <div class="item__hint">1. В Dolphin нажмите <strong>«Создать профиль»</strong>, имя любое, например «Claude»<br>2. В блоке прокси выберите <strong>«Новый прокси»</strong> → тип <strong>SOCKS5</strong><br>3. Вставьте строку прокси целиком, в формате <span class="code-line">IP:порт:логин:пароль</span><br>4. Нажмите проверку прокси (значок со стрелками справа от поля): должна показаться страна <strong>США</strong><br>5. Сохраните профиль</div>
+      </div>
+    </div>
+    <div class="item" data-key="dolphin-check"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+      <div class="item__body">
+        <div class="item__text">Проверить IP в профиле</div>
+        <div class="item__hint">1. Запустите профиль в Dolphin<br>2. Откройте в нём <a href="https://whoer.net/" target="_blank" onclick="event.stopPropagation()">whoer.net</a><br>3. Страна должна быть <strong>США</strong>, IP — как в строке прокси</div>
+      </div>
+    </div>
+    <div class="note note--green"><span class="note__icon">👉</span><span><strong>Claude и ChatGPT регистрируем и оплачиваем в этом профиле Dolphin.</strong> Шаги 09–11 выполняйте в нём, с включённым VPN.</span></div>
+  </div>
+</div>
+
+<!-- ====== 09 CLAUDE ====== -->
+<div class="section">
+  <div class="section__header"><div class="section__num">09</div><div class="section__title">Claude</div></div>
   <div class="section__card">
     <div class="note note--info"><span class="note__icon">🧠</span><span>Claude — языковая модель от Anthropic. На ней работает ваш ИИ-директор в OpenClaw.</span></div>
     <div class="item" data-key="claude-open"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Зарегистрироваться в Claude</div>
-        <div class="item__hint">1. VPN включён!<br>2. Откройте <a href="https://claude.ai/" target="_blank" onclick="event.stopPropagation()">claude.ai</a> → «Sign up»<br>3. <strong>Введите Gmail вручную</strong> (НЕ нажимайте «Continue with Google» — вводите email и пароль отдельно, так безопаснее)<br>4. <strong>Важно:</strong> используйте почту с доменом .com (например, gmail.com). Почта на .ru-домене может вызвать проблемы</div>
+        <div class="item__hint">1. VPN включён, запущен профиль Dolphin из шага 08<br>2. В этом профиле откройте <a href="https://claude.ai/" target="_blank" onclick="event.stopPropagation()">claude.ai</a> → «Sign up»<br>3. <strong>Введите Gmail вручную</strong> (НЕ нажимайте «Continue with Google» — вводите email и пароль отдельно, так безопаснее)<br>4. <strong>Важно:</strong> используйте почту с доменом .com (например, gmail.com). Почта на .ru-домене может вызвать проблемы</div>
         <a href="https://claude.ai/" target="_blank" class="item__link" onclick="event.stopPropagation()"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v2.69a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0 0 1.5h2.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/></svg> claude.ai — сайт для регистрации и работы с Claude</a>
       </div>
     </div>
     <div class="item" data-key="claude-phone"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Подтвердить номер телефона, если попросят</div>
-        <div class="item__hint"><strong>Скорее всего, этого шага не будет:</strong> за последний месяц Claude ни разу не запрашивал SMS-верификацию. Если запрос всё-таки появится, введите ваш обычный номер. Запроса не было — просто отметьте пункт.</div>
+        <div class="item__hint">Claude может попросить номер телефона и прислать на него SMS-код. Российский номер тут не подойдёт: возьмите номер США по инструкции ниже, «Если просят SMS-код». <strong>Запроса не было — просто отметьте пункт.</strong></div>
+      </div>
+    </div>
+    <div class="spoiler">
+      <div class="spoiler__title">📱 Если просят SMS-код: номер США</div>
+      <div class="spoiler__content">
+        <p><strong>Номер нужен, только если Claude или ChatGPT попросили SMS-код.</strong> Берите номер <strong>США</strong>: он совпадает со страной прокси и карты. Код приходит не на телефон, а в личный кабинет сервиса, где вы взяли номер.</p>
+        <p>Выберите <strong>один вариант</strong>. Не уверены — начните с hero-sms, это дешевле всего.</p>
+        <p style="margin-top:10px"><strong>💸 Вариант А — hero-sms: разовый номер, дешевле всего</strong></p>
+        <p>1. Откройте <a href="https://hero-sms.com/" target="_blank" class="lnk">hero-sms.com</a> → зарегистрируйтесь → пополните баланс, нужно немного<br>2. В поиске сервисов выберите тот, который регистрируете: Claude или ChatGPT<br>3. Страна: <strong>США (USA)</strong><br>4. Купите номер → вставьте его в форму регистрации<br>5. Дождитесь SMS-кода в личном кабинете hero-sms → введите код</p>
+        <p style="margin-top:10px"><strong>🌍 Вариант Б — 5sim: разовый номер, большой выбор</strong></p>
+        <p>1. Откройте <a href="https://5sim.net/" target="_blank" class="lnk">5sim.net</a> → зарегистрируйтесь → пополните баланс<br>2. Страна: <strong>США</strong><br>3. Сервис указывайте точно: для Claude — Anthropic / Claude AI, для ChatGPT — OpenAI / ChatGPT. С «любым сервисом» код может не прийти<br>4. Купите номер → вставьте его в форму регистрации<br>5. Дождитесь SMS-кода в личном кабинете 5sim → введите код</p>
+        <p>💡 Номера hero-sms и 5sim разовые: один номер на одну регистрацию. Для второго сервиса берите новый номер.</p>
+        <p style="margin-top:10px"><strong>🛡 Вариант В — mobilesms: номер США на месяц, надёжнее всего</strong></p>
+        <p>1. Откройте <a href="https://mobilesms.io/" target="_blank" class="lnk">mobilesms.io</a> → зарегистрируйтесь<br>2. <strong>Long Term Rentals</strong> → <strong>USA</strong><br>3. Тип: строго <strong>Physical / Non-VoIP</strong><br>4. Сервис: Claude / Anthropic или Universal<br>5. Срок аренды: минимум 1 месяц → оплатите и сохраните номер</p>
+        <p>Это настоящий номер оператора США, он закреплён за вами на месяц и подходит для всех сервисов сразу.</p>
       </div>
     </div>
     <div class="item" data-key="claude-kyc"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -474,16 +552,16 @@
   </div>
 </div>
 
-<!-- ====== 09 CLAUDE MAX ====== -->
+<!-- ====== 10 CLAUDE MAX ====== -->
 <div class="section">
-  <div class="section__header"><div class="section__num">09</div><div class="section__title">Оплата Claude Max ($100/мес)</div></div>
+  <div class="section__header"><div class="section__num">10</div><div class="section__title">Оплата Claude Max ($100/мес)</div></div>
   <div class="section__card">
     <div class="note note--info"><span class="note__icon">💎</span><span>Claude Max — старший тариф Claude. На этой подписке работает ваш OpenClaw.</span></div>
     <div class="note note--alert"><span class="note__icon">🔴</span><span><strong>Claude Max ($100/мес) — обязательная подписка.</strong> Без неё не собрать рабочий OpenClaw и не пройти интенсив.</span></div>
     <div class="item" data-key="claude-pay"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Оформить подписку Claude Max ($100/мес)</div>
-        <div class="item__hint">1. VPN включён<br>2. В Claude: иконка профиля → <strong>Settings</strong> → <strong>Billing</strong> → <strong>Upgrade</strong><br>3. Выберите <strong>Max ($100)</strong> и оплатите. Оформлять Max можно сразу, «прогревать» аккаунт не нужно.<br>4. Карта: реквизиты <strong>карты США</strong> из шага 02 (номер, срок, CVV)<br>5. Номер телефона: <strong>ваш обычный номер</strong><br>6. Адрес: <strong>биллинг-адрес карты США</strong> (шаг 02)</div>
+        <div class="item__hint">1. VPN включён, Claude открыт в профиле Dolphin из шага 08<br>2. В Claude: иконка профиля → <strong>Settings</strong> → <strong>Billing</strong> → <strong>Upgrade</strong><br>3. Выберите <strong>Max ($100)</strong> и оплатите. Оформлять Max можно сразу, «прогревать» аккаунт не нужно.<br>4. Карта: реквизиты <strong>карты США</strong> из шага 02 (номер, срок, CVV)<br>5. Номер телефона: <strong>ваш обычный номер</strong><br>6. Адрес: <strong>биллинг-адрес карты США</strong> (шаг 02)</div>
       </div>
     </div>
     <div class="item" data-key="claude-verify"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
@@ -495,17 +573,17 @@
   </div>
 </div>
 
-<!-- ====== 12 SECOND AI ====== -->
+<!-- ====== 11 SECOND AI ====== -->
 <div class="section">
-  <div class="section__header"><div class="section__num">10</div><div class="section__title">Второй ИИ: ChatGPT Plus или Pro</div></div>
+  <div class="section__header"><div class="section__num">11</div><div class="section__title">Второй ИИ: ChatGPT Plus или Pro</div></div>
   <div class="section__card">
-    <div class="note note--info"><span class="note__icon">🤖</span><span>Claude Max у вас уже есть (шаг 09) — это основа. Здесь подключаем <strong>второй ИИ</strong>: ChatGPT от OpenAI.</span></div>
+    <div class="note note--info"><span class="note__icon">🤖</span><span>Claude Max у вас уже есть (шаг 10) — это основа. Здесь подключаем <strong>второй ИИ</strong>: ChatGPT от OpenAI.</span></div>
     <div class="note note--warn"><span class="note__icon">⚠</span><span><strong>Выберите один из двух тарифов ChatGPT:</strong><br>• <strong>Plus за $20/мес</strong>: дешевле, для старта достаточно.<br>• <strong>Pro за $100/мес</strong>: максимум возможностей OpenAI, практически без лимитов.<br>Не уверены: начните с <strong>Plus</strong>, поднять тариф до Pro можно в любой момент.</span></div>
 
     <div class="item" data-key="second-ai"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Оформить подписку ChatGPT: Plus или Pro</div>
-        <div class="item__hint">Пройдите по инструкции ниже. VPN всегда включён.</div>
+        <div class="item__hint">Пройдите по инструкции ниже. VPN всегда включён, работаете в профиле Dolphin из шага 08.</div>
       </div>
     </div>
 
@@ -513,9 +591,9 @@
       <div class="spoiler__title">🤖 Регистрация и оплата ChatGPT</div>
       <div class="spoiler__content">
         <p><strong>Регистрация:</strong></p>
-        <p>1. VPN включён. Откройте <a href="https://chatgpt.com/" target="_blank" class="lnk">chatgpt.com</a> → «Sign up».</p>
+        <p>1. VPN включён. В профиле Dolphin откройте <a href="https://chatgpt.com/" target="_blank" class="lnk">chatgpt.com</a> → «Sign up».</p>
         <p>2. Введите Gmail из шага 06 (email + пароль).</p>
-        <p>3. Номер телефона: <strong>ваш обычный номер</strong>, на него придёт SMS-код.</p>
+        <p>3. Если попросят номер телефона для SMS-кода: возьмите номер США по инструкции «Если просят SMS-код» в шаге 09.</p>
         <p style="margin-top:10px"><strong>Оплата:</strong></p>
         <p>4. Иконка профиля → <strong>Settings</strong> → <strong>Subscription</strong> → <strong>Upgrade</strong>.</p>
         <p>5. Выберите тариф: <strong>Plus ($20)</strong> или <strong>Pro ($100)</strong>, и оплатите. Оформлять подписку можно сразу, «прогревать» аккаунт не нужно.</p>
@@ -550,7 +628,7 @@
     <div class="footer__final-part3">
       <div class="footer__final-emoji">🧰</div>
       <div class="footer__final-text">Подготовка завершена!</div>
-      <div class="footer__final-sub">Своя рабочая среда готова: сервер и VPN подняты, оформлена зарубежная виртуальная карта, почта Gmail под защитой 2FA, оплачены подписки Claude Max и ChatGPT Plus или Pro. Теперь вы можете оплачивать зарубежные ИИ-сервисы и работать с ними.</div>
+      <div class="footer__final-sub">Своя рабочая среда готова: сервер и VPN подняты, оформлена зарубежная виртуальная карта, настроен профиль Dolphin с прокси США, почта Gmail под защитой 2FA, оплачены подписки Claude Max и ChatGPT Plus или Pro. Теперь вы можете оплачивать зарубежные ИИ-сервисы и работать с ними.</div>
     </div>
     <div class="footer__contact">Возникли вопросы? Напишите <a href="https://t.me/stavzzz" target="_blank" class="tg">@stavzzz</a> в&nbsp;Telegram</div>
     <button class="btn-reset" onclick="resetProgress()">Сбросить прогресс</button>
