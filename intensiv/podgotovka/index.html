@@ -179,6 +179,9 @@
   .header__goal-list li{font-size:17px;color:var(--text-primary);line-height:1.5;display:flex;align-items:flex-start;gap:9px;}
   .header__goal-list li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;line-height:1.5;}
   .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .note--critical{display:block;padding:20px 22px;background:rgba(248,113,113,0.16);border:2px solid var(--red);border-radius:12px;margin:12px 14px;color:var(--red);font-size:17px;line-height:1.6;}
+  .note--critical__title{display:block;font-size:22px;font-weight:800;line-height:1.3;text-transform:uppercase;letter-spacing:.2px;margin-bottom:10px;}
+  .note--critical strong{color:#fecaca;}
   .shot{display:block;width:100%;max-width:280px;height:auto;margin:10px 0 4px;border:1px solid var(--border-accent);border-radius:10px;}
   .code-line{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:var(--text-primary);background:var(--bg-deep);border:1px solid var(--border);border-radius:6px;padding:2px 7px;word-break:break-all;}
   .reveal{opacity:0;transform:translateY(16px);}
@@ -496,7 +499,7 @@
         <div class="item__hint">1. Запустите профиль в Dolphin<br>2. Откройте в нём <a href="https://whoer.net/" target="_blank" onclick="event.stopPropagation()">whoer.net</a><br>3. Страна должна быть <strong>США</strong>, IP — как в строке прокси</div>
       </div>
     </div>
-    <div class="note note--green"><span class="note__icon">👉</span><span><strong>Claude и ChatGPT регистрируем и оплачиваем в этом профиле Dolphin.</strong> Шаги 09–11 выполняйте в нём, с включённым VPN.</span></div>
+    <div class="note note--green"><span class="note__icon">👉</span><span><strong>Claude и ChatGPT регистрируем и оплачиваем в этом профиле Dolphin.</strong> Шаги 09–11 выполняйте в нём, с включённым VPN. После оплаты работать с Claude и ChatGPT можно в обычном Chrome с включённым VPN.</span></div>
   </div>
 </div>
 
@@ -508,10 +511,11 @@
     <div class="item" data-key="claude-open"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Зарегистрироваться в Claude</div>
-        <div class="item__hint">1. VPN включён, запущен профиль Dolphin из шага 08<br>2. В этом профиле откройте <a href="https://claude.ai/" target="_blank" onclick="event.stopPropagation()">claude.ai</a> → «Sign up»<br>3. <strong>Введите Gmail вручную</strong> (НЕ нажимайте «Continue with Google» — вводите email и пароль отдельно, так безопаснее)<br>4. <strong>Важно:</strong> используйте почту с доменом .com (например, gmail.com). Почта на .ru-домене может вызвать проблемы</div>
+        <div class="item__hint">1. VPN включён, запущен профиль Dolphin из шага 08<br>2. В этом профиле откройте <a href="https://claude.ai/" target="_blank" onclick="event.stopPropagation()">claude.ai</a> → «Sign up»<br>3. <strong>Введите Gmail вручную</strong> в поле email. НЕ нажимайте «Continue with Google», так безопаснее<br>4. <strong>Важно:</strong> используйте почту с доменом .com (например, gmail.com). Почта на .ru-домене может вызвать проблемы<br>5. Claude пришлёт на эту почту письмо со ссылкой для входа. Как её открыть, написано в красном блоке ниже</div>
         <a href="https://claude.ai/" target="_blank" class="item__link" onclick="event.stopPropagation()"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v2.69a.75.75 0 0 0 1.5 0V3a.75.75 0 0 0-.75-.75H9a.75.75 0 0 0 0 1.5h2.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/></svg> claude.ai — сайт для регистрации и работы с Claude</a>
       </div>
     </div>
+    <div class="note--critical"><span class="note--critical__title">🚨 Важно! Ссылку из письма Claude открывайте только в Dolphin</span>Для входа Claude присылает на почту письмо со ссылкой. Если просто кликнуть по ней, она откроется в обычном браузере, а не в профиле Dolphin.<br><br><strong>Делайте так:</strong><br>1. В письме от Claude нажмите на ссылку для входа <strong>правой кнопкой мыши</strong><br>2. Выберите <strong>«Копировать адрес ссылки»</strong><br>3. Перейдите в запущенный профиль Dolphin из шага 08<br>4. <strong>Вставьте ссылку в адресную строку Dolphin</strong> и нажмите Enter</div>
     <div class="item" data-key="claude-phone"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
       <div class="item__body">
         <div class="item__text">Подтвердить номер телефона, если попросят</div>
