@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Аркадий · коммерческое предложение · ИИ-Гараж</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17181A; --surface:#1E1F22; --surface-2:#26272B;
+  --ink:#F5F5F5; --ink-soft:#9EA3A8; --ink-faint:#8E9399;
+  --line:#2c2e31; --accent:#4CAE86; --accent-dim:#2c4438; --accent-soft:#20302a; --on-accent:#0c130f;
+  --sans:'Manrope',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --glass:0 1px 0 rgba(255,255,255,.06) inset,0 20px 48px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark;scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(600px 420px at 8% 4%,rgba(76,174,134,.10),transparent 70%),
+    radial-gradient(560px 420px at 96% 30%,rgba(90,120,200,.07),transparent 70%),
+    radial-gradient(700px 480px at 20% 100%,rgba(76,174,134,.07),transparent 70%),
+    var(--bg);
+  color:var(--ink);font-family:var(--sans);font-weight:500;font-size:15.5px;line-height:1.6;overflow-x:hidden;
+}
+::selection{background:rgba(76,174,134,.3)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+/* секция: 96px воздуха, шов снизу, сетка в верхних 130px */
+section{padding:96px 0;border-bottom:1px solid var(--line);position:relative}
+section::before{
+  content:'';position:absolute;inset:0 0 auto 0;height:130px;pointer-events:none;
+  background:
+    linear-gradient(rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px;
+  -webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent);opacity:.35;
+}
+.num{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:12px}
+h2{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:12px;text-wrap:balance}
+.sub{color:var(--ink-soft);font-size:17px;max-width:62ch;margin-bottom:40px}
+.sub b,.card p b{color:var(--ink);font-weight:600}
+
+/* стекло */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{
+  background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 40%),rgba(38,39,43,.93);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:22px 24px;box-shadow:var(--glass);
+}
+.card h3{font-size:17px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.card p{color:var(--ink-soft);font-size:14.5px}
+.k{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;display:block}
+.k.acc{color:var(--accent)}
+.emoji{font-size:24px;margin-bottom:10px;line-height:1}
+
+/* hero: верх принадлежит клиенту */
+.hero{padding:88px 0 80px;border-bottom:1px solid var(--line);position:relative}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.badge{font-size:13px;font-weight:700;padding:8px 14px;border-radius:100px;border:1px solid var(--line);color:var(--ink-soft)}
+.badge.client{border-color:var(--accent-dim);background:var(--accent-soft);color:var(--accent)}
+.eyebrow{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:16px}
+h1{font-size:clamp(34px,5.6vw,54px);font-weight:700;line-height:1.15;letter-spacing:-.5px;max-width:19ch;margin-bottom:20px;text-wrap:balance}
+h1 .acc{color:var(--accent)}
+.lede{color:var(--ink-soft);font-size:17px;max-width:54ch;margin-bottom:44px}
+.lede b{color:var(--ink);font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.metric{background:rgba(30,31,34,.96);padding:20px 18px}
+.metric .n{font-family:var(--mono);font-size:clamp(20px,2.6vw,26px);font-weight:700;color:var(--accent);line-height:1.1}
+.metric .l{font-size:13px;color:var(--ink-faint);margin-top:6px}
+
+/* было / стало */
+.was{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin-top:14px;font-size:14px}
+.was .t{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint);padding-top:1px}
+.was .t.now{color:var(--accent)}
+.was span:not(.t){color:var(--ink-soft)}
+
+/* поток: шаги */
+.flow{counter-reset:s}
+.step{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
+.step:first-of-type{border-top:0}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px}
+.step b{display:block;font-size:15px;font-weight:600}
+.step small{color:var(--ink-faint);font-size:13px}
+
+/* статусы */
+.status{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:100px;margin-bottom:12px}
+.status.ok{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-dim)}
+.status.wip{color:var(--ink-soft);border:1px dashed var(--ink-faint)}
+
+/* панель действия: фирменный блок */
+.panel{background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:12px;padding:24px 26px;display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:16px}
+.panel h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.panel p{color:var(--ink-soft);font-size:14.5px;max-width:62ch}
+
+/* план */
+.stage{display:grid;grid-template-columns:140px 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--line)}
+.stage:last-child{border-bottom:1px solid var(--line)}
+.stage .when{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);padding-top:3px}
+.stage h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.stage p{color:var(--ink-soft);font-size:14.5px}
+
+/* команда */
+.person{display:flex;gap:16px;align-items:flex-start}
+.person img{width:88px;height:88px;object-fit:cover;object-position:50% 20%;border-radius:10px;flex:none}
+.person .role{display:block;color:var(--accent);font-size:13.5px;margin:2px 0 6px}
+
+/* цена */
+.price{display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:stretch}
+.price-total{font-family:var(--mono);font-size:clamp(36px,6vw,56px);font-weight:700;color:var(--accent);line-height:1;margin:6px 0 10px}
+.price-total small{font-size:15px;color:var(--ink-soft);font-weight:700}
+.old{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--accent-dim);font-weight:400;margin-right:8px}
+.rows{margin-top:22px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08)}
+.row .nm{font-weight:600;font-size:15px}
+.row .nm small{display:block;color:var(--ink-faint);font-weight:400;font-size:13px}
+.row .pr{font-family:var(--mono);font-weight:700;white-space:nowrap}
+.row.sum{border-top:1px solid var(--accent-dim)}
+.row.sum .pr{color:var(--accent);font-size:17px}
+.extra{margin-top:14px;font-size:14px;color:var(--ink-soft)}
+.extra li{list-style:none;padding:3px 0 3px 18px;position:relative}
+.extra li::before{content:'+';position:absolute;left:0;color:var(--accent);font-family:var(--mono);font-weight:700}
+.pays{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.pay{font-size:13.5px;color:var(--ink-soft);border:1px solid var(--line);border-radius:100px;padding:8px 14px}
+.pay b{font-family:var(--mono);color:var(--accent)}
+.note{margin-top:12px;font-size:13px;color:var(--ink-faint)}
+.mascot{display:flex;flex-direction:column;justify-content:space-between;padding:0;overflow:hidden}
+.mascot img{width:100%;height:auto;flex:1;min-height:240px;object-fit:cover;object-position:50% 30%;display:block;background:#d9d9db}
+.mascot .cta-wrap{padding:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;transition:filter .2s}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border:1px solid var(--line);color:var(--ink)}
+.btn.block{width:100%}
+
+/* подвал: наша подпись только здесь */
+footer{padding:40px 0 56px}
+.foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;font-size:15px}
+.logo img{height:22px}
+.logo .dot{color:var(--accent)}
+.foot p{color:var(--ink-faint);font-size:13px;margin-top:8px}
+.contacts{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13px}
+.contacts a{color:var(--ink-soft);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.contacts a:hover{color:var(--accent)}
+
+/* появление */
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade{animation:up .7s cubic-bezier(.2,.7,.2,1) both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}html{scroll-behavior:auto}}
+
+@media (max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}.price{grid-template-columns:1fr}.mascot{flex-direction:row;align-items:center}.mascot img{width:160px;height:160px;min-height:0;flex:none}.mascot .cta-wrap{flex:1}}
+@media (max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  section{padding:64px 0}.hero{padding:56px 0}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .panel{flex-direction:column;align-items:stretch}.panel .btn{width:100%}
+  .stage{grid-template-columns:1fr;gap:6px}
+  .mascot{flex-direction:row;align-items:center}.mascot img{width:112px;height:112px;min-height:0}.mascot .cta-wrap{flex:1;padding:14px}
+  .row{flex-direction:column;gap:2px}
+  .foot{flex-direction:column;align-items:flex-start}
+}
+@media print{section::before,.fade{animation:none}body{background:var(--bg)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<!-- HERO: бренд клиента первым, нашего логотипа здесь нет -->
+<header class="hero"><div class="wrap">
+  <div class="badges fade">
+    <span class="badge client">🚚 Аркадий · логистика</span>
+    <span class="badge">личный ИИ агент</span>
+  </div>
+  <div class="eyebrow fade d1">коммерческое предложение · 1 октября 2026</div>
+  <h1 class="fade d2">Бизнес-ассистент в Telegram, <span class="acc">который понимает голос</span></h1>
+  <p class="lede fade d3">Аркадий, вам удобнее говорить голосом, чем писать. Ассистент примет голосовое, фото или PDF и сделает задачу: КП, сайт, письмо, встречу в календаре. Работает круглые сутки на <b>вашем собственном сервере</b>.</p>
+  <div class="metrics fade d3">
+    <div class="metric"><div class="n">24/7</div><div class="l">на связи в Telegram</div></div>
+    <div class="metric"><div class="n">1 раз в сутки</div><div class="l">резервная копия</div></div>
+    <div class="metric"><div class="n">9 октября</div><div class="l">запуск</div></div>
+    <div class="metric"><div class="n">$450</div><div class="l">под ключ</div></div>
+  </div>
+</div></header>
+
+<!-- 01 · ЗАДАЧА -->
+<section><div class="wrap">
+  <div class="num">01 · задача</div>
+  <h2>Что сейчас мешает</h2>
+  <p class="sub">На созвоне 1 октября вы рассказали, как работаете сейчас. Вот что ассистент возьмёт на себя.</p>
+  <div class="grid g3">
+    <div class="card"><div class="emoji">🎙</div><h3>«Я писать не умею»</h3>
+      <div class="was"><span class="t">было</span><span>Письма, предложения и ответы приходится набирать руками</span><span class="t now">станет</span><span>Надиктовали голосовое, ассистент сделал и прислал результат</span></div></div>
+    <div class="card"><div class="emoji">🗂</div><h3>Хлам в Telegram с 2021 года</h3>
+      <div class="was"><span class="t">было</span><span>Нужное сообщение ищете по 10–15 минут среди групп и рассылок</span><span class="t now">станет</span><span>Отдельный рабочий аккаунт Telegram: только ассистент и работа</span></div></div>
+    <div class="card"><div class="emoji">📅</div><h3>Почта, календарь и таблицы врозь</h3>
+      <div class="was"><span class="t">было</span><span>Каждый сервис открываете и ведёте сами</span><span class="t now">станет</span><span>Ассистент отправляет письма с вашего Gmail, ставит встречи, заполняет таблицы и документы</span></div></div>
+  </div>
+</div></section>
+
+<!-- 02 · КАК ЭТО РАБОТАЕТ -->
+<section><div class="wrap">
+  <div class="num">02 · как это работает</div>
+  <h2>Вы, ассистент и ИИ-Гараж</h2>
+  <p class="sub">Знакомство начинается с разговора: вы голосом рассказываете ассистенту о бизнесе, он задаёт вопросы. Дальше вы ставите задачи, а мы следим, чтобы всё работало.</p>
+  <div class="grid g3 flow">
+    <div class="card"><span class="k acc">🎙 вы</span>
+      <div class="step"><div><b>Рассказываете о бизнесе</b><small>Голосом: чем занимаетесь, какие клиенты и услуги, чего хотите. Ассистент сам задаёт вопросы</small></div></div>
+      <div class="step"><div><b>Ставите задачи</b><small>Например: «подготовь предложение клиенту» или «поставь встречу на четверг в 15:00»</small></div></div></div>
+    <div class="card"><span class="k acc">🤖 ассистент</span>
+      <div class="step"><div><b>Разбирает сообщение</b><small>Голосовое, текст, фото, PDF или файл</small></div></div>
+      <div class="step"><div><b>Делает и присылает результат</b><small>Документ, сайт, письмо с вашего Gmail, запись в календаре или таблице</small></div></div></div>
+    <div class="card"><span class="k acc">🛠 ИИ-Гараж</span>
+      <div class="step"><div><b>Собирает и настраивает</b><small>Сервер, доступы, резервные копии, защиту входа</small></div></div>
+      <div class="step"><div><b>Остаётся на связи</b><small>Первый месяц после запуска поддержка бесплатно</small></div></div></div>
+  </div>
+</div></section>
+
+<!-- 03 · ИЗ ЧЕГО СОСТОИТ -->
+<section><div class="wrap">
+  <div class="num">03 · из чего состоит</div>
+  <h2>Ваша базовая инфраструктура</h2>
+  <p class="sub">Фундамент, на котором потом можно строить других агентов: финансиста, диспетчера, менеджера.</p>
+  <div class="grid g3">
+    <div class="card"><span class="k">блок 1</span><h3>ИИ агент в Telegram</h3><p>Личный бизнес-ассистент в новом рабочем аккаунте Telegram. Понимает голосовые, фото и PDF. Работает на вашей подписке ChatGPT.</p></div>
+    <div class="card"><span class="k">блок 2</span><h3>Свой сервер и копии</h3><p>Сервер Netcup в Германии на вашем аккаунте. Каждые сутки копия уходит на ваш Google Drive. Если сервер сломается, переедем на другой за пару часов.</p></div>
+    <div class="card"><span class="k">блок 3</span><h3>Google Workspace</h3><p>Gmail, календарь, Таблицы, Документы и Диск. Ассистент читает и отправляет письма, ведёт календарь, создаёт таблицы, документы и PDF.</p></div>
+  </div>
+  <div class="panel">
+    <div><h3>Всё остаётся у вас</h3>
+      <p>Сервер, ассистент, код и данные принадлежат вам: всё на ваших аккаунтах Netcup, GitHub, ChatGPT и Google. Вход в аккаунты защищаем кодом из Google Authenticator. Систему можно развивать с нами или самостоятельно.</p></div>
+  </div>
+</div></section>
+
+<!-- 04 · ДОГОВОРЁННОСТИ -->
+<section><div class="wrap">
+  <div class="num">04 · договорённости</div>
+  <h2>Что согласовали и что уточняем</h2>
+  <p class="sub">По итогам созвона 1 октября 2026.</p>
+  <div class="grid g2">
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Голосовые входят в цену</h3><p>Ассистент работает с голосом, как вам удобно. Цена остаётся $450.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Сервер Netcup, оплата помесячно</h3><p>Без годовой предоплаты: первые месяцы смотрим, как идут списания с карты.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>ChatGPT за $100 в месяц</h3><p>Хватает на много задач в месяц. Тариф за $20 тоже есть, но лимит на нём кончается быстрее.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Gmail защищён</h3><p>На созвоне 1 октября включили вход по коду из Google Authenticator.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Налог на подписку в Казахстане</h3><p>Узнаём, добавляет ли Казахстан налог на цифровые услуги. В Грузии это плюс 18%. Напишем вам.</p></div>
+    <div class="card"><span class="status wip">⟳ нужно от вас</span><h3>Zoom на компьютере</h3><p>Пришлём ссылку на официальное приложение. Так в субботу сможем показывать и рисовать прямо на экране.</p></div>
+  </div>
+</div></section>
+
+<!-- 05 · ПЛАН ЗАПУСКА -->
+<section><div class="wrap">
+  <div class="num">05 · план запуска</div>
+  <h2>Запуск к 9 октября</h2>
+  <p class="sub">Один созвон на регистрации, остальное собираем сами.</p>
+  <div>
+    <div class="stage"><div class="when">1 октября ✓</div><div><h3>Знакомство и Gmail</h3><p>Обсудили задачи, защитили Google-аккаунт кодом из Google Authenticator.</p></div></div>
+    <div class="stage"><div class="when">3 октября, 17:00 мск</div><div><h3>Созвон на 2 часа: регистрации</h3><p>Покупаем сервер, регистрируем GitHub, подключаем ChatGPT, заводим новый аккаунт Telegram. Предоплата 50%.</p></div></div>
+    <div class="stage"><div class="when">4–8 октября</div><div><h3>Собираем ассистента</h3><p>Вы передаёте ключи доступа. Мы разворачиваем ассистента на сервере, подключаем Telegram, ChatGPT, GitHub и Google Workspace, настраиваем резервные копии и проверяем на ваших задачах.</p></div></div>
+    <div class="stage"><div class="when">до 9 октября</div><div><h3>Запуск и знакомство</h3><p>Ассистент на связи в Telegram. Рассказываете ему о бизнесе, мы показываем, как ставить задачи.</p></div></div>
+    <div class="stage"><div class="when">первый месяц</div><div><h3>Бесплатная поддержка</h3><p>Отвечаем на вопросы и поправляем, если что-то работает не так. Следующих агентов обсуждаем отдельно.</p></div></div>
+  </div>
+</div></section>
+
+<!-- 06 · КТО ДЕЛАЕТ -->
+<section><div class="wrap">
+  <div class="num">06 · кто делает</div>
+  <h2>Команда</h2>
+  <p class="sub">Проект ведёт Стас, он ваш прямой контакт.</p>
+  <div class="grid g2">
+    <div class="card person"><img src="assets/team-stas.jpg" alt="Стас" width="88" height="88"><div><h3>Стас</h3><span class="role">главный инженер</span><p>Сооснователь школы ИИ-обучения. Четыре года в ИИ: агенты, боты, CRM, интеграции.</p></div></div>
+    <div class="card person"><img src="assets/team-uliana.jpg" alt="Ульяна" width="88" height="88"><div><h3>Ульяна</h3><span class="role">архитектор решений</span><p>5 лет в бизнес-аналитике: сначала считает, потом строит. От кофейни до логистики.</p></div></div>
+  </div>
+</div></section>
+
+<!-- 07 · СКОЛЬКО СТОИТ -->
+<section id="price"><div class="wrap">
+  <div class="num">07 · сколько стоит</div>
+  <h2>Цена под ключ</h2>
+  <p class="sub">Объём, срок и цену фиксируем до старта.</p>
+  <div class="price">
+    <div class="card">
+      <span class="k">базовая инфраструктура и ассистент</span>
+      <div class="price-total"><span class="old">$500</span>$450 <small>USD</small></div>
+      <p>Сервер, аккаунты, ИИ агент в Telegram с голосом и Google Workspace.</p>
+      <div class="rows">
+        <div class="row"><span class="nm">Инфраструктура<small>сервер, GitHub, резервные копии, защита входа</small></span><span class="pr">входит</span></div>
+        <div class="row"><span class="nm">ИИ агент в Telegram<small>голосовые, фото, PDF, работа 24/7</small></span><span class="pr">входит</span></div>
+        <div class="row"><span class="nm">Google Workspace<small>почта, календарь, таблицы, документы, диск</small></span><span class="pr">входит</span></div>
+        <div class="row"><span class="nm">Поддержка первый месяц<small>после запуска</small></span><span class="pr">$0</span></div>
+        <div class="row sum"><span class="nm">Итого</span><span class="pr">$450</span></div>
+      </div>
+      <ul class="extra">
+        <li>ChatGPT вы оплачиваете напрямую: $100 в месяц, возможно с налогом</li>
+        <li>Сервер Netcup оплачиваете напрямую: около €14 в месяц</li>
+        <li>Первый месяц вместе с подпиской и сервером: около $590</li>
+        <li>Учёт по банковским выпискам и других агентов обсуждаем отдельно</li>
+      </ul>
+      <div class="pays"><span class="pay"><b>50%</b> на старте, 3 октября</span><span class="pay"><b>50%</b> после запуска и приёмки</span></div>
+      <p class="note">Оплата в рублях по курсу ЦБ на день платежа. По курсу на 1 октября первые $225 равны 18 801 ₽.</p>
+    </div>
+    <div class="card mascot">
+      <img src="assets/garazhnik.webp" alt="Гаражник, талисман ИИ-Гаража" width="640" height="640">
+      <div class="cta-wrap"><a class="btn primary block" href="https://t.me/stavzzz">Согласовать и начать →</a></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <div>
+    <div class="logo"><img src="assets/logo-mark.png" alt="">гараж<span class="dot">_</span></div>
+    <p>Коммерческое предложение подготовлено для Аркадия · 1 октября 2026</p>
+  </div>
+  <div class="contacts">
+    <a href="https://ai-garage.tech/">ai-garage.tech</a>
+    <a href="mailto:aigarage.tech@gmail.com">aigarage.tech@gmail.com</a>
+    <a href="https://t.me/stavzzz">@stavzzz</a>
+  </div>
+</div></footer>
+
+</body>
+</html>
