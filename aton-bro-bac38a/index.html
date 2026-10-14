@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>АТОН · Бро знает всю компанию</title>
+<!-- Презентация ИИ-Гаража для АТОН: идеи интеграции Бро в ERP с памятью компании.
+     Стиль: «Ночной гараж» (VIBE CODING/19. AI-garage/DESIGN.md), правила КП: 0. My vault/AI-GARAGE/КП/ai-garage-kp-style.md.
+     Листается стрелками, свайпом и кнопками; на узком или низком экране читается лентой. -->
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17181A; --surface:#1E1F22; --surface-2:#26272B;
+  --ink:#F5F5F5; --ink-soft:#9EA3A8; --ink-faint:#8E9399;
+  --line:#2c2e31; --wall:#3a3d42;
+  --accent:#4CAE86; --accent-dim:#2c4438; --accent-soft:#20302a; --on-accent:#0c130f;
+  --sans:'Manrope',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --glass:0 1px 0 rgba(255,255,255,.06) inset,0 20px 48px rgba(0,0,0,.4);
+  --bar-top:58px; --bar-bottom:64px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark}
+body{
+  background:
+    radial-gradient(640px 440px at 6% 4%,rgba(76,174,134,.10),transparent 70%),
+    radial-gradient(560px 420px at 96% 30%,rgba(90,120,200,.07),transparent 70%),
+    radial-gradient(700px 480px at 22% 100%,rgba(76,174,134,.06),transparent 70%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--ink);font-family:var(--sans);font-weight:500;font-size:15.5px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:rgba(76,174,134,.3)}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--mono)}
+
+/* ——— рамка презентации ——— */
+.bar{position:fixed;left:0;right:0;z-index:20;display:none;align-items:center;gap:16px;padding:0 28px;
+  background:rgba(23,24,26,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.bar-top{top:0;height:var(--bar-top);border-bottom:1px solid var(--line)}
+.bar-bottom{bottom:0;height:var(--bar-bottom);border-top:1px solid var(--line)}
+.who{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.02em}
+.who span{color:var(--accent)}
+.where{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--ink-faint)}
+.progress{position:absolute;left:0;top:-1px;height:2px;background:var(--accent);width:0;transition:width .3s ease}
+.count{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft)}
+.count b{color:var(--ink)}
+.hint{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.navs{margin-left:auto;display:flex;gap:8px}
+.nav{min-width:44px;height:40px;padding:0 14px;border:1px solid var(--line);border-radius:8px;
+  font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink)}
+.nav:hover{border-color:#44474c;background:rgba(255,255,255,.03)}
+.nav:disabled{opacity:.35;cursor:default}
+
+/* ——— слайд ——— */
+.slide{position:relative;padding:72px 0;border-bottom:1px solid var(--line)}
+.slide::before{content:'';position:absolute;inset:0 0 auto 0;height:130px;pointer-events:none;
+  background:
+    linear-gradient(rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px;
+  -webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent);opacity:.35}
+.wrap{position:relative;max-width:1100px;margin:0 auto;padding:0 28px;width:100%}
+.num{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:12px}
+h1{font-size:clamp(34px,5.6vw,54px);font-weight:700;line-height:1.12;letter-spacing:-.5px;max-width:19ch;text-wrap:balance}
+h2{font-size:30px;font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:12px;text-wrap:balance;max-width:42ch}
+.lede{color:var(--ink-soft);font-size:17px;max-width:64ch;margin-bottom:32px}
+.lede b{color:var(--ink);font-weight:600}
+.small{font-size:12.5px;color:var(--ink-faint)}
+.tag{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint)}
+.tag.on{color:var(--accent)}
+
+/* стекло */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{position:relative;
+  background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 40%),rgba(38,39,43,.93);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:20px 22px;box-shadow:var(--glass)}
+.card h3{font-size:16.5px;font-weight:700;line-height:1.3;margin-bottom:6px}
+.card p{color:var(--ink-soft);font-size:14.5px;line-height:1.55}
+.card p b{color:var(--ink);font-weight:600}
+.emo{font-size:22px;line-height:1;margin-bottom:12px;display:block}
+.panel{margin-top:16px;border:1px solid var(--accent-dim);background:var(--accent-soft);border-radius:12px;padding:20px 24px;
+  display:flex;gap:24px;align-items:center}
+.panel p{color:var(--ink-soft);font-size:15px}
+.panel p b{color:var(--ink);font-weight:700}
+.panel .act{margin-left:auto;flex:none;display:flex;gap:10px}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 22px;border-radius:8px;
+  font-family:var(--mono);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:#5bbd95}
+.btn-ghost{border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:#44474c;background:rgba(255,255,255,.03)}
+
+/* ——— 01 обложка ——— */
+.cover .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border-radius:100px;border:1px solid var(--line);
+  background:rgba(38,39,43,.6);font-size:13px;font-weight:600;margin-bottom:14px}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px rgba(76,174,134,.6)}
+.meta{font-family:var(--mono);font-size:13px;color:var(--ink-faint);margin-bottom:22px}
+.cover .lede{margin:22px 0 26px;max-width:54ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft)}
+.facts b{color:var(--ink)}
+
+/* сообщение Бро */
+.msg{border-radius:14px;padding:16px 18px 14px;background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 40%),rgba(38,39,43,.95);
+  border:1px solid rgba(255,255,255,.09);box-shadow:var(--glass)}
+.msg-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ava{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);border:1px solid var(--accent-dim);
+  display:grid;place-items:center;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent)}
+.msg-h b{font-size:14.5px;font-weight:700}
+.msg-h span{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.voice{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.play{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;flex:none}
+.play::after{content:'';border-left:10px solid var(--on-accent);border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px}
+.wave{display:flex;align-items:center;gap:3px;height:28px;flex:1}
+.wave i{display:block;width:3px;border-radius:2px;background:#5f646a}
+.wave i.p{background:var(--accent)}
+.voice .t{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.msg ul{list-style:none;display:grid;gap:6px;font-size:14px;line-height:1.5;color:var(--ink)}
+.msg li{padding-left:16px;position:relative}
+.msg li::before{content:'·';position:absolute;left:4px;color:var(--ink-faint)}
+.msg li .k{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-right:6px}
+.msg .note{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+
+/* ——— 03 цитаты ——— */
+.quote{font-size:17px;font-weight:600;line-height:1.45;color:var(--ink);margin-bottom:12px}
+.quote-src{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+
+/* ——— 04 три свойства ——— */
+.trait .tag{margin-bottom:14px;display:block}
+.trait h3{font-size:22px;margin-bottom:10px}
+
+/* ——— 05 контуры: подпись презентации ——— */
+.contour{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:start}
+.roles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.role{min-height:40px;padding:8px 14px;border-radius:100px;border:1px solid var(--line);
+  font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft);background:rgba(38,39,43,.6)}
+.role:hover{color:var(--ink);border-color:#44474c}
+.role[aria-pressed="true"]{color:var(--accent);border-color:var(--accent-dim);background:var(--accent-soft)}
+.plan{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(84px,auto);gap:0;
+  border:3px solid var(--wall);border-radius:6px;background:
+    linear-gradient(rgba(76,174,134,.05) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(76,174,134,.05) 1px,transparent 1px) 0 0/22px 22px,
+    rgba(23,24,26,.7)}
+.room{position:relative;margin:-1.5px;border:1.5px solid var(--wall);padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;
+  transition:background-color .25s ease,border-color .25s ease,opacity .25s ease;min-width:0}
+.room b{font-size:14px;font-weight:700;line-height:1.3}
+.room .st{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint)}
+.room.w2{grid-column:span 2}
+/* дверной проём: разрыв в стене */
+.room::after{content:'';position:absolute;left:18px;bottom:-3px;width:26px;height:4px;background:var(--bg)}
+.room:nth-child(n+7)::after{display:none}
+.room[data-s="full"]{background:rgba(32,48,42,.92);border-color:var(--accent-dim);z-index:2}
+.room[data-s="full"] .st{color:var(--accent)}
+.room[data-s="part"]{background:rgba(32,48,42,.45);border-style:dashed;border-color:var(--accent-dim);z-index:1}
+.room[data-s="part"] .st{color:var(--ink-soft)}
+/* закрытая комната заштрихована, как на чертеже; текст остаётся читаемым */
+.room[data-s="off"]{background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px)}
+.room[data-s="off"] b{color:var(--ink-faint);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend .lf{background:rgba(32,48,42,.92);border:1px solid var(--accent-dim)}
+.legend .lp{border:1px dashed var(--accent-dim)}
+.legend .lo{border:1px solid var(--wall);background:repeating-linear-gradient(135deg,rgba(255,255,255,.12) 0 1px,transparent 1px 4px)}
+.ask .q{font-size:15px;font-weight:700;margin-bottom:10px}
+.ask .q span{display:block;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint);margin-bottom:6px}
+.bubble{border-radius:12px;border:1px solid var(--accent-dim);background:var(--accent-soft);padding:14px 16px;font-size:15px;line-height:1.55;color:var(--ink);min-height:120px}
+.bubble .from{display:block;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:6px}
+.ask .small{margin-top:14px;line-height:1.55}
+
+/* ——— 06 двенадцать идей ——— */
+.ideas{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.idea{padding:12px 16px 14px;display:flex;flex-direction:column;gap:4px}
+.idea .top{display:flex;align-items:center;gap:10px}
+.idea .rk{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft)}
+.idea h3{font-size:15px;margin:0}
+.idea p{font-size:13.5px;line-height:1.5}
+.star{margin-left:auto;width:36px;height:36px;margin-right:-8px;border-radius:8px;display:grid;place-items:center;
+  font-size:18px;color:var(--ink-faint);position:relative}
+.star::after{content:'';position:absolute;inset:-4px}
+.star:hover{color:var(--ink-soft);background:rgba(255,255,255,.04)}
+.star[aria-pressed="true"]{color:var(--accent)}
+.idea.picked{border-color:var(--accent-dim)}
+
+/* ——— пары «пример» ——— */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.ex .rk{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:8px;display:block}
+.ex h3{font-size:18px;margin-bottom:8px}
+.ex > p{margin-bottom:14px}
+.alert{border-left:2px solid var(--accent);background:rgba(23,24,26,.55);border-radius:0 8px 8px 0;padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink)}
+.alert .from{display:block;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.src{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.qa{display:grid;gap:10px}
+.qa .me{justify-self:end;max-width:86%;background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 4px 12px;padding:10px 14px;font-size:14px}
+.qa .bro{max-width:92%;background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:12px 12px 12px 4px;padding:10px 14px;font-size:14px}
+.qa .bro a{color:var(--accent);text-decoration:none;font-family:var(--mono);font-size:12.5px;font-weight:700;white-space:nowrap}
+.file{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(23,24,26,.6);border:1px solid var(--line);font-family:var(--mono);font-size:12.5px}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:8px 0 14px;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+.flow span{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:rgba(23,24,26,.5)}
+.flow em{font-style:normal;color:var(--ink-faint)}
+
+/* ——— 12 сигналы ——— */
+.sig{width:100%;border-collapse:separate;border-spacing:0;font-size:14.5px}
+.sig th{text-align:left;font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint);padding:0 14px 10px;border-bottom:1px solid var(--line)}
+.sig td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-soft)}
+.sig td:first-child{color:var(--ink);font-weight:700}
+.sig tr:last-child td{border-bottom:0}
+
+/* ——— 13 слои ——— */
+.stack{display:grid;gap:8px}
+.layer{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:center;padding:14px 18px}
+.layer .lv{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint)}
+.layer p{font-size:14.5px;color:var(--ink-soft)}
+.layer p b{color:var(--ink)}
+.layer.core{border-color:var(--accent-dim);background:linear-gradient(135deg,rgba(255,255,255,.04),transparent 40%),rgba(32,48,42,.85)}
+.layer.core .lv{color:var(--accent)}
+.flowline{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);padding:0 4px}
+
+/* ——— 15 списки работ ——— */
+.todo{list-style:none;display:grid;gap:9px;margin-top:6px}
+.todo li{position:relative;padding-left:22px;font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+.todo li::before{content:'';position:absolute;left:2px;top:7px;width:9px;height:9px;border:1.5px solid var(--ink-faint);border-radius:2px}
+.todo li b{color:var(--ink);font-weight:600}
+
+/* ——— 16 волны ——— */
+.waves{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.wave-c .when{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:10px;display:flex;gap:10px}
+.wave-c .when b{color:var(--accent)}
+.wave-c h3{font-size:19px;margin-bottom:10px}
+.wave-c .res{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:14px;color:var(--ink)}
+
+/* ——— 17 выбор ——— */
+.picks{list-style:none;display:grid;gap:8px;margin:4px 0 0}
+.picks li{display:flex;gap:12px;align-items:baseline;font-size:16px;font-weight:600}
+.picks li span{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:700}
+.empty{color:var(--ink-soft);font-size:15px}
+.foot{display:flex;align-items:center;gap:12px;margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--ink-faint)}
+.foot .logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--ink)}
+.foot .logo img{height:20px;width:auto}
+.foot .logo span{color:var(--accent)}
+.foot a{text-decoration:none}
+.foot a:hover{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:30;padding:10px 16px;border-radius:8px;background:var(--surface-2);
+  border:1px solid var(--accent-dim);font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ——— режим листания: широкий и не слишком низкий экран ——— */
+@media (min-width:900px) and (min-height:600px){
+  html,body{height:100%;overflow:hidden}
+  .bar{display:flex}
+  .deck{position:fixed;inset:0}
+  .slide{position:absolute;inset:0;padding:calc(var(--bar-top) + 28px) 0 calc(var(--bar-bottom) + 24px);border:0;
+    display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
+    opacity:0;visibility:hidden;transform:translateX(28px);transition:opacity .32s ease,transform .32s ease,visibility 0s linear .32s}
+  .slide::before{top:var(--bar-top)}
+  .slide > .wrap{margin:auto}
+  .slide.is-before{transform:translateX(-28px)}
+  .slide.is-current{opacity:1;visibility:visible;transform:none;transition:opacity .32s ease,transform .32s ease,visibility 0s}
+}
+@media (min-width:900px) and (min-height:600px) and (max-height:780px){
+  .slide{padding:calc(var(--bar-top) + 20px) 0 calc(var(--bar-bottom) + 14px)}
+  .lede{margin-bottom:22px;font-size:16px}
+  .qa{gap:8px}
+  .qa .me,.qa .bro{padding:8px 12px}
+  h2{font-size:27px}
+  .card{padding:16px 18px}
+  .idea{padding:13px 14px 12px}
+  .idea p{font-size:13px}
+  .plan{grid-auto-rows:minmax(70px,auto)}
+  .layer{padding:11px 16px}
+}
+
+@media (min-width:900px) and (min-height:600px) and (max-height:740px){
+  .num{margin-bottom:8px}
+  h2{margin-bottom:8px}
+  .lede{margin-bottom:16px;line-height:1.5}
+  .grid{gap:10px}
+  .ideas{gap:10px}
+  .idea{padding:10px 14px 12px}
+  .idea p{line-height:1.45}
+  .card .emo{margin-bottom:8px}
+  .panel{margin-top:12px;padding:14px 20px}
+  .sig td{padding:8px 14px}
+}
+
+/* ——— узкие экраны ——— */
+@media (max-width:1000px){
+  .ideas{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:899px){
+  .cover .wrap{grid-template-columns:minmax(0,1fr);gap:32px}
+  .contour{grid-template-columns:minmax(0,1fr)}
+  .duo,.trio,.waves,.g3{grid-template-columns:minmax(0,1fr)}
+  .ideas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel{flex-direction:column;align-items:stretch}
+  .panel .act{margin-left:0;flex-direction:column}
+  .panel .act .btn{width:100%}
+  .layer{grid-template-columns:minmax(0,1fr);gap:4px}
+}
+@media (max-width:640px){
+  .slide{padding:56px 0}
+  .wrap{padding:0 16px}
+  h2{font-size:25px}
+  .g2,.g4,.ideas{grid-template-columns:minmax(0,1fr)}
+  .plan{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-flow:row dense}
+  .room.w2{grid-column:span 2}
+  .sig thead{display:none}
+  .sig,.sig tbody,.sig tr,.sig td{display:block;width:100%}
+  .sig tr{padding:10px 0;border-bottom:1px solid var(--line)}
+  .sig td{border:0;padding:2px 0}
+  .qa .me,.qa .bro{max-width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+@media print{
+  @page{size:297mm 167mm;margin:0}
+  html,body{height:auto;overflow:visible}
+  .bar,.toast,.star,.roles,.navs{display:none!important}
+  .deck{position:static}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;break-after:page;min-height:167mm;border:0;padding:14mm 0}
+}
+</style>
+</head>
+<body>
+
+<header class="bar bar-top">
+  <div class="who">АТОН <span>×</span> Бро</div>
+  <div class="where" id="where">01 · обложка</div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- 01 · обложка -->
+<section class="slide cover" data-title="обложка" aria-label="Обложка">
+  <div class="wrap">
+    <div>
+      <div class="badge"><i></i>АТОН · для Павла Александровича</div>
+      <div class="meta">идеи и план · октябрь 2026</div>
+      <h1>Бро знает всю компанию</h1>
+      <p class="lede">Сейчас Бро помогает вам лично. Следующий шаг: он видит всю ERP, помнит каждое решение и первым замечает, где уходят деньги и сроки. Каждый в команде получает своего помощника, но видит только свой участок.</p>
+      <div class="facts"><span><b>12</b> идей</span><span><b>5</b> контуров доступа</span><span><b>3</b> волны запуска</span></div>
+    </div>
+    <div class="msg" aria-label="Пример утреннего доклада Бро">
+      <div class="msg-h"><div class="ava">Бро</div><b>Бро</b><span>07:30</span></div>
+      <div class="voice"><div class="play" aria-hidden="true"></div><div class="wave" id="wave" aria-hidden="true"></div><span class="t">1:12</span></div>
+      <ul>
+        <li><span class="k">26.18</span>кровля закрыта, 14 фото от прораба</li>
+        <li><span class="k">26.25</span>армопояс третий день без фото</li>
+        <li><span class="k">деньги</span>пришёл транш по 26.10, к оплате сегодня 3 счёта</li>
+        <li><span class="k">важно</span>бригада на 26.31 ждёт аванс, договор подписан</li>
+      </ul>
+      <div class="note">пример доклада · цифры условные</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · фундамент -->
+<section class="slide" data-title="что уже есть" aria-label="Что уже работает">
+  <div class="wrap">
+    <div class="num">02 · что уже есть</div>
+    <h2>Фундамент уже стоит</h2>
+    <p class="lede">За лето и осень в ERP переехало всё, на чём держится стройка. Из этих данных Бро и будет брать факты.</p>
+    <div class="grid g3">
+      <div class="card"><span class="emo">🏗️</span><h3>Объекты и график</h3><p>46 этапов на дом, план и факт по неделям. Новый объект заводится без дат.</p></div>
+      <div class="card"><span class="emo">📷</span><h3>Фото с площадки</h3><p>Одна лента по дате: кто снял и когда. Ревизор раскладывает снимки по объектам сам.</p></div>
+      <div class="card"><span class="emo">💰</span><h3>Деньги и договоры</h3><p>Платежи заказчиков, материалы, выплаты бригадам, офис и зарплаты в одной системе.</p></div>
+      <div class="card"><span class="emo">🧾</span><h3>Касса</h3><p>Приход и расход за день, остаток утром и вечером. Бухгалтер больше не печатает листочки.</p></div>
+      <div class="card"><span class="emo">🏦</span><h3>Банк Точка</h3><p>Подписали платёжку, и платёж в системе сам становится «Оплачен».</p></div>
+      <div class="card"><span class="emo">🤖</span><h3>Три агента</h3><p>Ревизор ведёт фото и этапы, Менеджер раздаёт задачи, Бро говорит с вами голосом.</p></div>
+    </div>
+    <div class="panel"><p><b>Чего не хватает.</b> Бро пока не видит ERP, а агенты работают каждый в своей комнате и не знают, что делают соседи.</p></div>
+  </div>
+</section>
+
+<!-- 03 · что болит -->
+<section class="slide" data-title="что болит" aria-label="Что болит">
+  <div class="wrap">
+    <div class="num">03 · что болит</div>
+    <h2>Что вы говорили на созвонах</h2>
+    <p class="lede">Идеи на следующих слайдах отвечают на эти фразы.</p>
+    <div class="grid g3">
+      <div class="card"><p class="quote">«Я нервничаю, когда что-то не могу найти»</p><div class="quote-src">созвон 13.07</div></div>
+      <div class="card"><p class="quote">«По любому объекту только смотрю прибыль. Если падает, я начинаю в него вникать»</p><div class="quote-src">созвон 19.08</div></div>
+      <div class="card"><p class="quote">«Начинает нервоз накидывать, когда процесс не движется»</p><div class="quote-src">созвон 19.08</div></div>
+      <div class="card"><p class="quote">«Я кидаю в день по 20–30 задач»</p><div class="quote-src">созвон 13.07</div></div>
+      <div class="card"><p class="quote">«Зачем лишнего привезли?»</p><div class="quote-src">созвон 12.10, про остатки на объекте</div></div>
+      <div class="card"><p class="quote">«Чтобы я просто уже ушёл от таблиц»</p><div class="quote-src">созвон 19.08</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · три свойства -->
+<section class="slide" data-title="идея" aria-label="Идея">
+  <div class="wrap">
+    <div class="num">04 · идея</div>
+    <h2>Бро становится мозгом компании</h2>
+    <p class="lede">Три свойства, без которых помощник остаётся просто чатом.</p>
+    <div class="grid g3">
+      <div class="card trait"><span class="tag on">знает</span><h3>Видит всё и помнит</h3><p>Вся ERP, созвоны, решения и обещания. Цифры Бро берёт из системы и прикладывает ссылку на запись.</p></div>
+      <div class="card trait"><span class="tag on">делит</span><h3>Каждому свой контур</h3><p>У сотрудника свой помощник. Бухгалтер не увидит прибыль, прораб не увидит кассу. Доступ режет сама ERP, уговорами модели его не открыть.</p></div>
+      <div class="card trait"><span class="tag on">предвидит</span><h3>Пишет до проблемы</h3><p>Сторожа проверяют систему каждые полчаса. Сработал сигнал: Бро разбирается в причине и пишет вам, пока ошибка ещё дешёвая.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · контуры памяти -->
+<section class="slide" data-title="контуры памяти" aria-label="Контуры памяти">
+  <div class="wrap">
+    <div class="num">05 · контуры памяти</div>
+    <h2>Каждой роли свой ключ</h2>
+    <p class="lede">Компания как дом: комнаты с данными, у каждой роли ключи только от своих. Выберите роль и посмотрите, что открыто её помощнику.</p>
+    <div class="contour">
+      <div>
+        <div class="roles" role="group" aria-label="Роль">
+          <button class="role" data-role="owner" aria-pressed="true">Владелец</button>
+          <button class="role" data-role="acc" aria-pressed="false">Бухгалтер</button>
+          <button class="role" data-role="pto" aria-pressed="false">ПТО</button>
+          <button class="role" data-role="build" aria-pressed="false">Стройка</button>
+          <button class="role" data-role="client" aria-pressed="false">Заказчик</button>
+        </div>
+        <div class="plan" id="plan" aria-live="polite">
+          <div class="room" data-room="profit"><b>Прибыль и маржа</b><span class="st"></span></div>
+          <div class="room w2" data-room="money"><b>Деньги и касса</b><span class="st"></span></div>
+          <div class="room" data-room="personal"><b>Личное владельца</b><span class="st"></span></div>
+          <div class="room" data-room="crew"><b>Договоры с бригадами</b><span class="st"></span></div>
+          <div class="room" data-room="cust"><b>Договоры с заказчиками</b><span class="st"></span></div>
+          <div class="room w2" data-room="sched"><b>Объекты и график</b><span class="st"></span></div>
+          <div class="room" data-room="photo"><b>Фото с площадки</b><span class="st"></span></div>
+          <div class="room" data-room="docs"><b>Документы объекта</b><span class="st"></span></div>
+          <div class="room" data-room="know"><b>Регламенты и узлы</b><span class="st"></span></div>
+          <div class="room" data-room="decide"><b>Решения и созвоны</b><span class="st"></span></div>
+        </div>
+        <div class="legend"><span><i class="lf"></i>открыто</span><span><i class="lp"></i>частично</span><span><i class="lo"></i>закрыто</span></div>
+      </div>
+      <div class="ask">
+        <p class="q"><span>один вопрос, пять ответов</span>«Сколько заработали на объекте 26.18?»</p>
+        <div class="bubble" id="answer"></div>
+        <p class="small">Контуры повторяют права, которые уже есть в ERP: прибыль видит только владелец, бухгалтеру закрыт график, стройке закрыты заказчики. Заказчик подключается через отдельный шлюз и видит только свой дом.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 · двенадцать идей -->
+<section class="slide" data-title="12 идей" aria-label="Двенадцать идей">
+  <div class="wrap">
+    <div class="num">06 · двенадцать идей</div>
+    <h2>Что Бро будет делать</h2>
+    <p class="lede">Сверху самое полезное и готовое к запуску. Отметьте ☆ то, что нужно первым.</p>
+    <div class="grid ideas" id="ideas"></div>
+  </div>
+</section>
+
+<!-- 07 · доклад и вопросы -->
+<section class="slide" data-title="доклад и вопросы" aria-label="Утренний доклад и вопросы голосом">
+  <div class="wrap">
+    <div class="num">07 · идеи 01 и 02</div>
+    <h2>Утро начинается с доклада</h2>
+    <p class="lede">Едете в офис и слушаете, что произошло за ночь. Дальше спрашиваете голосом, как спросили бы бухгалтера или прораба.</p>
+    <div class="duo">
+      <div class="card ex">
+        <span class="rk">01 · утренний доклад</span>
+        <h3>В 07:30 голосом и текстом</h3>
+        <p>Что сдвинулось на каждом объекте, деньги дня, что горит сегодня. Только то, что требует вашего внимания.</p>
+        <div class="alert"><span class="from">Бро · 07:30</span>Вчера: кровля на 26.18 закрыта, 14 фото. Армопояс на 26.25 стоит третий день, прораб не прислал фото. К оплате сегодня 3 счёта на 186&nbsp;тыс. Бригада на 26.31 ждёт аванс по подписанному договору.</div>
+        <div class="src">берёт: этапы · фото · деньги · касса · договоры</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">02 · спроси компанию</span>
+        <h3>Любой вопрос, ответ со ссылкой</h3>
+        <p>Цифру Бро берёт из ERP и прикладывает запись или файл. Ничего не придумывает.</p>
+        <div class="qa">
+          <div class="me">Сколько осталось заплатить кровельщикам на 26.18?</div>
+          <div class="bro">312&nbsp;тыс. по договору №&nbsp;14, последняя выплата 03.10. <a href="#" tabindex="-1">открыть договор →</a></div>
+          <div class="me">Скинь карточку предприятия</div>
+          <div class="bro">Держите, последняя версия. <span class="file">📎 Карточка АТОН.pdf</span></div>
+        </div>
+        <div class="src">пример · цифры условные</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 · прибыль и сроки -->
+<section class="slide" data-title="прибыль и сроки" aria-label="Прибыль и сроки">
+  <div class="wrap">
+    <div class="num">08 · идеи 03 и 04</div>
+    <h2>Тревога раньше, чем ушла прибыль</h2>
+    <p class="lede">ERP уже считает отставание этапов и отклонение от плана прибыли. Бро добавляет причину, предлагает шаг и пишет сам.</p>
+    <div class="duo">
+      <div class="card ex">
+        <span class="rk">03 · прибыль под наблюдением</span>
+        <h3>Прогноз по каждому дому</h3>
+        <p>Сравнивает прогноз с планом прибыли. Падает: объясняет, из-за чего.</p>
+        <div class="alert"><span class="from">Бро · сигнал</span>26.18: прибыль идёт ниже плана на 9%. Материалы на 240&nbsp;тыс. дороже сметы, допработы на 180&nbsp;тыс. не внесены в договор. Предлагаю: допсоглашение с заказчиком и проверка счетов за газобетон.</div>
+        <div class="src">берёт: деньги объекта · план прибыли · договоры</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">04 · сторож сроков</span>
+        <h3>План, факт и тишина на объекте</h3>
+        <p>Видит, где этап стоит, где три дня нет фото, и считает дату сдачи по реальному темпу.</p>
+        <div class="alert"><span class="from">Бро · сигнал</span>26.25 отстаёт от графика на 2 недели. «Армопояс» начат 18 дней назад, фото не было 3 дня. При таком темпе тёплый контур будет к 20.11 вместо 06.11.</div>
+        <div class="src">берёт: этапы · недели графика · фото · исполнители</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 · деньги -->
+<section class="slide" data-title="деньги" aria-label="Деньги под присмотром">
+  <div class="wrap">
+    <div class="num">09 · идеи 05, 06 и 07</div>
+    <h2>Деньги под присмотром</h2>
+    <p class="lede">То, что вы раньше находили вручную в таблице, Бро ловит в момент записи.</p>
+    <div class="trio">
+      <div class="card ex">
+        <span class="rk">05 · контролёр денег</span>
+        <h3>Ошибки и лишние выплаты</h3>
+        <div class="alert"><span class="from">Бро · сигнал</span>Выплата фасадчикам на 26.1 больше остатка по договору на 40&nbsp;тыс. Это аванс за следующий этап или ошибка?</div>
+        <div class="src">ещё ловит: дубли, расход без документа, кассу, которая не сошлась вечером</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">06 · ценовой радар</span>
+        <h3>Счёт дороже обычного</h3>
+        <div class="alert"><span class="from">Бро · сигнал</span>В новом счёте щебень по 1&nbsp;200&nbsp;₽ за тонну. Последние три месяца брали по 1&nbsp;000. Разница по счёту 36&nbsp;тыс.</div>
+        <div class="src">нужно: разбирать строки счетов, сейчас в ERP хранится только сумма</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">07 · кассовый горизонт</span>
+        <h3>Деньги на 4 недели вперёд</h3>
+        <div class="alert"><span class="from">Бро · сигнал</span>Через 12 дней не хватит 400&nbsp;тыс. на выплаты бригадам: транш по 26.10 придёт позже. Можно перенести два счёта с отсрочкой.</div>
+        <div class="src">берёт: этапы и транши заказчиков · выплаты · отсрочки поставщиков</div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:14px">Примеры · цифры условные</p>
+  </div>
+</section>
+
+<!-- 10 · память -->
+<section class="slide" data-title="ничего не теряется" aria-label="Память решений, задачи и база знаний">
+  <div class="wrap">
+    <div class="num">10 · идеи 08, 09 и 10</div>
+    <h2>Ничего не теряется</h2>
+    <p class="lede">Бро помнит ответ, который вам понравился, и через два дня не выдаст другой. Так же он будет помнить решения, задачи и опыт бригад.</p>
+    <div class="trio">
+      <div class="card ex">
+        <span class="rk">08 · память решений</span>
+        <h3>Созвоны и планёрки в протокол</h3>
+        <div class="alert"><span class="from">Бро · напоминание</span>На планёрке 14.10 решили: окна на 26.31 нестандартные, доплата заказчика 85&nbsp;тыс. Договор пока не обновлён. Напомнить ПТО?</div>
+        <div class="src">берёт: созвоны · голосовые · договоры</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">09 · одна лента задач</span>
+        <h3>Задачи голосом, итог вечером</h3>
+        <div class="alert"><span class="from">Бро · 19:00</span>Сегодня 23 задачи: 17 сделано, 4 в работе. Две висят третий день: справка для кадастра и смета на забор.</div>
+        <div class="src">вместе с Менеджером · задача привязана к объекту</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">10 · база знаний бригад</span>
+        <h3>«Как у нас делают узел»</h3>
+        <div class="qa">
+          <div class="me">Как крепим мауэрлат?</div>
+          <div class="bro">Вот наш узел с 26.10 и правило из регламента. <span class="file">📷 4 фото</span></div>
+        </div>
+        <div class="src">для прорабов и новичков · эталонные фото вместо ленты за три года</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · зима -->
+<section class="slide" data-title="зима" aria-label="Склад и заказчики">
+  <div class="wrap">
+    <div class="num">11 · идеи 11 и 12</div>
+    <h2>Зима: склад, снабжение и заказчики</h2>
+    <p class="lede">Большие куски, под которые в ERP появятся новые разделы. Их стоит продумать сейчас, пока строится склад.</p>
+    <div class="duo">
+      <div class="card ex">
+        <span class="rk">11 · снабженец и склад</span>
+        <h3>Материал считает агент, везёт склад</h3>
+        <div class="flow"><span>проект дома</span><em>→</em><span>спецификация ±5%</span><em>→</em><span>заявка кладовщику</span><em>→</em><span>лимит на объект</span><em>→</em><span>остатки на склад</span></div>
+        <p>Меньше лишних рейсов манипулятора и поддонов, которые потом вывозят обратно. Остатки на объекте Бро видит по фото и предлагает забрать.</p>
+        <div class="src">нужно: склад с номенклатурой, количеством и остатками</div>
+      </div>
+      <div class="card ex">
+        <span class="rk">12 · кабинет заказчика</span>
+        <h3>Расчёт за минуту, спокойный клиент</h3>
+        <div class="flow"><span>до договора</span><em>·</em><span>расчёт ±10%</span><em>·</em><span>после договора</span><em>·</em><span>свой дом в кабинете</span></div>
+        <p>Новый клиент получает примерную цену дома за минуту вместо часа разговора. После договора видит прогресс, отобранные фото и ближайший платёж. Вопросов «достроите ли» станет меньше.</p>
+        <div class="src">нужно: прайс работ и параметры домов · отдельный шлюз для заказчиков</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · сигналы -->
+<section class="slide" data-title="как Бро предвидит" aria-label="Как Бро предвидит">
+  <div class="wrap">
+    <div class="num">12 · как Бро предвидит</div>
+    <h2>Сторожа считают, Бро объясняет</h2>
+    <p class="lede">Сторож проверяет ERP каждые полчаса обычным скриптом, без модели. Модель включается, только когда что-то сработало: тихие проверки не тратят деньги на модель. Каждая цифра в сообщении ведёт на запись в системе. <b>Пороги задаёте вы.</b></p>
+    <div class="card" style="padding:8px 8px 4px">
+      <table class="sig">
+        <thead><tr><th>Сигнал</th><th>Откуда данные</th><th>Когда Бро пишет</th></tr></thead>
+        <tbody>
+          <tr><td>Этап стоит</td><td>этапы, недели графика</td><td>отставание больше недели</td></tr>
+          <tr><td>Тишина на объекте</td><td>фото, автор, время съёмки</td><td>3 дня без фото на идущем этапе</td></tr>
+          <tr><td>Прибыль ниже плана</td><td>деньги объекта, план прибыли</td><td>прогноз ниже плана на 5%</td></tr>
+          <tr><td>Счёт дороже обычного</td><td>строки счетов по поставщику</td><td>цена выше средней на 10%</td></tr>
+          <tr><td>Выплата сверх договора</td><td>договоры, выплаты</td><td>остаток уходит в минус</td></tr>
+          <tr><td>Кассовый разрыв</td><td>транши, счета, отсрочки</td><td>нехватка в ближайшие 4 недели</td></tr>
+          <tr><td>Долг заказчика</td><td>сданные этапы, платежи</td><td>срок оплаты прошёл</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · архитектура -->
+<section class="slide" data-title="как устроено" aria-label="Как это устроено">
+  <div class="wrap">
+    <div class="num">13 · как устроено</div>
+    <h2>Шесть слоёв, один источник правды</h2>
+    <p class="lede">Снизу факты, сверху разговор с вами. Деньги считает только ERP, агенты их читают и объясняют.</p>
+    <div class="stack">
+      <div class="card layer"><span class="lv">каналы</span><p><b>Telegram голосом</b>, утренний доклад, почта, сама ERP.</p></div>
+      <div class="card layer"><span class="lv">агенты</span><p><b>Бро владельца</b>, помощник бухгалтера, помощник стройки, Ревизор, Менеджер. Позже снабженец и бот заказчика.</p></div>
+      <div class="card layer"><span class="lv">сторожа</span><p>Проверки по расписанию без модели. <b>Модель только по сигналу.</b> Пороги и правила записаны в инструкции агента.</p></div>
+      <div class="card layer"><span class="lv">память</span><p><b>Общая база знаний</b>, память своего контура, личная память владельца отдельно. У каждой записи видно, откуда она, и её можно удалить.</p></div>
+      <div class="card layer core"><span class="lv">шлюз ERP</span><p><b>Ключ на каждую роль</b>, узкие инструменты чтения, журнал всех запросов. Запись только с подтверждением человека.</p></div>
+      <div class="card layer"><span class="lv">ERP</span><p><b>Объекты, деньги, касса, договоры, фото, документы.</b> Рядом банк, почта и Google Диск.</p></div>
+    </div>
+    <div class="flowline" style="margin-top:10px"><span>↑ события: платёж, фото, сдан этап</span><span>↓ вопросы и команды</span></div>
+  </div>
+</section>
+
+<!-- 14 · безопасность -->
+<section class="slide" data-title="три замка" aria-label="Три замка контура">
+  <div class="wrap">
+    <div class="num">14 · безопасность</div>
+    <h2>Три замка на каждом контуре</h2>
+    <p class="lede">Инструкция модели и память контур не удержат. Его держат три замка, и модель не может обойти ни один.</p>
+    <div class="grid g3">
+      <div class="card"><span class="emo">🔑</span><h3>Ключ ERP по роли</h3><p>ERP сама отдаёт данные по правам роли. Помощник прораба физически не получит кассу, даже если его очень попросить.</p></div>
+      <div class="card"><span class="emo">🚪</span><h3>Свой агент на контур</h3><p>Свои инструменты, своя память. Чужие переписки между агентами закрыты.</p></div>
+      <div class="card"><span class="emo">✋</span><h3>Подтверждение на запись</h3><p>Бро предлагает, человек нажимает «да». Без подтверждения деньги и статусы не меняются.</p></div>
+    </div>
+    <div class="panel"><p><b>Заказчики на отдельном шлюзе.</b> Внутри одного шлюза агенты рассчитаны на сотрудников, которые доверяют друг другу. Посторонним даём отдельный вход с одним домом. Всё стоит на вашем сервере, код и доступы остаются у вас.</p></div>
+  </div>
+</section>
+
+<!-- 15 · что доделать -->
+<section class="slide" data-title="что доделать" aria-label="Что нужно доделать">
+  <div class="wrap">
+    <div class="num">15 · что доделать</div>
+    <h2>Что нужно построить</h2>
+    <p class="lede">Сейчас агентам открыты только этапы и фото: этого хватает Ревизору, но мало для Бро.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>В ERP</h3>
+        <ul class="todo">
+          <li><b>Чтение для агентов</b> денег, договоров, людей и журналов с ключом на роль</li>
+          <li><b>События</b> при новом платеже, фото и сданном этапе</li>
+          <li><b>Сигналы</b>: отставание и план прибыли уже считаются, добавить кассовый горизонт и цены</li>
+          <li><b>Строки счетов</b>: количество, единица, цена</li>
+          <li><b>Журнал</b> каждого запроса агента</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>В Бро и агентах</h3>
+        <ul class="todo">
+          <li><b>Подключение к ERP</b> отдельно для каждого контура</li>
+          <li><b>Агенты контуров</b> со своими инструментами и памятью</li>
+          <li><b>Закрыть</b> чтение чужих переписок между агентами</li>
+          <li><b>Сторожа</b> и утренний доклад по расписанию</li>
+          <li><b>База знаний</b>: регламенты, узлы, решения созвонов</li>
+        </ul>
+      </div>
+    </div>
+    <p class="small" style="margin-top:14px">Сервер на 8&nbsp;ГБ памяти тесноват для пяти агентов: к третьей волне стоит заложить апгрейд.</p>
+  </div>
+</section>
+
+<!-- 16 · волны -->
+<section class="slide" data-title="план" aria-label="План по волнам">
+  <div class="wrap">
+    <div class="num">16 · план</div>
+    <h2>Три волны, у каждой видимый результат</h2>
+    <p class="lede">Сроки ориентировочные, точнее скажем после выбора идей.</p>
+    <div class="waves">
+      <div class="card wave-c">
+        <div class="when"><b>волна 1</b><span>2–3 недели</span></div>
+        <h3>Бро видит компанию</h3>
+        <ul class="todo"><li>шлюз ERP на чтение для владельца</li><li>утренний доклад</li><li>вопросы голосом</li><li>прибыль и сроки под наблюдением</li></ul>
+        <p class="res">Узнать, что происходит на объектах, можно без звонков.</p>
+      </div>
+      <div class="card wave-c">
+        <div class="when"><b>волна 2</b><span>3–4 недели</span></div>
+        <h3>Бро замечает заранее</h3>
+        <ul class="todo"><li>контролёр денег, ценовой радар</li><li>кассовый горизонт</li><li>память решений и лента задач</li><li>контуры бухгалтера и стройки</li></ul>
+        <p class="res">Ошибки и переплаты всплывают в день, когда случились.</p>
+      </div>
+      <div class="card wave-c">
+        <div class="when"><b>волна 3</b><span>зима</span></div>
+        <h3>Бро ведёт процессы</h3>
+        <ul class="todo"><li>склад и снабженец</li><li>кабинет заказчика</li><li>расчёт дома за минуту</li></ul>
+        <p class="res">Материал везут по расчёту, клиенты реже звонят с вопросом «как там дом».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · выбор -->
+<section class="slide" data-title="ваш выбор" aria-label="Ваш выбор">
+  <div class="wrap">
+    <div class="num">17 · ваш выбор</div>
+    <h2>Три идеи для первой волны</h2>
+    <p class="lede">Отмеченные звёздочкой идеи собираются здесь. Скопируйте список и пришлите Стасу: с него начнём.</p>
+    <div class="card">
+      <ul class="picks" id="picks"></ul>
+      <p class="empty" id="empty">Пока ничего не отмечено. Вернитесь на слайд 06 и нажмите ☆ у идей, которые нужны первыми.</p>
+    </div>
+    <div class="panel">
+      <p><b>Готовы начать?</b> Обсудим выбор на созвоне и разложим первую волну по неделям.</p>
+      <div class="act">
+        <button class="btn btn-ghost" id="copy" type="button">Скопировать список</button>
+        <a class="btn btn-primary" href="https://t.me/stavzzz" target="_blank" rel="noopener">Написать Стасу →</a>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="logo"><img src="assets/logo-mark.png" alt="Ai">гараж<span>_</span></div>
+      <span>подготовлено для АТОН · октябрь 2026</span>
+      <a href="https://ai-garage.tech/" target="_blank" rel="noopener" style="margin-left:auto">ai-garage.tech</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="bar bar-bottom">
+  <div class="progress" id="progress"></div>
+  <div class="count" id="count"><b>01</b> / 17</div>
+  <div class="hint">← → или свайп</div>
+  <div class="navs">
+    <button class="nav" id="prev" type="button" aria-label="Предыдущий слайд">←</button>
+    <button class="nav" id="next" type="button" aria-label="Следующий слайд">→</button>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var IDEAS = [
+    ["Утренний доклад","В 07:30 голосом: что сдвинулось на объектах, деньги дня, что горит.",1],
+    ["Спроси компанию","Любой вопрос голосом из машины, ответ с цифрой и ссылкой на запись.",1],
+    ["Прибыль под наблюдением","Прогноз прибыли по каждому дому против плана и причина, если падает.",1],
+    ["Сторож сроков","План и факт этапов, тишина на объекте, дата сдачи по реальному темпу.",1],
+    ["Контролёр денег","Дубли, выплаты сверх договора, расходы без документа, касса вечером.",2],
+    ["Ценовой радар","Новый счёт сравнивается с прошлыми ценами и другими поставщиками.",2],
+    ["Кассовый горизонт","Деньги на 4 недели вперёд: транши, выплаты, отсрочки поставщиков.",2],
+    ["Память решений","Созвоны и планёрки в протокол: что решили и что обещали заказчику.",2],
+    ["Одна лента задач","Задачи голосом с привязкой к объекту, вечером итог: сделано и висит.",2],
+    ["База знаний бригад","Как у нас делают узел: ответ с эталонными фото для прораба и новичка.",2],
+    ["Снабженец и склад","Спецификация по проекту ±5%, лимиты на объект, остатки обратно на склад.",3],
+    ["Кабинет заказчика","Расчёт дома за минуту, после договора свой кабинет с прогрессом.",3]
+  ];
+  var ROOMS = ["profit","money","personal","crew","cust","sched","photo","docs","know","decide"];
+  /* f — открыто, p — частично (с пояснением), o — закрыто. Повторяет права ERP (src/lib/permissions.ts). */
+  var ACCESS = {
+    owner:{profit:"f",money:"f",personal:["f","свой агент"],crew:"f",cust:"f",sched:"f",photo:"f",docs:"f",know:"f",decide:"f"},
+    acc:{money:"f",crew:"f",cust:"f",know:"f",decide:["p","по деньгам"]},
+    pto:{cust:["p","только сумма"],sched:"f",photo:"f",docs:"f",know:"f",decide:["p","по объектам"]},
+    build:{crew:"f",sched:"f",photo:"f",docs:"f",know:"f",decide:["p","по своим объектам"]},
+    client:{cust:["p","свой договор"],sched:["p","свой дом"],photo:["p","отобранные"]}
+  };
+  var ANSWER = {
+    owner:["Бро владельца","По 26.18 прибыль идёт на 9% ниже плана: материалы дороже сметы, допработы не внесены. Открыть объект в ERP?"],
+    acc:["Помощник бухгалтера","Прибыль видит только владелец. Могу показать платежи по 26.18 и что осталось оплатить."],
+    pto:["Помощник ПТО","Деньги объекта за пределами моего контура. По 26.18 могу показать график, документы и сумму договора."],
+    build:["Помощник стройки","Деньги мне закрыты. На 26.18 сейчас идёт кровля, сегодня прораб прислал 14 фото."],
+    client:["Бот заказчика","Покажу ваш дом: идёт кровля, вот свежие фото. Следующий платёж по договору после сдачи этапа."]
+  };
+  var LABEL = {f:"открыто",p:"частично",o:"закрыто"};
+  var KEY = "aton-bro-picks";
+  var picks = [];
+  try { picks = JSON.parse(localStorage.getItem(KEY) || "[]") || []; } catch (e) { picks = []; }
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+  /* звуковая дорожка обложки */
+  var wave = document.getElementById("wave");
+  var hs = [8,14,20,12,24,16,10,22,18,26,12,20,9,16,24,14,20,11,18,8,15,22,12,17,10,19,13,8];
+  hs.forEach(function(h, i){ var b = document.createElement("i"); b.style.height = h + "px"; if (i < 9) b.className = "p"; wave.appendChild(b); });
+
+  /* идеи */
+  var ideasEl = document.getElementById("ideas");
+  IDEAS.forEach(function(it, i){
+    var n = pad(i + 1), on = picks.indexOf(n) >= 0;
+    var c = document.createElement("div");
+    c.className = "card idea" + (on ? " picked" : "");
+    c.innerHTML = '<div class="top"><span class="rk">' + n + '</span><span class="tag' + (it[2] === 1 ? " on" : "") + '">волна ' + it[2] + "</span>" +
+      '<button class="star" type="button" data-n="' + n + '" aria-pressed="' + on + '" aria-label="Отметить идею ' + n + '">' + (on ? "★" : "☆") + "</button></div>" +
+      "<h3>" + it[0] + "</h3><p>" + it[1] + "</p>";
+    ideasEl.appendChild(c);
+  });
+  ideasEl.addEventListener("click", function(e){
+    var b = e.target.closest(".star"); if (!b) return;
+    var n = b.getAttribute("data-n"), k = picks.indexOf(n);
+    if (k >= 0) picks.splice(k, 1); else picks.push(n);
+    picks.sort();
+    var on = k < 0;
+    b.setAttribute("aria-pressed", on); b.textContent = on ? "★" : "☆";
+    b.closest(".idea").classList.toggle("picked", on);
+    try { localStorage.setItem(KEY, JSON.stringify(picks)); } catch (e2) {}
+    renderPicks();
+  });
+  function renderPicks(){
+    var ul = document.getElementById("picks"), empty = document.getElementById("empty");
+    ul.innerHTML = "";
+    picks.forEach(function(n){ var li = document.createElement("li"); li.innerHTML = "<span>" + n + "</span>" + IDEAS[Number(n) - 1][0]; ul.appendChild(li); });
+    empty.hidden = picks.length > 0; ul.hidden = picks.length === 0;
+  }
+  renderPicks();
+
+  var toastEl = document.getElementById("toast"), toastT;
+  function toast(t){ toastEl.textContent = t; toastEl.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove("show"); }, 2200); }
+  document.getElementById("copy").addEventListener("click", function(){
+    if (!picks.length) { toast("Сначала отметьте идеи на слайде 06"); return; }
+    var text = "Бро × ERP, первая волна:\n" + picks.map(function(n){ return n + " " + IDEAS[Number(n) - 1][0]; }).join("\n");
+    function done(){ toast("Список скопирован"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+    function fallback(){
+      var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("Не получилось скопировать: выделите список вручную"); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  /* контуры */
+  var roleBtns = Array.prototype.slice.call(document.querySelectorAll(".role"));
+  function setRole(r){
+    roleBtns.forEach(function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-role") === r); });
+    var a = ACCESS[r];
+    ROOMS.forEach(function(room){
+      var v = a[room] || "o", s = Array.isArray(v) ? v[0] : v, note = Array.isArray(v) ? v[1] : "";
+      var el = document.querySelector('.room[data-room="' + room + '"]');
+      el.setAttribute("data-s", s === "f" ? "full" : s === "p" ? "part" : "off");
+      el.querySelector(".st").textContent = LABEL[s] + (note ? ": " + note : "");
+    });
+    document.getElementById("answer").innerHTML = '<span class="from">' + ANSWER[r][0] + "</span>" + ANSWER[r][1];
+  }
+  roleBtns.forEach(function(b){ b.addEventListener("click", function(){ setRole(b.getAttribute("data-role")); }); });
+  setRole("owner");
+
+  /* листание */
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var total = slides.length, cur = 0;
+  var mq = window.matchMedia("(min-width:900px) and (min-height:600px)");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var where = document.getElementById("where"), count = document.getElementById("count"), prog = document.getElementById("progress");
+  var prev = document.getElementById("prev"), next = document.getElementById("next");
+
+  function label(i){ return pad(i + 1) + " · " + slides[i].getAttribute("data-title"); }
+  function paint(){
+    where.textContent = label(cur);
+    count.innerHTML = "<b>" + pad(cur + 1) + "</b> / " + total;
+    prog.style.width = ((cur + 1) / total * 100) + "%";
+    prev.disabled = cur === 0; next.disabled = cur === total - 1;
+  }
+  function layout(){
+    var deck = mq.matches;
+    slides.forEach(function(s, i){
+      s.classList.toggle("is-current", deck && i === cur);
+      s.classList.toggle("is-before", deck && i < cur);
+      if (deck && i !== cur) { s.setAttribute("aria-hidden", "true"); s.inert = true; }
+      else { s.removeAttribute("aria-hidden"); s.inert = false; }
+    });
+  }
+  function go(i, fromHash){
+    i = Math.max(0, Math.min(total - 1, i));
+    cur = i;
+    if (mq.matches) { layout(); slides[cur].scrollTop = 0; }
+    else if (!fromHash) slides[cur].scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth" });
+    paint();
+    if (history.replaceState) history.replaceState(null, "", "#" + (cur + 1));
+  }
+  prev.addEventListener("click", function(){ go(cur - 1); });
+  next.addEventListener("click", function(){ go(cur + 1); });
+  document.addEventListener("keydown", function(e){
+    if (!mq.matches || e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target, tag = t && t.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    var onBtn = tag === "BUTTON" || tag === "A";
+    if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !onBtn)) { e.preventDefault(); go(cur + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
+    else if (e.key === "Home") { e.preventDefault(); go(0); }
+    else if (e.key === "End") { e.preventDefault(); go(total - 1); }
+  });
+  var sx = 0, sy = 0;
+  document.addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener("touchend", function(e){
+    if (!mq.matches) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  /* колесо: листаем, только когда слайд докручен до края */
+  var acc = 0, lock = false;
+  document.addEventListener("wheel", function(e){
+    if (!mq.matches || lock) return;
+    var s = slides[cur], atBottom = s.scrollTop + s.clientHeight >= s.scrollHeight - 2, atTop = s.scrollTop <= 0;
+    if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) { acc = 0; return; }
+    acc += e.deltaY;
+    if (Math.abs(acc) > 90) { go(cur + (acc > 0 ? 1 : -1)); acc = 0; lock = true; setTimeout(function(){ lock = false; }, 650); }
+  }, { passive: true });
+  /* в режиме ленты счётчик следит за прокруткой */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(es){
+      if (mq.matches) return;
+      es.forEach(function(en){ if (en.isIntersecting) { cur = slides.indexOf(en.target); paint(); } });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  window.addEventListener("hashchange", function(){
+    var n = parseInt((location.hash || "").slice(1), 10);
+    if (n >= 1 && n <= total && n - 1 !== cur) go(n - 1);
+  });
+  function onMode(){ layout(); if (!mq.matches) slides[cur].scrollIntoView(); }
+  if (mq.addEventListener) mq.addEventListener("change", onMode); else mq.addListener(onMode);
+
+  var h = parseInt((location.hash || "").slice(1), 10);
+  cur = h >= 1 && h <= total ? h - 1 : 0;
+  layout(); paint();
+  if (!mq.matches && cur > 0) slides[cur].scrollIntoView();
+})();
+</script>
+</body>
+</html>
