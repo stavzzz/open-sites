@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server backup</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0a0a0f; --bg-card:#12121a; --bg-card-hover:#181825;
+    --border:#1e1e2e; --border-accent:#2a2a3e;
+    --text-primary:#e8e6f0; --text-secondary:#8b879e; --text-muted:#5a5670;
+    --accent:#7c5bf5; --accent-glow:#9d7cff; --accent-soft:rgba(124,91,245,0.12);
+    --green:#34d399; --green-glow:#6ee7b7; --green-soft:rgba(52,211,153,0.1);
+    --amber:#fbbf24; --amber-soft:rgba(251,191,36,0.1);
+    --red-soft:rgba(248,113,113,0.1); --red:#f87171;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Onest',sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(124,91,245,0.04) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(52,211,153,0.03) 0%,transparent 50%);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:40px 20px 80px;}
+  .header{text-align:center;margin-bottom:26px;}
+  .header__badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;animation:fadeDown .6s ease both;}
+  .header__title{font-size:clamp(30px,5vw,45px);font-weight:800;line-height:1.15;letter-spacing:-0.5px;margin-bottom:20px;animation:fadeDown .6s ease .1s both;}
+  .header__title span{background:linear-gradient(135deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .header__topics{list-style:none;display:flex;flex-direction:column;gap:7px;max-width:600px;margin:0 auto;animation:fadeDown .6s ease .2s both;}
+  .header__topics li{font-size:17px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:8px;text-align:left;}
+  .header__topics li::before{content:'→';color:var(--accent);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:14px;margin-top:3px;}
+  .progress-wrap{background:rgba(18,18,26,0.92);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:36px;position:sticky;top:12px;z-index:10;backdrop-filter:blur(16px);animation:fadeDown .6s ease .3s both;}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .progress-label{font-size:16px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+  .progress-count{font-family:'JetBrains Mono',monospace;font-size:17.5px;font-weight:700;color:var(--accent-glow);}
+  .progress-bar{width:100%;height:8px;background:var(--border);border-radius:100px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:100px;transition:width .5s cubic-bezier(.34,1.56,.64,1);width:0%;}
+  .section{margin-bottom:28px;}
+  .section__header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-left:2px;}
+  .section__num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);background:var(--accent-soft);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;}
+  .section__title{font-size:20px;font-weight:700;letter-spacing:-0.2px;line-height:1.35;}
+  .section__card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .3s;}
+  .section__card:hover{border-color:var(--border-accent);}
+  .item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+  .item:last-child{border-bottom:none;}
+  .item:hover{background:var(--bg-card-hover);}
+  .item.checked .item__text{color:var(--text-muted);text-decoration:line-through;}
+  .item__check{position:relative;width:22px;height:22px;flex-shrink:0;margin-top:1px;pointer-events:auto;cursor:pointer;}
+  .item__check input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2;}
+  .item__check .cm{width:22px;height:22px;border:2px solid var(--border-accent);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check .cm svg{width:12px;height:12px;opacity:0;transform:scale(0);transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check input:checked + .cm{background:var(--green);border-color:var(--green);}
+  .item__check input:checked + .cm svg{opacity:1;transform:scale(1);}
+  .item__body{flex:1;min-width:0;pointer-events:none;user-select:text;}
+  .item__body a,.item__body .lnk,.item__body .btn-copy,.item__body .cmd-copy,.item__body .btn-dl{pointer-events:auto;}
+  .item__text{font-size:18px;font-weight:500;color:var(--text-primary);transition:all .3s;}
+  .item__hint{font-size:16px;color:var(--text-secondary);margin-top:5px;line-height:1.65;}
+  .item__hint strong{color:var(--text-primary);}
+  .lnk{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-family:'JetBrains Mono',monospace;color:var(--accent-glow);text-decoration:none;transition:color .2s;word-break:break-all;}
+  .lnk:hover{color:#bba4ff;text-decoration:underline;}
+  .note{display:flex;align-items:flex-start;gap:10px;padding:14px 20px;font-size:16px;color:var(--text-secondary);line-height:1.65;border-bottom:1px solid var(--border);}
+  .note:last-child{border-bottom:none;}
+  .note--warn{background:var(--amber-soft);color:var(--amber);}
+  .note--info{background:var(--accent-soft);}
+  .note--alert{background:var(--red-soft);color:var(--red);}
+  .note--green{background:var(--green-soft);color:var(--green-glow);}
+  .note__icon{flex-shrink:0;font-size:19px;}
+  .note strong{color:inherit;}
+  .info-block{padding:14px 20px;border-bottom:1px solid var(--border);font-size:17px;color:var(--text-secondary);line-height:1.7;}
+  .info-block:last-child{border-bottom:none;}
+  .info-block strong{color:var(--text-primary);font-weight:600;}
+  .mono{font-family:'JetBrains Mono',monospace;color:var(--accent-glow);font-size:15px;}
+  .cmd-copy{background:rgba(0,0,0,0.35);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;margin:10px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .cmd-copy__text{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.6;word-break:break-all;flex:1;white-space:pre-wrap;}
+  .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--border-accent);border-radius:10px;padding:16px 20px;margin:12px 20px;}
+  .code-block__label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:block;}
+  .code-block__scroll{max-height:320px;overflow-y:auto;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+  .code-block__scroll::-webkit-scrollbar{width:9px;height:9px;}
+  .code-block__scroll::-webkit-scrollbar-thumb{background:var(--border-accent);border-radius:9px;}
+  .code-block .btn-copy{margin-top:12px;}
+  .btn-copy{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.3);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+  .btn-copy:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .btn-copy.copied{color:var(--green);background:var(--green-soft);border-color:rgba(52,211,153,0.3);}
+  .cmd-copy .btn-copy{padding:5px 12px;font-size:12.5px;}
+  .btn-dl{display:inline-flex;align-items:center;gap:7px;font-family:'Onest',sans-serif;font-size:16px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.35);padding:9px 18px;border-radius:10px;text-decoration:none;transition:all .2s;cursor:pointer;margin:0 20px 14px;}
+  .dl-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .dl-row:last-of-type{border-bottom:1px solid var(--border);}
+  .dl-row__label{font-size:18px;display:flex;align-items:center;}
+  .dl-row .btn-dl{margin:0;flex-shrink:0;}
+  @media(max-width:480px){.dl-row{flex-direction:column;align-items:flex-start;gap:10px;}}
+  .btn-dl:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .os-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;margin-left:8px;vertical-align:middle;}
+  .os-tag--mac{color:var(--green-glow);background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);}
+  .os-tag--win{color:#38bdf8;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);}
+  .data-table{width:100%;border-collapse:collapse;font-size:16px;}
+  .data-table th{text-align:left;padding:11px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);border-bottom:1px solid var(--border);}
+  .data-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;line-height:1.6;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table td:first-child{width:38%;}
+  .section-divider{text-align:center;margin:48px 0 32px;padding:0 20px;}
+  .section-divider__line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin-bottom:20px;}
+  .section-divider__title{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--accent-glow);text-transform:uppercase;letter-spacing:3px;}
+  .footer{text-align:center;margin-top:48px;}
+  .footer__done{display:none;background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);border-radius:var(--radius);padding:32px 24px;margin-bottom:24px;}
+  .footer__done.visible{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .footer__done-emoji{font-size:60px;margin-bottom:10px;}
+  .footer__done-text{font-size:27.5px;font-weight:800;color:var(--green);margin-bottom:6px;}
+  .footer__done-sub{font-size:19px;color:var(--text-secondary);}
+  .footer__final{background:linear-gradient(135deg,rgba(124,91,245,0.08),rgba(52,211,153,0.08));border:1px solid rgba(124,91,245,0.25);border-radius:var(--radius);padding:34px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+  .footer__final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(124,91,245,0.12),transparent 50%),radial-gradient(circle at 80% 100%,rgba(52,211,153,0.12),transparent 50%);pointer-events:none;}
+  .footer__final-emoji{font-size:67.5px;margin-bottom:12px;line-height:1;position:relative;}
+  .footer__final-text{font-size:30px;font-weight:800;background:linear-gradient(90deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-0.4px;position:relative;}
+  .footer__final-sub{font-size:19px;color:var(--text-secondary);line-height:1.6;max-width:700px;margin:0 auto;position:relative;}
+  .footer__contact{font-size:17.5px;color:var(--text-secondary);margin-bottom:20px;}
+  .tg{color:#2dd4bf;font-weight:700;text-decoration:underline;text-decoration-color:rgba(45,212,191,0.4);text-underline-offset:2px;transition:color .2s;}
+  .tg:hover{color:#5eead4;}
+  .btn-reset{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:15px;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-reset:hover{border-color:var(--red);color:var(--red);}
+  #confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+  @media (max-width:480px){
+    .wrapper{padding:28px 14px 60px;}
+    .item,.note,.info-block{padding:12px 16px;}
+    .cmd-copy,.code-block{margin-left:14px;margin-right:14px;}
+    .btn-dl{margin-left:14px;margin-right:14px;}
+    .data-table th,.data-table td{padding:10px 14px;}
+    .data-table td:first-child{width:auto;}
+    .progress-wrap{padding:16px 18px;top:8px;}
+    .header__title{font-size:26.5px;}
+  }
+  .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .reveal{opacity:0;transform:translateY(16px);}
+  .reveal.is-in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s ease;}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal.is-in{opacity:1;transform:none;transition:none;}}
+  @media print{.reveal{opacity:1;transform:none;}}
+@media (max-width:600px){.data-table th{display:none}.data-table tr{display:block;border-bottom:1px solid var(--border)}.data-table tr:last-child{border-bottom:none}.data-table td{display:block;width:auto!important;border-bottom:none;padding:6px 16px}.data-table td:first-child{padding-top:14px}.data-table td:last-child{padding-bottom:14px}.data-table td+td::before{content:'→ ';color:var(--accent)}}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div class="wrapper">
+
+<div class="header">
+  <div class="header__badge">Server · Backup</div>
+  <h1 class="header__title">Server backup <span>and restore</span></h1>
+  <ul class="header__topics">
+    <li>A nightly encrypted copy of your whole server</li>
+    <li>Three places to keep it: Google Drive, your computer, a portable disk</li>
+    <li>Moving to a new server from any of these copies</li>
+    <li>Ready prompts for Claude Code</li>
+  </ul>
+  <div class="header__time">⏳ About 1.5 hours with the restore test</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Checklist</span>
+    <span class="progress-count" id="progressCount">0 / 0</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- 00 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">00</div><div class="section__title">The whole picture</div></div>
+  <div class="section__card">
+    <div class="info-block">Every night the server packs everything it needs, locks the archive with a passphrase and sends it out. If the server dies, you rent a new one and restore from any copy.</div>
+    <div style="padding:18px 16px;border-bottom:1px solid var(--border);">
+      <svg viewBox="0 0 440 440" role="img" aria-label="Server makes a nightly encrypted archive, copies go to Google Drive, your computer and a portable disk, and any copy plus the passphrase restores a new server" style="display:block;width:100%;max-width:520px;margin:0 auto;font-family:'Onest',sans-serif;">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5a5670"/></marker>
+          <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#fbbf24"/></marker>
+        </defs>
+        <rect x="110" y="8" width="220" height="58" rx="12" fill="#181825" stroke="#2a2a3e"/>
+        <text x="220" y="33" text-anchor="middle" fill="#e8e6f0" font-size="16" font-weight="700">🖥 Your server</text>
+        <text x="220" y="53" text-anchor="middle" fill="#8b879e" font-size="13">agent, bots, databases</text>
+        <line x1="220" y1="66" x2="220" y2="102" stroke="#5a5670" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="90" y="106" width="260" height="58" rx="12" fill="rgba(124,91,245,0.12)" stroke="#7c5bf5"/>
+        <text x="220" y="131" text-anchor="middle" fill="#e8e6f0" font-size="16" font-weight="700">🔒 Nightly archive</text>
+        <text x="220" y="151" text-anchor="middle" fill="#9d7cff" font-size="13">encrypted with your passphrase</text>
+        <line x1="160" y1="164" x2="75" y2="214" stroke="#5a5670" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="220" y1="164" x2="220" y2="214" stroke="#5a5670" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="280" y1="164" x2="365" y2="214" stroke="#5a5670" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="6" y="218" width="134" height="70" rx="12" fill="#181825" stroke="#2a2a3e"/>
+        <text x="73" y="244" text-anchor="middle" fill="#e8e6f0" font-size="14.5" font-weight="700">☁️ Google Drive</text>
+        <text x="73" y="263" text-anchor="middle" fill="#8b879e" font-size="12.5">every night</text>
+        <text x="73" y="279" text-anchor="middle" fill="#8b879e" font-size="12.5">keeps last 7</text>
+        <rect x="153" y="218" width="134" height="70" rx="12" fill="#181825" stroke="#2a2a3e"/>
+        <text x="220" y="244" text-anchor="middle" fill="#e8e6f0" font-size="14.5" font-weight="700">💻 Your computer</text>
+        <text x="220" y="263" text-anchor="middle" fill="#8b879e" font-size="12.5">every day</text>
+        <text x="220" y="279" text-anchor="middle" fill="#8b879e" font-size="12.5">keeps last 7</text>
+        <rect x="300" y="218" width="134" height="70" rx="12" fill="#181825" stroke="#2a2a3e"/>
+        <text x="367" y="244" text-anchor="middle" fill="#e8e6f0" font-size="14.5" font-weight="700">💾 Portable disk</text>
+        <text x="367" y="263" text-anchor="middle" fill="#8b879e" font-size="12.5">every week</text>
+        <text x="367" y="279" text-anchor="middle" fill="#8b879e" font-size="12.5">keeps last 4</text>
+        <line x1="73" y1="288" x2="230" y2="350" stroke="#5a5670" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr)"/>
+        <line x1="220" y1="288" x2="245" y2="350" stroke="#5a5670" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr)"/>
+        <line x1="367" y1="288" x2="300" y2="350" stroke="#5a5670" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr)"/>
+        <rect x="170" y="354" width="264" height="74" rx="12" fill="rgba(52,211,153,0.1)" stroke="#34d399"/>
+        <text x="302" y="381" text-anchor="middle" fill="#e8e6f0" font-size="15" font-weight="700">🚀 New server</text>
+        <text x="302" y="400" text-anchor="middle" fill="#6ee7b7" font-size="12.5">any one copy</text>
+        <text x="302" y="416" text-anchor="middle" fill="#6ee7b7" font-size="12.5">+ the passphrase</text>
+        <rect x="6" y="354" width="140" height="74" rx="12" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-dasharray="6 4"/>
+        <text x="76" y="381" text-anchor="middle" fill="#e8e6f0" font-size="14" font-weight="700">🔑 Passphrase</text>
+        <text x="76" y="400" text-anchor="middle" fill="#fbbf24" font-size="12">Google Password</text>
+        <text x="76" y="416" text-anchor="middle" fill="#fbbf24" font-size="12">Manager</text>
+        <line x1="146" y1="391" x2="166" y2="391" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrA)"/>
+      </svg>
+    </div>
+    <div class="info-block"><strong>Three copies in three places.</strong> Google can lock an account, a laptop can be stolen, a disk can fail. If one copy is lost, two remain.</div>
+    <div class="info-block"><strong>The passphrase never travels with the archive.</strong> It isn’t inside the archive, in logs or in Telegram. Without it nobody can open a copy, including you.</div>
+    <div class="info-block"><strong>A backup you never restored is not a backup.</strong> Test the restore once right after setup, then once a month.</div>
+  </div>
+</div>
+
+<!-- 01 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">01</div><div class="section__title">What goes into the archive</div></div>
+  <div class="section__card">
+    <div class="info-block">This is the setup that runs every night on the instructor’s server. The prompt in section 03 builds the same on yours.</div>
+    <table class="data-table">
+      <tr><th>Part</th><th>How it’s copied</th></tr>
+      <tr><td><strong>Databases</strong></td><td>Dumps, never raw files: Postgres with all roles, every SQLite file as a hot copy while it runs</td></tr>
+      <tr><td><strong>Agent and keys</strong></td><td>~/.openclaw, project folders, .env files, ~/.ssh, the Google sign-in</td></tr>
+      <tr><td><strong>System</strong></td><td>SSH, firewall and service settings, plus a list of versions and installed plugins</td></tr>
+      <tr><td><strong>Left out</strong></td><td>Things that reinstall by themselves: node_modules, .venv, caches, logs, OpenClaw plugins. Their list goes in the archive</td></tr>
+    </table>
+    <div class="info-block"><strong>Lessons from a live server:</strong><br>
+      • A systemd timer starts the job, not cron: on Debian cron ignored the time zone and ran an hour off.<br>
+      • A Google service account can’t upload to a personal Drive: it has no storage and gets error 403. Use your own Google sign-in.<br>
+      • Before uploading, the script opens the archive with the passphrase as a test.<br>
+      • Old copies are deleted only after the new one is confirmed on Drive.<br>
+      • A watchdog writes to Telegram if there was no successful backup for 26 hours.</div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">02</div><div class="section__title">The passphrase</div></div>
+  <div class="section__card">
+    <div class="info-block">Make a long passphrase of 5–6 random words and keep it in three places.</div>
+    <table class="data-table">
+      <tr><th>Where</th><th>Why</th></tr>
+      <tr><td><strong>On the server</strong></td><td>File /root/.backup-passphrase, readable only by root. The night job needs it</td></tr>
+      <tr><td><strong>Google Password Manager</strong></td><td>Your main copy, protected by two-step sign-in</td></tr>
+      <tr><td><strong>Outside Google</strong></td><td>On paper at home. If you lose the Google account, the copies on your computer and disk still open</td></tr>
+    </table>
+    <div class="item" data-key="pp-gpm"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Passphrase saved in Google Password Manager</div><div class="item__hint">Open <a class="lnk" href="https://passwords.google.com/" target="_blank">passwords.google.com</a> → Add. Site: server-backup. Check that two-step sign-in is on in your Google account.</div></div></div>
+    <div class="item" data-key="pp-paper"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Second copy written down outside Google</div></div></div>
+    <div class="note note--alert"><span class="note__icon">🚨</span><div><strong>Lose the passphrase and you lose every backup.</strong> Nobody can open the archives without it, not even Claude.</div></div>
+  </div>
+</div>
+
+<!-- 03 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">03</div><div class="section__title">Copy 1: Google Drive every night</div></div>
+  <div class="section__card">
+    <div class="info-block">You need Google Workspace MCP on the server first: the backup uploads with the same Google sign-in. See the handout <a class="lnk" href="https://stavzzz.github.io/open-sites/google-workspace-mcp/" target="_blank">Google Workspace MCP</a>. Claude Code works in three passes: looks around, shows a plan and waits for your OK, then installs.</div>
+    <div class="code-block"><span class="code-block__label">Prompt A · nightly backup to Google Drive</span><div class="code-block__scroll" id="prompt-drive">Set up a nightly encrypted backup of my whole server to my Google Drive. Work in three passes: look around, show me a plan and wait for my OK, then install. Delete or overwrite nothing without my "yes". For anything about OpenClaw use the openclaw-docs skill. Never print secrets in the chat.
+
+Goal: every night the server dumps the databases, packs everything, encrypts it, uploads it to Google Drive, keeps the last 7 archives and messages me in Telegram. If a step fails, the message says which one.
+
+1. Recon, change nothing: ssh to my server. List Docker containers and databases (if any), SQLite files, project folders in /root, /opt, /home, and free disk space.
+2. Plan: what goes in, what is excluded, approximate size, start time. Wait for my OK.
+3. Archive contents:
+   - all Postgres/MySQL databases if present (for Postgres: pg_dumpall plus --roles-only);
+   - every SQLite file as a hot copy through Python's sqlite3 backup API (the sqlite3 CLI may be missing);
+   - ~/.openclaw, project folders, .env files, ~/.ssh, ~/.google_workspace_mcp;
+   - system config (sshd, ufw, fail2ban, systemd units, cron) and a manifest: openclaw --version, plugin list, docker ps -a, images;
+   - exclude: node_modules, .venv, __pycache__, caches, logs, Codex log databases (logs_*.sqlite), codex-home/cache, ~/.openclaw/npm (list it in the manifest), old backup folders.
+4. Encryption: gpg --symmetric --cipher-algo AES256, passphrase read from /root/.backup-passphrase (mode 600). Tell me when to create it; I keep it in Google Password Manager. It never goes into the archive, logs or Telegram. Warn me that without it nothing can be restored.
+5. Google Drive through rclone with MY Google account. No service account: it has zero storage quota and uploads fail with 403. Google Workspace MCP is already signed in on this server: build the rclone remote from its OAuth client and token in ~/.google_workspace_mcp, but only if the token's scopes include full Drive access. Otherwise run rclone authorize "drive" on my computer with the same client_secret.json and copy the token over. Prove it with a test upload that shows up on my Drive.
+6. Script order: check free space (work in /var/tmp) → dumps → tar → encrypt → test-decrypt into gzip -t → upload → compare size on Drive → rotate (delete old archives only after a confirmed upload, match by archive name, never keep fewer than 7) → remove temp files → Telegram report. Use trap so any failure sends me "failed at step N". Telegram: my OpenClaw bot token from an env file with mode 600, chat = my Telegram ID.
+7. Schedule: a systemd timer at 04:00 in my time zone (ask me which), not cron. After the first automatic run, check the real start time in the log. Add a watchdog: every 5 minutes check the last-success mark; if it is older than 26 hours, alert me at most every 30 minutes.
+8. Verify: run it once by hand and show the log. Download the archive, decrypt it, restore files and databases into a test location (never over live data) and compare. Write RESTORE.md: where the archives are, how to decrypt, what is inside, how to rebuild the server.
+
+Before editing any config file, copy it with a date. No destructive commands.
+
+At the end report: script path, schedule, archive size, run time, and what the restore test proved.</div><button class="btn-copy" onclick="copyBlock('prompt-drive',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="dr-run"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">First run by hand passed, the archive is on Drive</div></div></div>
+    <div class="item" data-key="dr-restore"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Restore test passed, RESTORE.md is written</div></div></div>
+    <div class="item" data-key="dr-night"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The next morning a Telegram report arrived</div></div></div>
+  </div>
+</div>
+
+<!-- 04 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">04</div><div class="section__title">Copy 2: your computer every day</div></div>
+  <div class="section__card">
+    <div class="info-block">Your computer picks up the fresh archive by itself once a day. Run this prompt in Claude Code on the computer that will keep the copies.</div>
+    <div class="code-block"><span class="code-block__label">Prompt B · daily copy to this computer</span><div class="code-block__scroll" id="prompt-pc">Set up a daily copy of my server backups to this computer. Show me the plan first and wait for my OK. Never print secrets in the chat. Delete nothing outside the backup folder.
+
+My server already makes a nightly encrypted backup (a .gpg archive) and uploads it to Google Drive.
+
+1. ssh to my server and find out where the backup script keeps the archive. If it deletes the archive after upload, offer me two options and wait for my choice:
+   a) take the archive from Google Drive with rclone, signed in with my own Google account;
+   b) change the server script to keep the last 2 archives in /var/backups/server (mode 700), and take it over SSH.
+2. Create a folder for the copies: ~/ServerBackups (Windows: %USERPROFILE%\ServerBackups).
+3. Write a small script that:
+   - downloads the newest archive, and skips it if the file is already here;
+   - checks that the size matches the source;
+   - keeps the last 7 archives and deletes older ones only in this folder;
+   - writes a log next to the archives.
+4. Schedule it once a day at 10:00: launchd on macOS, Task Scheduler on Windows. If the computer was asleep at that time, run it after wake-up.
+5. On any error show me a system notification on this computer.
+6. Run it once by hand and show me the log and the file list.
+
+The archives are encrypted. Don't try to open them and don't ask for the passphrase.</div><button class="btn-copy" onclick="copyBlock('prompt-pc',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="pc-copy"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The archive appeared in ServerBackups on your computer</div></div></div>
+    <div class="item" data-key="pc-next"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The next day a newer archive arrived by itself</div></div></div>
+  </div>
+</div>
+
+<!-- 05 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">05</div><div class="section__title">Copy 3: a portable disk every week</div></div>
+  <div class="section__card">
+    <div class="info-block">Once a week plug in the disk and run the prompt. Then keep the disk at home, away from the laptop.</div>
+    <div class="code-block"><span class="code-block__label">Prompt C · copy to a portable disk</span><div class="code-block__scroll" id="prompt-disk">Copy my server backups to the portable disk I just connected.
+
+1. Find the disk (macOS: /Volumes, Windows: a drive letter) and show me its name and free space. Wait for my OK.
+2. Copy the newest archives from ~/ServerBackups (Windows: %USERPROFILE%\ServerBackups) to the folder ServerBackups on the disk. Skip files that are already there.
+3. Check that every copied file has the same size as the original.
+4. On the disk keep only the last 4 archives; delete older ones only in that folder.
+5. Show me the file list on the disk, then eject the disk safely.</div><button class="btn-copy" onclick="copyBlock('prompt-disk',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="disk-first"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">First copy is on the disk</div></div></div>
+    <div class="item" data-key="disk-remind"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">A weekly reminder is in your calendar</div></div></div>
+  </div>
+</div>
+
+<!-- 06 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">06</div><div class="section__title">Restore or move to a new server</div></div>
+  <div class="section__card">
+    <div class="info-block">The same steps work when the old server died and when you simply move to another provider. Rent a new server with <strong>Ubuntu 24.04</strong> and your SSH key, then run the prompt.</div>
+    <div class="code-block"><span class="code-block__label">Prompt D · restore on a new server</span><div class="code-block__scroll" id="prompt-restore">Restore my server from an encrypted backup onto a NEW server. For anything about OpenClaw use the openclaw-docs skill; don't invent commands. Before each step that changes something, tell me what you will do. Never print secrets in the chat.
+
+I will give you: the new server's IP, where the archive is (Google Drive, a file on this computer or a portable disk), and RESTORE.md if I have it.
+
+1. Connect to the new server with my SSH key. Check: Ubuntu 24.04, free disk space at least 3 times the archive size.
+2. Put the archive on the new server: upload it from this computer with scp, or download it from Google Drive with rclone. Compare the size with the original.
+3. Ask me to create /root/.backup-passphrase on the new server myself: I open a terminal, ssh in and paste the passphrase from Google Password Manager. Mode 600. You never see it.
+4. Decrypt with gpg and unpack into /root/restore, not over the system.
+5. Read the manifest: OpenClaw version, plugin list, Node version, Docker containers. Install the same OpenClaw version, Node and Docker if it was there.
+6. Return files to their places: ~/.openclaw, project folders, .env files, ~/.google_workspace_mcp, systemd units. For every SQLite database use its hot copy from the dumps, not the raw file. Restore Postgres or MySQL dumps if present. Before overwriting any file, save a dated copy.
+7. SSH and firewall settings go last: check the config with sshd -t and make sure my key login still works before reloading.
+8. Reinstall the OpenClaw plugins from the manifest list.
+9. Make sure the Gateway on the old server is stopped: two servers with the same Telegram bot fight over messages.
+10. Run openclaw doctor, start the Gateway, then check openclaw gateway status, openclaw health and openclaw mcp doctor --probe.
+11. Turn the nightly backup back on for this server: timer, watchdog, Telegram report.
+12. Report: what was restored, what failed, what I should check by hand.
+
+If I think the old server was hacked, after the restore help me change the Telegram bot token in @BotFather, the Gateway token and other keys, following the docs.</div><button class="btn-copy" onclick="copyBlock('prompt-restore',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="rs-open"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The passphrase opened the archive</div></div></div>
+    <div class="item" data-key="rs-agent"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The agent answers in Telegram and remembers past conversations</div></div></div>
+    <div class="item" data-key="rs-google"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Google tools and your bots work on the new server</div><div class="item__hint">Ask the agent “show my last 3 emails” and send each bot one test message.</div></div></div>
+    <div class="item" data-key="rs-backup"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The nightly backup runs on the new server</div></div></div>
+    <div class="item" data-key="rs-old"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The old server is deleted after a week of quiet work</div></div></div>
+    <div class="note note--green"><span class="note__icon">📅</span><div><strong>Once a month</strong> ask Claude Code to restore last night’s archive into a test folder on the server and compare it with the live data. That’s how you know the backup still works.</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer__done" id="doneBlock"><div class="footer__done-emoji">💾</div><div class="footer__done-text">Your server is backed up!</div><div class="footer__done-sub">You have three copies and a tested restore.</div></div>
+  <div class="footer__final"><div class="footer__final-emoji">🛟</div><div class="footer__final-text">Losing a server is now just a move</div><div class="footer__final-sub">Rent a new one, take any copy, enter the passphrase. Your agent comes back with its memory and keys.</div></div>
+  <div class="footer__contact">Questions? Message <a href="https://t.me/stavzzz" target="_blank" class="tg">@stavzzz</a> on Telegram</div>
+  <button class="btn-reset" onclick="resetProgress()">Reset progress</button>
+</div>
+
+</div>
+<script>
+const C=document.getElementById('confetti-canvas'),ctx=C.getContext('2d');
+let particles=[],confettiActive=false;
+function resizeCanvas(){C.width=window.innerWidth;C.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+const COLORS=['#7c5bf5','#9d7cff','#34d399','#6ee7b7','#fbbf24','#f87171','#fb7185','#38bdf8','#a78bfa','#4ade80'];
+function rand(a,b){return Math.random()*(b-a)+a;}
+function createBurst(x,y,count){for(let i=0;i<count;i++){const angle=rand(0,Math.PI*2),speed=rand(4,14),size=rand(4,10);particles.push({x,y,vx:Math.cos(angle)*speed+rand(-2,2),vy:Math.sin(angle)*speed*-0.8-rand(2,6),size,color:COLORS[Math.floor(Math.random()*COLORS.length)],rotation:rand(0,Math.PI*2),rotSpeed:rand(-0.2,0.2),gravity:rand(0.12,0.25),friction:rand(0.97,0.995),opacity:1,fadeSpeed:rand(0.005,0.015),shape:Math.random()>0.4?'rect':'circle'});}}
+function launchConfetti(){if(confettiActive)return;confettiActive=true;particles=[];const W=C.width,H=C.height;[[W*.5,H*.3,120],[W*.15,H*.2,80],[W*.85,H*.2,80],[W*.5,H*.1,100],[W*.3,H*.5,60],[W*.7,H*.5,60]].forEach(([x,y,c],i)=>{setTimeout(()=>createBurst(x,y,c),i*150)});animate();setTimeout(()=>{confettiActive=false},6000);}
+function animate(){ctx.clearRect(0,0,C.width,C.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.vx*=p.friction;p.vy*=p.friction;p.vy+=p.gravity;p.x+=p.vx;p.y+=p.vy;p.rotation+=p.rotSpeed;p.opacity-=p.fadeSpeed;if(p.opacity<=0){particles.splice(i,1);continue}ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation);ctx.globalAlpha=p.opacity;ctx.fillStyle=p.color;if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2)}else{ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill()}ctx.restore();}if(particles.length>0||confettiActive){requestAnimationFrame(animate)}else{ctx.clearRect(0,0,C.width,C.height);}}
+function copyBlock(id,btn){const text=document.getElementById(id).textContent;navigator.clipboard.writeText(text).then(()=>{const orig=btn.innerHTML;btn.classList.add('copied');btn.innerHTML='✅ Copied!';setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);});}
+const STORAGE_KEY='server_backup_v1';
+const items=document.querySelectorAll('.item[data-key]');
+const totalCount=items.length;let wasComplete=false;
+function loadState(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');let c=0;items.forEach(it=>{const cb=it.querySelector('input');if(s[it.dataset.key]){cb.checked=true;it.classList.add('checked');c++}});wasComplete=c===totalCount}catch(e){}updateProgress(false);}
+function saveState(){const s={};items.forEach(it=>{s[it.dataset.key]=it.querySelector('input').checked});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s))}catch(e){}}
+function updateProgress(cc=true){let c=0;items.forEach(it=>{if(it.querySelector('input').checked)c++});document.getElementById('progressCount').textContent=c+' / '+totalCount;document.getElementById('progressFill').style.width=(totalCount>0?(c/totalCount)*100:0)+'%';const d=document.getElementById('doneBlock');if(c===totalCount&&totalCount>0){d.classList.add('visible');if(cc&&!wasComplete)launchConfetti();wasComplete=true}else{d.classList.remove('visible');wasComplete=false;}}
+items.forEach(it=>{const cb=it.querySelector('input');it.addEventListener('click',function(e){if(e.target.closest('a')||e.target.closest('.btn-copy'))return;if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});cb.addEventListener('change',function(){it.classList.toggle('checked',this.checked);saveState();updateProgress(true);});});
+function resetProgress(){if(!confirm('Reset all progress?'))return;items.forEach(it=>{it.querySelector('input').checked=false;it.classList.remove('checked')});wasComplete=false;saveState();updateProgress(false);}
+loadState();
+</script><script>
+// Плавное появление блоков по мере скролла. Класс вешает сам скрипт:
+// если JS отключён, страница обычная — прятать контент стилями нельзя.
+// Проверяем положение блока, а не события пересечения: при прыжке в конец
+// страницы (Cmd+End, ссылка-якорь) наблюдатель пропускал бы блоки, и они
+// остались бы невидимыми.
+(function(){
+  var sel='.section,.module,.event,.stage,.card,.footer';
+  var els=Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+    if(el.parentElement && el.parentElement.closest('.reveal')) return false;  // вложенные не прячем дважды
+    if(getComputedStyle(el).position!=='static') return false;                 // липкий прогресс-бар не трогаем
+    el.classList.add('reveal'); return true;
+  });
+  if(!els.length) return;
+  var ticking=false;
+  function sweep(){
+    ticking=false;
+    var edge=window.innerHeight-60;
+    for(var i=els.length-1;i>=0;i--){
+      if(els[i].getBoundingClientRect().top<edge){ els[i].classList.add('is-in'); els.splice(i,1); }
+    }
+    if(!els.length){ window.removeEventListener('scroll',onMove); window.removeEventListener('resize',onMove); }
+  }
+  function onMove(){ if(!ticking){ ticking=true; requestAnimationFrame(sweep); } }
+  window.addEventListener('scroll',onMove,{passive:true});
+  window.addEventListener('resize',onMove);
+  requestAnimationFrame(sweep);   // первый экран проявляется тоже плавно
+})();
+</script>
+</body>
+</html>
