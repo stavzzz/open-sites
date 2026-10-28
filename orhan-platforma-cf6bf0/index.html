@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Платформа сделок M&amp;A · видение и план</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17181A; --surface:#1E1F22; --surface-2:#26272B;
+  --ink:#F5F5F5; --ink-soft:#9EA3A8; --ink-faint:#8E9399;
+  --line:#2c2e31; --accent:#4CAE86; --accent-dim:#2c4438; --accent-soft:#20302a; --on-accent:#0c130f;
+  --sans:'Manrope',-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --glass:0 1px 0 rgba(255,255,255,.06) inset,0 20px 48px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:dark;scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(600px 420px at 8% 4%,rgba(76,174,134,.10),transparent 70%),
+    radial-gradient(560px 420px at 96% 30%,rgba(90,120,200,.07),transparent 70%),
+    radial-gradient(700px 480px at 20% 100%,rgba(76,174,134,.07),transparent 70%),
+    var(--bg);
+  color:var(--ink);font-family:var(--sans);font-weight:500;font-size:15.5px;line-height:1.6;overflow-x:hidden;
+}
+::selection{background:rgba(76,174,134,.3)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+section{padding:96px 0;border-bottom:1px solid var(--line);position:relative}
+section::before{
+  content:'';position:absolute;inset:0 0 auto 0;height:130px;pointer-events:none;
+  background:
+    linear-gradient(rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px,
+    linear-gradient(90deg,rgba(76,174,134,.16) 1px,transparent 1px) 0 0/22px 22px;
+  -webkit-mask-image:linear-gradient(#000,transparent);mask-image:linear-gradient(#000,transparent);opacity:.35;
+}
+.num{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:12px}
+h2{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.01em;margin-bottom:12px;text-wrap:balance}
+.sub{color:var(--ink-soft);font-size:17px;max-width:62ch;margin-bottom:40px;text-wrap:pretty}
+.sub b,.card p b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{
+  background:linear-gradient(135deg,rgba(255,255,255,.05),transparent 40%),rgba(38,39,43,.93);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:22px 24px;box-shadow:var(--glass);
+}
+.card h3{font-size:17px;font-weight:700;line-height:1.35;margin-bottom:6px;text-wrap:balance}
+.card p{color:var(--ink-soft);font-size:14.5px;text-wrap:pretty}
+.k{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;display:block}
+.k.acc{color:var(--accent)}
+.emoji{font-size:24px;margin-bottom:10px;line-height:1}
+
+.hero{padding:88px 0 80px;border-bottom:1px solid var(--line);position:relative}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.badge{font-size:13px;font-weight:700;padding:8px 14px;border-radius:100px;border:1px solid var(--line);color:var(--ink-soft)}
+.badge.client{border-color:var(--accent-dim);background:var(--accent-soft);color:var(--accent)}
+.eyebrow{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--ink-faint);margin-bottom:16px}
+h1{font-size:clamp(34px,5.6vw,54px);font-weight:700;line-height:1.15;letter-spacing:-.5px;max-width:19ch;margin-bottom:20px;text-wrap:balance}
+h1 .acc{color:var(--accent)}
+.lede{color:var(--ink-soft);font-size:17px;max-width:56ch;margin-bottom:44px;text-wrap:pretty}
+.lede b{color:var(--ink);font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.metric{background:rgba(30,31,34,.96);padding:20px 18px}
+.metric .n{font-family:var(--mono);font-size:clamp(20px,2.6vw,26px);font-weight:700;color:var(--accent);line-height:1.1}
+.metric .l{font-size:13px;color:var(--ink-faint);margin-top:6px}
+
+.was{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin-top:14px;font-size:14px}
+.was .t{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink-faint);padding-top:1px}
+.was .t.now{color:var(--accent)}
+.was span:not(.t){color:var(--ink-soft)}
+
+.flow{counter-reset:s}
+.step{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
+.step:first-of-type{border-top:0}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px}
+.step b{display:block;font-size:15px;font-weight:600}
+.step small{color:var(--ink-faint);font-size:13px}
+
+.status{display:inline-block;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:100px;margin-bottom:12px}
+.status.ok{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-dim)}
+.status.wip{color:var(--ink-soft);border:1px dashed var(--ink-faint)}
+
+.panel{background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:12px;padding:24px 26px;margin-top:16px}
+.panel h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.panel p{color:var(--ink-soft);font-size:14.5px;max-width:72ch;text-wrap:pretty}
+
+/* воронка сделки */
+.pipe{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}
+.pipe .p{font-family:var(--mono);font-size:13px;font-weight:700;padding:8px 14px;border-radius:100px;border:1px solid var(--line);color:var(--ink-soft);white-space:nowrap}
+.pipe .p.on{background:var(--accent-soft);border-color:var(--accent-dim);color:var(--accent)}
+.pipe .arr{font-family:var(--mono);color:var(--ink-faint)}
+.legend{font-size:13px;color:var(--ink-faint);margin-top:12px}
+
+/* анкета */
+.field{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:16px 18px}
+.field .i{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);padding-top:2px}
+.field b{display:block;font-size:15px;font-weight:600;line-height:1.4}
+.field small{display:block;color:var(--ink-faint);font-size:13px;margin-top:2px}
+
+/* два сервера */
+.servers{display:grid;grid-template-columns:1fr 120px 1fr;align-items:stretch;gap:0}
+.servers .card ul,.person ul{margin-top:8px}
+.bridge{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:var(--mono);color:var(--accent);font-weight:700}
+.bridge .ln{font-size:22px;line-height:1}
+.bridge small{font-size:12.5px;color:var(--ink-faint);text-align:center}
+
+.extra{margin-top:10px;font-size:14.5px;color:var(--ink-soft)}
+.extra li{list-style:none;padding:3px 0 3px 18px;position:relative}
+.extra li::before{content:'+';position:absolute;left:0;color:var(--accent);font-family:var(--mono);font-weight:700}
+
+/* план */
+.stage{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--line)}
+.stage:last-child{border-bottom:1px solid var(--line)}
+.stage .when{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);padding-top:3px}
+.stage h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.stage p{color:var(--ink-soft);font-size:14.5px;max-width:72ch;text-wrap:pretty}
+
+/* команда */
+.person{display:flex;gap:16px;align-items:flex-start}
+.person img,.avatar{width:88px;height:88px;border-radius:10px;flex:none}
+.person img{object-fit:cover;object-position:50% 20%}
+.avatar{display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border:1px solid var(--accent-dim);color:var(--accent);font-family:var(--sans);font-size:36px;font-weight:700}
+.person .role{display:block;color:var(--accent);font-size:13.5px;margin:2px 0 6px}
+
+/* следующий шаг */
+.next{display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:stretch}
+.next .card h3{font-size:24px;margin:4px 0 10px}
+.mascot{display:flex;flex-direction:column;justify-content:space-between;padding:0;overflow:hidden}
+.mascot img{width:100%;height:auto;flex:1;min-height:220px;object-fit:cover;object-position:50% 30%;display:block;background:#d9d9db}
+.mascot .cta-wrap{padding:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;transition:filter .2s}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.block{width:100%}
+.nw{white-space:nowrap}
+
+footer{padding:40px 0 56px}
+.foot{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:700;font-size:15px}
+.logo img{height:22px}
+.logo .dot{color:var(--accent)}
+.foot p{color:var(--ink-faint);font-size:13px;margin-top:8px}
+.contacts{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13px}
+.contacts a{color:var(--ink-soft);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.contacts a:hover{color:var(--accent)}
+
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade{animation:up .7s cubic-bezier(.2,.7,.2,1) both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}html{scroll-behavior:auto}}
+
+@media (max-width:1000px){.next{grid-template-columns:1fr}.mascot{flex-direction:row;align-items:center}.mascot img{width:160px;height:160px;min-height:0;flex:none}.mascot .cta-wrap{flex:1}}
+@media (max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){
+  .servers{grid-template-columns:1fr}
+  .bridge{flex-direction:row;padding:14px 0}
+  .bridge .ln{transform:rotate(90deg)}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  section{padding:64px 0}.hero{padding:56px 0}
+  .g2,.g3{grid-template-columns:1fr}
+  .stage{grid-template-columns:1fr;gap:6px}
+  .mascot{flex-direction:row;align-items:center}.mascot img{width:112px;height:112px;min-height:0}.mascot .cta-wrap{flex:1;padding:14px}
+  .person{flex-direction:column}
+  .foot{flex-direction:column;align-items:flex-start}
+}
+@media print{section::before,.fade{animation:none}body{background:var(--bg)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+
+<header class="hero"><div class="wrap">
+  <div class="badges fade">
+    <span class="badge client">🤝 Платформа сделок M&amp;A</span>
+    <span class="badge">видение и план</span>
+  </div>
+  <div class="eyebrow fade d1">для Орхана · 28 октября 2026</div>
+  <h1 class="fade d2">Больше проектов, инвесторов и <span class="acc">сделок</span></h1>
+  <p class="lede fade d3">Закрытая платформа для сделок M&amp;A. Проект заходит по приглашению, подписывает NDA и загружает данные. ИИ проверяет компанию и готовит первичный отчёт. <b>Инвестор подписывает NDA один раз</b> и дальше получает новые проекты без новых бумаг.</p>
+  <div class="metrics fade d3">
+    <div class="metric"><div class="n">≈20</div><div class="l">сделок собрано с января</div></div>
+    <div class="metric"><div class="n">2–3</div><div class="l">отрасли в закрытой бете</div></div>
+    <div class="metric"><div class="n">1 NDA</div><div class="l">на инвестора вместо NDA на каждую сделку</div></div>
+    <div class="metric"><div class="n">3 мес.</div><div class="l">чтобы выбрать направление и начать разработку</div></div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <div class="num">01 · задача</div>
+  <h2>Что сейчас отнимает время</h2>
+  <p class="sub">Сделки живут в <span class="nw">Google-таблице</span>, проверка идёт вручную. У платформы одно мерило: <b>растёт ли число проектов, инвесторов и сделок</b>. Если работать станет удобнее, а сделок больше не станет, задача не решена.</p>
+  <div class="grid g2">
+    <div class="card"><div class="emoji">🔎</div><h3>Проверка компании по ИНН</h3>
+      <div class="was"><span class="t">было</span><span>Владельцев, выручку и отчётность Орхан ищет в открытых базах руками.</span><span class="t now">станет</span><span>Агент сам собирает эти данные по ИНН через API и открытые источники.</span></div></div>
+    <div class="card"><div class="emoji">✍️</div><h3>NDA на каждую сделку</h3>
+      <div class="was"><span class="t">было</span><span>С тем же инвестором новый NDA под каждый новый проект.</span><span class="t now">станет</span><span>Инвестор подписывает NDA с платформой один раз.</span></div></div>
+    <div class="card"><div class="emoji">📋</div><h3>Данные разбросаны</h3>
+      <div class="was"><span class="t">было</span><span>Сделка живёт строкой в таблице, данные копируются и пересылаются вручную.</span><span class="t now">станет</span><span>Проект сам заполняет анкету, ИИ раскладывает данные для инвестора.</span></div></div>
+    <div class="card"><div class="emoji">🚪</div><h3>Случайные проекты</h3>
+      <div class="was"><span class="t">было</span><span>Время уходит на тех, кто не готов раскрывать данные.</span><span class="t now">станет</span><span>Регистрация и анкета отсеивают лишних: кто заполнил, тот настроен всерьёз.</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">02 · как это работает</div>
+  <h2>Проект, <span class="nw">ИИ-комитет</span> и инвестор</h2>
+  <p class="sub">Вся переписка по сделке идёт через платформу. У каждой стороны свой <span class="nw">прогресс-бар</span>. Орхан видит обе стороны и ведёт сделку.</p>
+  <div class="grid g3 flow">
+    <div class="card"><span class="k acc">🏢 проект</span>
+      <div class="step"><div><b>Получает приглашение</b><small>Уникальная одноразовая ссылка от Орхана</small></div></div>
+      <div class="step"><div><b>Подписывает NDA</b><small>Электронная подпись, как в DocuSign</small></div></div>
+      <div class="step"><div><b>Загружает данные</b><small>Тизер, анкета на 10–15 полей, документы при необходимости</small></div></div></div>
+    <div class="card"><span class="k acc">🤖 <span class="nw">ИИ-комитет</span></span>
+      <div class="step"><div><b>Проверяет компанию по ИНН</b><small>Владельцы, партнёры, выручка, налоговая отчётность</small></div></div>
+      <div class="step"><div><b>Считает первичный скоринг</b><small>Несколько моделей проверяют выводы друг друга</small></div></div>
+      <div class="step"><div><b>Готовит отчёт</b><small>Рекомендации проекту и структурированные данные для инвестора. Орхану приходит уведомление</small></div></div></div>
+    <div class="card"><span class="k acc">💼 инвестор</span>
+      <div class="step"><div><b>Получает ссылку</b><small>Орхан предлагает проект, инвестор регистрируется</small></div></div>
+      <div class="step"><div><b>Подписывает NDA один раз</b><small>Следующие проекты открываются без нового NDA</small></div></div>
+      <div class="step"><div><b>Изучает проект и решает</b><small>Интересно: подписывает LOI на платформе, дальше идёт обычный путь сделки</small></div></div></div>
+  </div>
+  <div class="panel">
+    <h3>Сначала проекты, потом инвесторы</h3>
+    <p>Инвесторов на пустую платформу не зовём. Первым собираем блок для проекта: приглашение, NDA и анкету.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">03 · закрытая бета</div>
+  <h2>Три функции для первой версии</h2>
+  <p class="sub">Этого хватит, чтобы понять, нужна ли платформа и как она помогает в работе. Оболочка простая: сайт для компьютера и телефона, без приложений.</p>
+  <div class="grid g3">
+    <div class="card"><span class="k">функция 1</span><h3>Первичный DD по 2–3 отраслям</h3><p>Первый кандидат: IT и всё рядом с ним. ЦОДы, ИИ, электронные площадки, разработка. <span class="nw">IT-бизнес</span> понятен, его хотят купить многие.</p></div>
+    <div class="card"><span class="k">функция 2</span><h3>NDA с обеих сторон</h3><p>Проект и инвестор подписывают NDA на платформе электронно. Инвестор делает это один раз.</p></div>
+    <div class="card"><span class="k">функция 3</span><h3>LOI на платформе</h3><p>Инвестор изучил данные и хочет идти дальше: подписывает LOI там же. Механику уточняем.</p></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <span class="k">путь сделки</span>
+    <div class="pipe">
+      <span class="p on">NDA</span><span class="arr">→</span>
+      <span class="p on">первичные данные</span><span class="arr">→</span>
+      <span class="p on">LOI</span><span class="arr">→</span>
+      <span class="p">term sheet</span><span class="arr">→</span>
+      <span class="p">SHA / SPA</span>
+    </div>
+    <p class="legend">Зелёные шаги проходят на платформе, остальные идут как обычно.</p>
+  </div>
+  <div class="panel">
+    <h3>Отчёт платформы даёт первичный скоринг</h3>
+    <p>Полный due diligence делает команда инвестора, когда стороны нашли общий язык и <span class="nw">стоп-факторов</span> нет. В отчёте платформы прямо написано, что глубокая проверка может дать другую картину. Так расхождение с проверкой инвестора не бьёт по репутации Орхана.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">04 · <span class="nw">ИИ-комитет</span></div>
+  <h2>Как ИИ разбирает сделку</h2>
+  <p class="sub">Одна модель может уверенно ошибаться. Поэтому сделку разбирает комитет из нескольких моделей, и каждая проверяет выводы остальных.</p>
+  <div class="grid g2">
+    <div class="card"><div class="emoji">🧠</div><h3>Несколько моделей спорят</h3><p>Grok, Claude, Gemini и GPT обучены <span class="nw">по-разному</span> и разбирают выводы друг друга. Так точнее, чем у одной модели.</p></div>
+    <div class="card"><div class="emoji">🏭</div><h3>Свои промпты под отрасль</h3><p>В каждой отрасли свои метрики. Оркестратор берёт набор промптов той отрасли, к которой относится сделка.</p></div>
+    <div class="card"><div class="emoji">🗂</div><h3>Открытые данные по ИНН</h3><p>Российские базы подключаем по API или парсингу: владельцы, партнёры, выручка, налоговая отчётность.</p></div>
+    <div class="card"><div class="emoji">⚖️</div><h3>Модели выбираем по тестам</h3><p>Через OpenRouter сравниваем модели на задачах аналитики и берём лучшие. Бюджет на токены считаем отдельно: одной подписки не хватит.</p></div>
+  </div>
+  <div class="panel">
+    <h3>Прототип уже работает</h3>
+    <p>У Стаса есть <span class="nw">инвест-комитет</span> из четырёх ролей: аналитик сделки, финансовый моделист, <span class="nw">риск-менеджер</span> и секретарь. В июне Стас показывал на конференции комитет из четырёх моделей. С этого прототипа и начинаем.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">05 · анкета проекта</div>
+  <h2>Что проект заполняет сам</h2>
+  <p class="sub">Черновой список со звонка. Его хватает для первого взгляда инвестора, но он ничего не гарантирует по документам и финансам. Остальные поля до 10–15 добираем вместе.</p>
+  <div class="grid g3">
+    <div class="card field"><span class="i">01</span><div><b>ИНН компании</b><small>С него начинается проверка</small></div></div>
+    <div class="card field"><span class="i">02</span><div><b>Тизер</b><small>Короткое описание бизнеса</small></div></div>
+    <div class="card field"><span class="i">03</span><div><b>EBITDA за 2025 год</b></div></div>
+    <div class="card field"><span class="i">04</span><div><b>Долг</b></div></div>
+    <div class="card field"><span class="i">05</span><div><b>Оценка собственника</b><small>За сколько готов продать</small></div></div>
+    <div class="card field"><span class="i">06</span><div><b>Что продаётся</b><small>Доля или компания целиком</small></div></div>
+    <div class="card field"><span class="i">07</span><div><b>Причина продажи</b><small>Новый бизнес, пенсия, некому передать, слабое управление при хорошем кэшфлоу</small></div></div>
+    <div class="card field"><span class="i">08</span><div><b>Какой нужен инвестор</b><small>Финансовый или стратегический, который поможет расти</small></div></div>
+    <div class="card field"><span class="i">09</span><div><b>Продукты и направления</b><small>Что продаёт компания и как делится выручка</small></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">06 · данные и закон</div>
+  <h2>Где хранятся данные</h2>
+  <p class="sub">Платформа обрабатывает персональные данные граждан РФ. По <span class="nw">152-ФЗ</span> их хранят в России, даже если платформа закрытая. Штрафы за нарушение крупные, их получали Google и Apple.</p>
+  <div class="servers">
+    <div class="card"><span class="k acc">🇷🇺 сервер в России</span><h3>Данные и обработка</h3>
+      <ul class="extra"><li>База данных и персональные данные</li><li>Обработка и мэтчинг</li><li>Резервные копии, чтобы данные не потерялись</li></ul></div>
+    <div class="bridge"><span class="ln">⇄</span><small>обмен данными</small></div>
+    <div class="card"><span class="k acc">🌍 зарубежный сервер</span><h3><span class="nw">ИИ-агенты</span></h3>
+      <p>Из российского контура модели не работают <span class="nw">из-за</span> санкций, поэтому агенты живут на отдельном сервере. Какие данные туда можно отправлять, уточняем.</p></div>
+  </div>
+  <div class="grid g3" style="margin-top:16px">
+    <div class="card"><div class="emoji">🌐</div><h3>Российский домен</h3><p>Регистрируем на reg.ru и подтверждаем личность через Госуслуги.</p></div>
+    <div class="card"><div class="emoji">📄</div><h3>Оферта и соглашение</h3><p>Готовим пользовательское соглашение и оферту до первого проекта на платформе.</p></div>
+    <div class="card"><div class="emoji">🗺</div><h3>География</h3><p>Старт в России. Дальше СНГ, Азия, возможно Ближний Восток. Европу с её GDPR не берём.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">07 · договорённости</div>
+  <h2>Что согласовали и что уточняем</h2>
+  <p class="sub">По итогам созвона 26 октября.</p>
+  <div class="grid g2">
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Закрытая бета на 2–3 отрасли</h3><p>Первичный DD, NDA с обеих сторон и LOI.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Сначала проекты, потом инвесторы</h3><p>Первый блок: приглашение, NDA и анкета проекта.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3><span class="nw">ИИ-комитет</span> из нескольких моделей</h3><p>Отчёт проходит перекрёстную проверку и подаётся как первичный скоринг.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Персональные данные в России</h3><p>Данные на сервере в РФ, зарубежный сервер только для агентов.</p></div>
+    <div class="card"><span class="status ok">✓ согласовано</span><h3>Сначала M&amp;A</h3><p>Венчур и <span class="nw">pre-IPO</span> смотрим позже.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Какую боль закрываем для проекта</h3><p>Ответ даст кастдев Орхана на встречах с проектами и инвесторами.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Отрасли беты</h3><p>IT выглядит первым кандидатом. Ещё <span class="nw">одну-две</span> выбираем по таблице сделок.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Поля анкеты и методика скоринга</h3><p>Есть ли у Орхана своя методика анализа сделки и подготовки предложения инвестору.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Как устроен LOI</h3><p>Какие шаги и документы переносим на платформу.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Что можно отдавать зарубежным моделям</h3><p>Какие данные уходят агентам без нарушения <span class="nw">152-ФЗ</span> и NDA.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Бюджет и юрисдикция</h3><p>Сколько стоят токены и серверы, на кого оформляем платформу и как работаем с инвесторами <span class="nw">из-за</span> рубежа.</p></div>
+    <div class="card"><span class="status wip">⟳ уточняем</span><h3>Конкуренты</h3><p>Возможно, похожая платформа уже есть. Тогда решаем, что у неё взять и стоит ли доверять ей данные проектов.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">08 · кто что делает</div>
+  <h2>Роли</h2>
+  <p class="sub">Предложение Стаса, обсуждаем на созвоне. Каждый ведёт свою часть, решения по продукту принимаем вместе. Условия партнёрства обсуждаем отдельно.</p>
+  <div class="grid g2">
+    <div class="card person"><img src="assets/team-stas.jpg" alt="Стас" width="88" height="88"><div><h3>Стас</h3><span class="role">продукт и разработка</span><p>Сооснователь школы <span class="nw">ИИ-обучения</span>. 3+ года в ИИ, 10+ лет в IT, 5+ лет обучает команды и встраивает автоматизацию в <span class="nw">бизнес-процессы</span> разных компаний.</p>
+      <ul class="extra"><li>Видение продукта и архитектура</li><li><span class="nw">ИИ-комитет</span> и агенты</li><li>Серверы, данные и безопасность</li><li>Сборка закрытой беты</li></ul></div></div>
+    <div class="card person"><div class="avatar" aria-hidden="true">О</div><div><h3>Орхан</h3><span class="role">сделки и рынок</span><p>Ведёт сделки M&amp;A: находит проекты и инвесторов через личные знакомства и конференции. С января собрал около 20 сделок.</p>
+      <ul class="extra"><li>Кастдев с проектами и инвесторами</li><li>Разбор конкурентов</li><li>Анкета и критерии оценки сделки</li><li>Первые проекты на платформе</li></ul></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">09 · следующие шаги</div>
+  <h2>План на три месяца</h2>
+  <p class="sub">Орхан дал себе три месяца, чтобы выбрать направление и начать разработку. Идём короткими этапами, у каждого понятный результат.</p>
+  <div>
+    <div class="stage"><div class="when">до 2 ноября</div><div><h3>Каждый делает свою часть</h3><p>Стас присылает эту презентацию. Орхан изучает похожие платформы и обсуждает идею с инвесторами и проектами.</p></div></div>
+    <div class="stage"><div class="when">около 2 ноября</div><div><h3>Созвон</h3><p>Разбираем отзывы рынка, выбираем отрасли беты, фиксируем поля анкеты и роли.</p></div></div>
+    <div class="stage"><div class="when">ноябрь</div><div><h3><span class="nw">ИИ-комитет</span> на реальных сделках</h3><p>Прогоняем 2–3 сделки из таблицы без названий и личных данных и сверяем отчёт с тем, что Орхан знает о сделке. Так проверяем главный риск: точность.</p></div></div>
+    <div class="stage"><div class="when">27 ноября</div><div><h3>Конференция в Дубае</h3><p>Ещё одна точка, где можно показать идею инвесторам и проектам и собрать отзывы.</p></div></div>
+    <div class="stage"><div class="when">декабрь–январь</div><div><h3>Первый блок беты</h3><p>Сервер в России, приглашение проекта, NDA, анкета и отчёт <span class="nw">ИИ-комитета</span>. Заводим первые проекты Орхана.</p></div></div>
+    <div class="stage"><div class="when">потом</div><div><h3>Инвесторы</h3><p>Регистрация инвестора, NDA один раз, доступ к проектам и LOI.</p></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="num">10 · идеи на потом</div>
+  <h2>Что не входит в бету</h2>
+  <p class="sub">Прозвучало на звонке, возвращаемся после беты.</p>
+  <div class="grid g3">
+    <div class="card"><div class="emoji">🪟</div><h3>Витрина проектов</h3><p>Инвестор без NDA видит обезличенные карточки. Заинтересовался: регистрируется, подписывает NDA и получает первичные данные.</p></div>
+    <div class="card"><div class="emoji">🚀</div><h3>Венчур и <span class="nw">pre-IPO</span></h3><p>У этих сделок своя логика. Сначала доводим M&amp;A.</p></div>
+    <div class="card"><div class="emoji">🏷</div><h3>Платформа как продукт</h3><p>Если бета сработает, платформу можно продавать тем, кто тоже ведёт сделки.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="next">
+    <div class="card">
+      <span class="k acc">следующий шаг</span>
+      <h3>Созвон около 2 ноября</h3>
+      <p>Напиши в Telegram, что поправить в презентации. На созвоне решаем четыре вопроса:</p>
+      <ul class="extra"><li>Что сказали инвесторы и проекты, что нашлось у конкурентов</li><li>Какие 2–3 отрасли берём в бету</li><li>Какие поля входят в анкету проекта</li><li>Кто что делает и на каких условиях</li></ul>
+    </div>
+    <div class="card mascot">
+      <img src="assets/garazhnik.webp" alt="Гаражник, талисман ИИ-Гаража" width="640" height="640">
+      <div class="cta-wrap"><a class="btn primary block" href="https://t.me/stavzzz">Обсудить в Telegram →</a></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <div>
+    <div class="logo"><img src="assets/logo-mark.png" alt="">гараж<span class="dot">_</span></div>
+    <p>Подготовлено для Орхана · 28 октября 2026</p>
+  </div>
+  <div class="contacts">
+    <a href="https://t.me/stavzzz">@stavzzz</a>
+    <a href="https://ai-garage.tech/"><span class="nw">ai-garage</span>.tech</a>
+  </div>
+</div></footer>
+
+</body>
+</html>
