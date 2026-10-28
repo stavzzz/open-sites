@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Workspace MCP</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0a0a0f; --bg-card:#12121a; --bg-card-hover:#181825;
+    --border:#1e1e2e; --border-accent:#2a2a3e;
+    --text-primary:#e8e6f0; --text-secondary:#8b879e; --text-muted:#5a5670;
+    --accent:#7c5bf5; --accent-glow:#9d7cff; --accent-soft:rgba(124,91,245,0.12);
+    --green:#34d399; --green-glow:#6ee7b7; --green-soft:rgba(52,211,153,0.1);
+    --amber:#fbbf24; --amber-soft:rgba(251,191,36,0.1);
+    --red-soft:rgba(248,113,113,0.1); --red:#f87171;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Onest',sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(124,91,245,0.04) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(52,211,153,0.03) 0%,transparent 50%);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:40px 20px 80px;}
+  .header{text-align:center;margin-bottom:26px;}
+  .header__badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;animation:fadeDown .6s ease both;}
+  .header__title{font-size:clamp(30px,5vw,45px);font-weight:800;line-height:1.15;letter-spacing:-0.5px;margin-bottom:20px;animation:fadeDown .6s ease .1s both;}
+  .header__title span{background:linear-gradient(135deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .header__topics{list-style:none;display:flex;flex-direction:column;gap:7px;max-width:600px;margin:0 auto;animation:fadeDown .6s ease .2s both;}
+  .header__topics li{font-size:17px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:8px;text-align:left;}
+  .header__topics li::before{content:'→';color:var(--accent);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:14px;margin-top:3px;}
+  .progress-wrap{background:rgba(18,18,26,0.92);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:36px;position:sticky;top:12px;z-index:10;backdrop-filter:blur(16px);animation:fadeDown .6s ease .3s both;}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .progress-label{font-size:16px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+  .progress-count{font-family:'JetBrains Mono',monospace;font-size:17.5px;font-weight:700;color:var(--accent-glow);}
+  .progress-bar{width:100%;height:8px;background:var(--border);border-radius:100px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:100px;transition:width .5s cubic-bezier(.34,1.56,.64,1);width:0%;}
+  .section{margin-bottom:28px;}
+  .section__header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-left:2px;}
+  .section__num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);background:var(--accent-soft);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;}
+  .section__title{font-size:20px;font-weight:700;letter-spacing:-0.2px;line-height:1.35;}
+  .section__card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .3s;}
+  .section__card:hover{border-color:var(--border-accent);}
+  .item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+  .item:last-child{border-bottom:none;}
+  .item:hover{background:var(--bg-card-hover);}
+  .item.checked .item__text{color:var(--text-muted);text-decoration:line-through;}
+  .item__check{position:relative;width:22px;height:22px;flex-shrink:0;margin-top:1px;pointer-events:auto;cursor:pointer;}
+  .item__check input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2;}
+  .item__check .cm{width:22px;height:22px;border:2px solid var(--border-accent);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check .cm svg{width:12px;height:12px;opacity:0;transform:scale(0);transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check input:checked + .cm{background:var(--green);border-color:var(--green);}
+  .item__check input:checked + .cm svg{opacity:1;transform:scale(1);}
+  .item__body{flex:1;min-width:0;pointer-events:none;user-select:text;}
+  .item__body a,.item__body .lnk,.item__body .btn-copy,.item__body .cmd-copy,.item__body .btn-dl{pointer-events:auto;}
+  .item__text{font-size:18px;font-weight:500;color:var(--text-primary);transition:all .3s;}
+  .item__hint{font-size:16px;color:var(--text-secondary);margin-top:5px;line-height:1.65;}
+  .item__hint strong{color:var(--text-primary);}
+  .lnk{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-family:'JetBrains Mono',monospace;color:var(--accent-glow);text-decoration:none;transition:color .2s;word-break:break-all;}
+  .lnk:hover{color:#bba4ff;text-decoration:underline;}
+  .note{display:flex;align-items:flex-start;gap:10px;padding:14px 20px;font-size:16px;color:var(--text-secondary);line-height:1.65;border-bottom:1px solid var(--border);}
+  .note:last-child{border-bottom:none;}
+  .note--warn{background:var(--amber-soft);color:var(--amber);}
+  .note--info{background:var(--accent-soft);}
+  .note--alert{background:var(--red-soft);color:var(--red);}
+  .note--green{background:var(--green-soft);color:var(--green-glow);}
+  .note__icon{flex-shrink:0;font-size:19px;}
+  .note strong{color:inherit;}
+  .info-block{padding:14px 20px;border-bottom:1px solid var(--border);font-size:17px;color:var(--text-secondary);line-height:1.7;}
+  .info-block:last-child{border-bottom:none;}
+  .info-block strong{color:var(--text-primary);font-weight:600;}
+  .mono{font-family:'JetBrains Mono',monospace;color:var(--accent-glow);font-size:15px;}
+  .cmd-copy{background:rgba(0,0,0,0.35);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;margin:10px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .cmd-copy__text{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.6;word-break:break-all;flex:1;white-space:pre-wrap;}
+  .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--border-accent);border-radius:10px;padding:16px 20px;margin:12px 20px;}
+  .code-block__label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:block;}
+  .code-block__scroll{max-height:320px;overflow-y:auto;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+  .code-block__scroll::-webkit-scrollbar{width:9px;height:9px;}
+  .code-block__scroll::-webkit-scrollbar-thumb{background:var(--border-accent);border-radius:9px;}
+  .code-block .btn-copy{margin-top:12px;}
+  .btn-copy{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.3);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+  .btn-copy:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .btn-copy.copied{color:var(--green);background:var(--green-soft);border-color:rgba(52,211,153,0.3);}
+  .cmd-copy .btn-copy{padding:5px 12px;font-size:12.5px;}
+  .btn-dl{display:inline-flex;align-items:center;gap:7px;font-family:'Onest',sans-serif;font-size:16px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.35);padding:9px 18px;border-radius:10px;text-decoration:none;transition:all .2s;cursor:pointer;margin:0 20px 14px;}
+  .dl-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .dl-row:last-of-type{border-bottom:1px solid var(--border);}
+  .dl-row__label{font-size:18px;display:flex;align-items:center;}
+  .dl-row .btn-dl{margin:0;flex-shrink:0;}
+  @media(max-width:480px){.dl-row{flex-direction:column;align-items:flex-start;gap:10px;}}
+  .btn-dl:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .os-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;margin-left:8px;vertical-align:middle;}
+  .os-tag--mac{color:var(--green-glow);background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);}
+  .os-tag--win{color:#38bdf8;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);}
+  .data-table{width:100%;border-collapse:collapse;font-size:16px;}
+  .data-table th{text-align:left;padding:11px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);border-bottom:1px solid var(--border);}
+  .data-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;line-height:1.6;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table td:first-child{width:38%;}
+  .section-divider{text-align:center;margin:48px 0 32px;padding:0 20px;}
+  .section-divider__line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin-bottom:20px;}
+  .section-divider__title{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--accent-glow);text-transform:uppercase;letter-spacing:3px;}
+  .footer{text-align:center;margin-top:48px;}
+  .footer__done{display:none;background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);border-radius:var(--radius);padding:32px 24px;margin-bottom:24px;}
+  .footer__done.visible{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .footer__done-emoji{font-size:60px;margin-bottom:10px;}
+  .footer__done-text{font-size:27.5px;font-weight:800;color:var(--green);margin-bottom:6px;}
+  .footer__done-sub{font-size:19px;color:var(--text-secondary);}
+  .footer__final{background:linear-gradient(135deg,rgba(124,91,245,0.08),rgba(52,211,153,0.08));border:1px solid rgba(124,91,245,0.25);border-radius:var(--radius);padding:34px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+  .footer__final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(124,91,245,0.12),transparent 50%),radial-gradient(circle at 80% 100%,rgba(52,211,153,0.12),transparent 50%);pointer-events:none;}
+  .footer__final-emoji{font-size:67.5px;margin-bottom:12px;line-height:1;position:relative;}
+  .footer__final-text{font-size:30px;font-weight:800;background:linear-gradient(90deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-0.4px;position:relative;}
+  .footer__final-sub{font-size:19px;color:var(--text-secondary);line-height:1.6;max-width:700px;margin:0 auto;position:relative;}
+  .footer__contact{font-size:17.5px;color:var(--text-secondary);margin-bottom:20px;}
+  .tg{color:#2dd4bf;font-weight:700;text-decoration:underline;text-decoration-color:rgba(45,212,191,0.4);text-underline-offset:2px;transition:color .2s;}
+  .tg:hover{color:#5eead4;}
+  .btn-reset{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:15px;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-reset:hover{border-color:var(--red);color:var(--red);}
+  #confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+  @media (max-width:480px){
+    .wrapper{padding:28px 14px 60px;}
+    .item,.note,.info-block{padding:12px 16px;}
+    .cmd-copy,.code-block{margin-left:14px;margin-right:14px;}
+    .btn-dl{margin-left:14px;margin-right:14px;}
+    .data-table th,.data-table td{padding:10px 14px;}
+    .data-table td:first-child{width:auto;}
+    .progress-wrap{padding:16px 18px;top:8px;}
+    .header__title{font-size:26.5px;}
+  }
+  .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .reveal{opacity:0;transform:translateY(16px);}
+  .reveal.is-in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s ease;}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal.is-in{opacity:1;transform:none;transition:none;}}
+  @media print{.reveal{opacity:1;transform:none;}}
+@media (max-width:600px){.data-table th{display:none}.data-table tr{display:block;border-bottom:1px solid var(--border)}.data-table tr:last-child{border-bottom:none}.data-table td{display:block;width:auto!important;border-bottom:none;padding:6px 16px}.data-table td:first-child{padding-top:14px}.data-table td:last-child{padding-bottom:14px}.data-table td+td::before{content:'→ ';color:var(--accent)}}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div class="wrapper">
+
+<div class="header">
+  <div class="header__badge">Google Workspace · MCP</div>
+  <h1 class="header__title">Google Workspace MCP: <span>connect and disconnect</span></h1>
+  <ul class="header__topics">
+    <li>One Google key for Claude Code on your computer and your OpenClaw agent on the server</li>
+    <li>Publishing the app so the sign-in doesn’t expire every 7 days</li>
+    <li>How to disconnect fully or switch to another Google account</li>
+    <li>Ready prompts: copy, paste into Claude Code, follow</li>
+  </ul>
+  <div class="header__time">⏳ About 45 minutes</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Checklist</span>
+    <span class="progress-count" id="progressCount">0 / 0</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- 00 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">00</div><div class="section__title">How it fits together</div></div>
+  <div class="section__card">
+    <div class="info-block">Google Workspace MCP gives an AI tool access to your Gmail, Calendar, Drive, Docs and Sheets. You create <strong>one key</strong> in Google Cloud, sign in once on your computer, and then copy that sign-in to the server. The server has no browser, so it can’t sign in by itself.</div>
+    <table class="data-table">
+      <tr><th>Step</th><th>Where</th></tr>
+      <tr><td><strong>1. Key</strong></td><td>Google Cloud Console, once</td></tr>
+      <tr><td><strong>2. Publish the app</strong></td><td>Google Auth Platform, once</td></tr>
+      <tr><td><strong>3. Claude Code</strong></td><td>Your computer, prompt 1</td></tr>
+      <tr><td><strong>4. OpenClaw</strong></td><td>Your server, prompt 2</td></tr>
+    </table>
+    <div class="note note--info"><span class="note__icon">💡</span><div>Do the steps in this order. Step 4 reuses the sign-in from step 3.</div></div>
+  </div>
+</div>
+
+<!-- 01 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">01</div><div class="section__title">Google Cloud: create the key</div></div>
+  <div class="section__card">
+    <div class="info-block">Open <a class="lnk" href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a> with the Google account you want to connect.</div>
+    <div class="item" data-key="gc-project"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Create a new project</div><div class="item__hint">Any name, for example “my-assistant”.</div></div></div>
+    <div class="item" data-key="gc-apis"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Enable 10 APIs in APIs &amp; Services → Library</div><div class="item__hint">Gmail, Google Calendar, Google Drive, Google Docs, Google Sheets, Google Slides, Google Forms, Google Tasks, People, Apps Script. Search each name and press Enable.</div></div></div>
+    <div class="item" data-key="gc-auth"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Google Auth Platform → Get started → External</div><div class="item__hint">App name: anything. Support email and contact email: your Gmail.</div></div></div>
+    <div class="item" data-key="gc-testuser"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Audience → Test users → add your Gmail</div></div></div>
+    <div class="item" data-key="gc-client"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Clients → Create client → Desktop app → Download JSON</div><div class="item__hint">Rename the file to client_secret.json and keep it in its own folder outside your projects, for example ~/secrets/google.</div></div></div>
+    <div class="note note--warn"><span class="note__icon">⚠️</span><div><strong>This file is a key.</strong> Don’t send it in a chat, don’t put it in GitHub and don’t keep it inside a project folder.</div></div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">02</div><div class="section__title">Publish the app so the sign-in lasts</div></div>
+  <div class="section__card">
+    <div class="info-block">While the app is in <strong>Testing</strong>, Google ends your sign-in every 7 days and the agent loses your mail. In <strong>Production</strong> the sign-in stays. To publish, Google needs a home page, a privacy policy and terms. Claude Code makes all three for you on free GitHub Pages.</div>
+    <div class="code-block"><span class="code-block__label">Prompt A · GitHub Pages for branding</span><div class="code-block__scroll" id="prompt-pages">Create my GitHub Pages site for Google OAuth branding. My GitHub is already connected to you (gh CLI or GitHub MCP).
+
+1. Find my GitHub username. Below it is USER. Ask me which email to show as the contact.
+2. If the repo USER.github.io does not exist, create it as public. Add three short pages in English:
+   - index.html: a personal assistant app that connects my own Google account to my AI tools; not a commercial service.
+   - privacy.html: the app accesses only my own Google data, at my request; data is processed by the AI tools I use (such as Anthropic Claude) on my behalf; nothing is sold or shared with third parties; contact email.
+   - terms.html: personal, non-commercial use only, provided as is, no warranty.
+   If the repo already exists, only add the missing pages and do not delete anything.
+3. Make sure GitHub Pages is enabled from the main branch.
+4. Check the three URLs every 30 seconds until all of them open (status 200), at most 10 minutes.
+5. Give me exactly these four lines to paste into Google Auth Platform, Branding:
+   Application home page: https://USER.github.io/
+   Application privacy policy link: https://USER.github.io/privacy.html
+   Application terms of service link: https://USER.github.io/terms.html
+   Authorized domain: USER.github.io</div><button class="btn-copy" onclick="copyBlock('prompt-pages',this)">📋 Copy prompt</button></div>
+    <table class="data-table">
+      <tr><th>Branding field</th><th>What to enter</th></tr>
+      <tr><td><strong>App name</strong></td><td>Anything you like</td></tr>
+      <tr><td><strong>User support email</strong></td><td>Your Gmail</td></tr>
+      <tr><td><strong>App logo</strong></td><td>Leave empty</td></tr>
+      <tr><td><strong>Home page, privacy policy, terms</strong></td><td>The three links from the prompt</td></tr>
+      <tr><td><strong>Authorized domain</strong></td><td>USER.github.io, without https:// and without a slash at the end</td></tr>
+      <tr><td><strong>Developer contact</strong></td><td>Your Gmail</td></tr>
+    </table>
+    <div class="note note--warn"><span class="note__icon">🚫</span><div><strong>Don’t upload a logo.</strong> Google says it right on the page: once there’s a logo, the app must pass verification before it can leave Testing.</div></div>
+    <div class="note note--info"><span class="note__icon">💡</span><div><strong>“Your branding is not being shown” or “Branding verification issues”.</strong> Press Cancel. This only affects how the app name looks on the sign-in screen. Everything still works.</div></div>
+    <div class="item" data-key="br-pages"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Three pages open and Branding is saved</div></div></div>
+    <div class="item" data-key="br-publish"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Audience → Publish app → status “In production”</div><div class="item__hint">“0 users / 100 user cap” is normal.</div></div></div>
+    <div class="item" data-key="br-relogin"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Signed in to Google again after publishing</div><div class="item__hint">Only if you signed in while the app was in Testing: that old sign-in still dies after 7 days. Use prompt D in section 05, then sign in and copy the new sign-in to the server.</div></div></div>
+  </div>
+</div>
+
+<!-- 03 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">03</div><div class="section__title">Connect to Claude Code</div></div>
+  <div class="section__card">
+    <div class="info-block">Paste the prompt into Claude Code on your computer. Replace the text in angle brackets with your path to client_secret.json.</div>
+    <div class="code-block"><span class="code-block__label">Prompt B · Claude Code</span><div class="code-block__scroll" id="prompt-cc">Connect Google Workspace MCP to Claude Code globally (user scope), so it works in every session.
+
+Server: https://github.com/taylorwilsdon/google_workspace_mcp
+
+1. Install uv if it is missing (https://docs.astral.sh/uv/).
+2. Clone the repo to ~/.local/share/google_workspace_mcp (on Windows: %USERPROFILE%\.local\share\google_workspace_mcp) and run uv sync there.
+3. My OAuth key file is here: &lt;paste the full path to client_secret.json&gt;. Never print its contents.
+4. Add the server with claude mcp add (check claude mcp add --help for the exact syntax):
+   - name: google-workspace, scope: user, transport: stdio
+   - command: uv run --directory &lt;repo path&gt; main.py --tool-tier complete
+   - env: GOOGLE_CLIENT_SECRET_PATH=&lt;path to client_secret.json&gt;, OAUTHLIB_INSECURE_TRANSPORT=1
+5. Run claude mcp list and confirm google-workspace is connected.
+
+Then tell me to restart Claude Code and ask "show my last 3 emails" to sign in with Google.</div><button class="btn-copy" onclick="copyBlock('prompt-cc',this)">📋 Copy prompt</button></div>
+    <div class="note note--alert"><span class="note__icon">🔁</span><div><strong>Restart Claude Code after the install.</strong> Close it completely and open it again. Until then the Google tools don’t appear, and Claude will say it has no access to your mail.</div></div>
+    <div class="item" data-key="cc-restart"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code restarted</div></div></div>
+    <div class="item" data-key="cc-signin"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Signed in with Google</div><div class="item__hint">Ask “show my last 3 emails” and open the link. On “Google hasn’t verified this app” press Advanced → Go to your app name. Allow everything on the next screen.</div></div></div>
+    <div class="item" data-key="cc-test"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code shows your last 3 emails</div></div></div>
+  </div>
+</div>
+
+<!-- 04 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">04</div><div class="section__title">Connect to OpenClaw on the server</div></div>
+  <div class="section__card">
+    <div class="info-block">This prompt copies your key and sign-in from the computer to the server and adds Google to your main agent. Replace &lt;my Gmail&gt; in two places.</div>
+    <div class="code-block"><span class="code-block__label">Prompt C · OpenClaw on the server</span><div class="code-block__scroll" id="prompt-oc">Connect Google Workspace MCP to my OpenClaw main agent on my server. Use the openclaw-docs skill; don't invent commands or flags.
+
+The server has no browser for Google sign-in, so reuse the sign-in I already did on this computer via Claude Code.
+
+1. On this computer, find client_secret.json (path in the google-workspace entry of my Claude Code config, GOOGLE_CLIENT_SECRET_PATH) and the folder ~/.google_workspace_mcp/credentials (Windows: %USERPROFILE%\.google_workspace_mcp\credentials). It must contain &lt;my Gmail&gt;.json; if not, stop and tell me to sign in via Claude Code first. Never print these files.
+2. ssh to my server. Install uv if missing. Clone https://github.com/taylorwilsdon/google_workspace_mcp to /root/.local/share/google_workspace_mcp and run uv sync there.
+3. Copy client_secret.json to /root/.google_workspace_mcp/client_secret.json and the credentials folder to /root/.google_workspace_mcp/credentials. Permissions: folders 700, files 600.
+4. Save the server in OpenClaw with openclaw mcp set GoogleWorkspace and this JSON (use the real path to uv from `command -v uv`):
+{"command":"/root/.local/bin/uv","args":["run","--directory","/root/.local/share/google_workspace_mcp","main.py","--single-user","--tools","docs","sheets","slides","forms","appscript","calendar","gmail","drive"],"env":{"GOOGLE_CLIENT_SECRET_PATH":"/root/.google_workspace_mcp/client_secret.json","WORKSPACE_MCP_CREDENTIALS_DIR":"/root/.google_workspace_mcp/credentials","OAUTHLIB_INSECURE_TRANSPORT":"1","HOME":"/root","WORKSPACE_MCP_PORT":"8000","MCP_SINGLE_USER_MODE":"1","USER_GOOGLE_EMAIL":"&lt;my Gmail&gt;"},"connectionTimeoutMs":120000}
+5. Run openclaw mcp doctor --probe and confirm GoogleWorkspace connects and lists tools. If the docs say the Gateway needs a restart to pick it up, restart it.
+6. Tell me to ask my agent in Telegram: "show my last 3 emails".
+
+Never show tokens or keys in the chat. Don't open any ports.</div><button class="btn-copy" onclick="copyBlock('prompt-oc',this)">📋 Copy prompt</button></div>
+    <div class="note note--info"><span class="note__icon">💡</span><div><strong>The agent may go quiet for a minute.</strong> OpenClaw saves and tests MCP servers only while the Gateway is stopped, so Claude Code stops it and starts it again. Drive is in the list on purpose: the nightly server backup uploads to it.</div></div>
+    <div class="item" data-key="oc-probe"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The check shows GoogleWorkspace connected with a list of tools</div></div></div>
+    <div class="item" data-key="oc-test"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The agent shows your last 3 emails in Telegram</div></div></div>
+  </div>
+</div>
+
+<!-- 05 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">05</div><div class="section__title">Disconnect or switch accounts</div></div>
+  <div class="section__card">
+    <div class="info-block">Signed in with the wrong account, or want to remove access? The access lives in four places. Close all four.</div>
+    <table class="data-table">
+      <tr><th>Where</th><th>What to do</th></tr>
+      <tr><td><strong>1. Claude Code</strong></td><td>Remove the server and delete the sign-in files on your computer</td></tr>
+      <tr><td><strong>2. OpenClaw</strong></td><td>Remove the server from the agent and delete the sign-in files on the server</td></tr>
+      <tr><td><strong>3. Your Google account</strong></td><td>Remove the app’s access, so old sign-ins stop working everywhere</td></tr>
+      <tr><td><strong>4. Google Cloud</strong></td><td>Delete the client or the whole project. Only if you won’t connect again</td></tr>
+    </table>
+    <div class="info-block">Places 1 and 2 are covered by one prompt.</div>
+    <div class="code-block"><span class="code-block__label">Prompt D · disconnect</span><div class="code-block__scroll" id="prompt-off">Disconnect Google Workspace MCP from Claude Code on this computer and from my OpenClaw agent on my server. For OpenClaw use the openclaw-docs skill; don't invent commands. Show me the plan first and wait for my OK. Never print the contents of token or key files.
+
+On this computer:
+1. Remove the server: claude mcp remove google-workspace -s user. Confirm with claude mcp list.
+2. Delete the sign-in files in ~/.google_workspace_mcp/credentials (Windows: %USERPROFILE%\.google_workspace_mcp\credentials). Keep client_secret.json unless I ask for a full cleanup.
+
+On the server (ssh):
+3. OpenClaw changes MCP servers only while the Gateway is stopped: run openclaw gateway stop, then openclaw mcp unset GoogleWorkspace, then openclaw gateway start.
+4. Delete /root/.google_workspace_mcp/credentials. For a full cleanup also delete /root/.google_workspace_mcp/client_secret.json and /root/.local/share/google_workspace_mcp.
+5. Check: openclaw mcp list no longer shows GoogleWorkspace, openclaw gateway status is healthy, and my agent still answers in Telegram.
+
+If my nightly backup uploads to Google Drive with this sign-in, warn me: it will stop working until I connect Google again.
+
+At the end remind me to remove the app's access at https://myaccount.google.com/permissions.</div><button class="btn-copy" onclick="copyBlock('prompt-off',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="off-tools"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code and OpenClaw no longer list Google tools</div></div></div>
+    <div class="item" data-key="off-google"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">App access removed in your Google account</div><div class="item__hint">Open <a class="lnk" href="https://myaccount.google.com/permissions" target="_blank">myaccount.google.com/permissions</a>, find your app name, remove all access. Do it in the account that was connected by mistake.</div></div></div>
+    <div class="item" data-key="off-console"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Optional: client or project deleted in Google Cloud</div><div class="item__hint">Google Auth Platform → Clients → delete. Or IAM &amp; Admin → Settings → Shut down for the whole project. Skip this if you plan to connect again.</div></div></div>
+    <div class="note note--green"><span class="note__icon">🔄</span><div><strong>Switching to another account.</strong> Run prompt D, remove access in the wrong account, then in Claude Code ask “show my last 3 emails” and sign in with the right account. After that run prompt C again with the new Gmail. If the app is still in Testing, add the new Gmail to Test users first.</div></div>
+  </div>
+</div>
+
+<!-- 06 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">06</div><div class="section__title">Safety</div></div>
+  <div class="section__card">
+    <div class="info-block"><strong>The sign-in files open your mail.</strong> Anyone who has client_secret.json and the credentials folder can read your Gmail. Never put them in a chat, in GitHub or in a screenshot.</div>
+    <div class="info-block"><strong>An agent with mail is the “lethal trifecta”.</strong> It reads your private data, reads emails from strangers and can send messages out. One email with hidden instructions is enough to trick it. That’s why the agent sends, forwards and deletes only after your “OK”.</div>
+    <div class="note note--info"><span class="note__icon">🛡</span><div>More on this in the Russian handout <a class="lnk" href="https://stavzzz.github.io/open-sites/ai-agents-security/" target="_blank">AI agent security</a>.</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer__done" id="doneBlock"><div class="footer__done-emoji">✅</div><div class="footer__done-text">Google is connected!</div><div class="footer__done-sub">Claude Code and your agent both work with your mail and calendar.</div></div>
+  <div class="footer__final"><div class="footer__final-emoji">🔑</div><div class="footer__final-text">One key, two tools, your “OK”</div><div class="footer__final-sub">The key stays outside your projects, the sign-in stays out of chats, and anything the agent sends goes through you.</div></div>
+  <div class="footer__contact">Questions? Message <a href="https://t.me/stavzzz" target="_blank" class="tg">@stavzzz</a> on Telegram</div>
+  <button class="btn-reset" onclick="resetProgress()">Reset progress</button>
+</div>
+
+</div>
+<script>
+const C=document.getElementById('confetti-canvas'),ctx=C.getContext('2d');
+let particles=[],confettiActive=false;
+function resizeCanvas(){C.width=window.innerWidth;C.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+const COLORS=['#7c5bf5','#9d7cff','#34d399','#6ee7b7','#fbbf24','#f87171','#fb7185','#38bdf8','#a78bfa','#4ade80'];
+function rand(a,b){return Math.random()*(b-a)+a;}
+function createBurst(x,y,count){for(let i=0;i<count;i++){const angle=rand(0,Math.PI*2),speed=rand(4,14),size=rand(4,10);particles.push({x,y,vx:Math.cos(angle)*speed+rand(-2,2),vy:Math.sin(angle)*speed*-0.8-rand(2,6),size,color:COLORS[Math.floor(Math.random()*COLORS.length)],rotation:rand(0,Math.PI*2),rotSpeed:rand(-0.2,0.2),gravity:rand(0.12,0.25),friction:rand(0.97,0.995),opacity:1,fadeSpeed:rand(0.005,0.015),shape:Math.random()>0.4?'rect':'circle'});}}
+function launchConfetti(){if(confettiActive)return;confettiActive=true;particles=[];const W=C.width,H=C.height;[[W*.5,H*.3,120],[W*.15,H*.2,80],[W*.85,H*.2,80],[W*.5,H*.1,100],[W*.3,H*.5,60],[W*.7,H*.5,60]].forEach(([x,y,c],i)=>{setTimeout(()=>createBurst(x,y,c),i*150)});animate();setTimeout(()=>{confettiActive=false},6000);}
+function animate(){ctx.clearRect(0,0,C.width,C.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.vx*=p.friction;p.vy*=p.friction;p.vy+=p.gravity;p.x+=p.vx;p.y+=p.vy;p.rotation+=p.rotSpeed;p.opacity-=p.fadeSpeed;if(p.opacity<=0){particles.splice(i,1);continue}ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation);ctx.globalAlpha=p.opacity;ctx.fillStyle=p.color;if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2)}else{ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill()}ctx.restore();}if(particles.length>0||confettiActive){requestAnimationFrame(animate)}else{ctx.clearRect(0,0,C.width,C.height);}}
+function copyBlock(id,btn){const text=document.getElementById(id).textContent;navigator.clipboard.writeText(text).then(()=>{const orig=btn.innerHTML;btn.classList.add('copied');btn.innerHTML='✅ Copied!';setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);});}
+const STORAGE_KEY='google_workspace_mcp_v1';
+const items=document.querySelectorAll('.item[data-key]');
+const totalCount=items.length;let wasComplete=false;
+function loadState(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');let c=0;items.forEach(it=>{const cb=it.querySelector('input');if(s[it.dataset.key]){cb.checked=true;it.classList.add('checked');c++}});wasComplete=c===totalCount}catch(e){}updateProgress(false);}
+function saveState(){const s={};items.forEach(it=>{s[it.dataset.key]=it.querySelector('input').checked});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s))}catch(e){}}
+function updateProgress(cc=true){let c=0;items.forEach(it=>{if(it.querySelector('input').checked)c++});document.getElementById('progressCount').textContent=c+' / '+totalCount;document.getElementById('progressFill').style.width=(totalCount>0?(c/totalCount)*100:0)+'%';const d=document.getElementById('doneBlock');if(c===totalCount&&totalCount>0){d.classList.add('visible');if(cc&&!wasComplete)launchConfetti();wasComplete=true}else{d.classList.remove('visible');wasComplete=false;}}
+items.forEach(it=>{const cb=it.querySelector('input');it.addEventListener('click',function(e){if(e.target.closest('a')||e.target.closest('.btn-copy'))return;if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});cb.addEventListener('change',function(){it.classList.toggle('checked',this.checked);saveState();updateProgress(true);});});
+function resetProgress(){if(!confirm('Reset all progress?'))return;items.forEach(it=>{it.querySelector('input').checked=false;it.classList.remove('checked')});wasComplete=false;saveState();updateProgress(false);}
+loadState();
+</script><script>
+// Плавное появление блоков по мере скролла. Класс вешает сам скрипт:
+// если JS отключён, страница обычная — прятать контент стилями нельзя.
+// Проверяем положение блока, а не события пересечения: при прыжке в конец
+// страницы (Cmd+End, ссылка-якорь) наблюдатель пропускал бы блоки, и они
+// остались бы невидимыми.
+(function(){
+  var sel='.section,.module,.event,.stage,.card,.footer';
+  var els=Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+    if(el.parentElement && el.parentElement.closest('.reveal')) return false;  // вложенные не прячем дважды
+    if(getComputedStyle(el).position!=='static') return false;                 // липкий прогресс-бар не трогаем
+    el.classList.add('reveal'); return true;
+  });
+  if(!els.length) return;
+  var ticking=false;
+  function sweep(){
+    ticking=false;
+    var edge=window.innerHeight-60;
+    for(var i=els.length-1;i>=0;i--){
+      if(els[i].getBoundingClientRect().top<edge){ els[i].classList.add('is-in'); els.splice(i,1); }
+    }
+    if(!els.length){ window.removeEventListener('scroll',onMove); window.removeEventListener('resize',onMove); }
+  }
+  function onMove(){ if(!ticking){ ticking=true; requestAnimationFrame(sweep); } }
+  window.addEventListener('scroll',onMove,{passive:true});
+  window.addEventListener('resize',onMove);
+  requestAnimationFrame(sweep);   // первый экран проявляется тоже плавно
+})();
+</script>
+</body>
+</html>
