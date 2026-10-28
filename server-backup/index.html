@@ -148,7 +148,7 @@
   <ul class="header__topics">
     <li>A nightly encrypted copy of your whole server</li>
     <li>Three places to keep it: Google Drive, your computer, a portable disk</li>
-    <li>Moving to a new server from any of these copies</li>
+    <li>Moving to a new server: SSH key first, then the restore and a full check</li>
     <li>Ready prompts for Claude Code</li>
   </ul>
   <div class="header__time">⏳ About 1.5 hours with the restore test</div>
@@ -247,7 +247,7 @@
       <tr><td><strong>Google Password Manager</strong></td><td>Your main copy, protected by two-step sign-in</td></tr>
       <tr><td><strong>Outside Google</strong></td><td>On paper at home. If you lose the Google account, the copies on your computer and disk still open</td></tr>
     </table>
-    <div class="item" data-key="pp-gpm"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Passphrase saved in Google Password Manager</div><div class="item__hint">Open <a class="lnk" href="https://passwords.google.com/" target="_blank">passwords.google.com</a> → Add. Site: server-backup. Check that two-step sign-in is on in your Google account.</div></div></div>
+    <div class="item" data-key="pp-gpm"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Passphrase saved in Google Password Manager</div><div class="item__hint">Open <a class="lnk" href="https://passwords.google.com/" target="_blank">passwords.google.com</a> → Add. Site: server-backup. Check that <a class="lnk" href="https://myaccount.google.com/signinoptions/twosv" target="_blank">two-step sign-in</a> is on in your Google account.</div></div></div>
     <div class="item" data-key="pp-paper"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Second copy written down outside Google</div></div></div>
     <div class="note note--alert"><span class="note__icon">🚨</span><div><strong>Lose the passphrase and you lose every backup.</strong> Nobody can open the archives without it, not even Claude.</div></div>
   </div>
@@ -257,7 +257,7 @@
 <div class="section">
   <div class="section__header"><div class="section__num">03</div><div class="section__title">Copy 1: Google Drive every night</div></div>
   <div class="section__card">
-    <div class="info-block">You need Google Workspace MCP on the server first: the backup uploads with the same Google sign-in. See the handout <a class="lnk" href="https://stavzzz.github.io/open-sites/google-workspace-mcp/" target="_blank">Google Workspace MCP</a>. Claude Code works in three passes: looks around, shows a plan and waits for your OK, then installs.</div>
+    <div class="info-block">You need Google Workspace MCP on the server first: the backup uploads with the same Google sign-in. See the handout <a class="lnk" href="https://stavzzz.github.io/open-sites/google-workspace-mcp/" target="_blank">Google Workspace MCP</a>. You will also need your Telegram ID: send any message to <a class="lnk" href="https://t.me/userinfobot" target="_blank">@userinfobot</a>. Claude Code works in three passes: looks around, shows a plan and waits for your OK, then installs.</div>
     <div class="code-block"><span class="code-block__label">Prompt A · nightly backup to Google Drive</span><div class="code-block__scroll" id="prompt-drive">Set up a nightly encrypted backup of my whole server to my Google Drive. Work in three passes: look around, show me a plan and wait for my OK, then install. Delete or overwrite nothing without my "yes". For anything about OpenClaw use the openclaw-docs skill. Never print secrets in the chat.
 
 Goal: every night the server dumps the databases, packs everything, encrypts it, uploads it to Google Drive, keeps the last 7 archives and messages me in Telegram. If a step fails, the message says which one.
@@ -279,7 +279,7 @@ Goal: every night the server dumps the databases, packs everything, encrypts it,
 Before editing any config file, copy it with a date. No destructive commands.
 
 At the end report: script path, schedule, archive size, run time, and what the restore test proved.</div><button class="btn-copy" onclick="copyBlock('prompt-drive',this)">📋 Copy prompt</button></div>
-    <div class="item" data-key="dr-run"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">First run by hand passed, the archive is on Drive</div></div></div>
+    <div class="item" data-key="dr-run"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">First run by hand passed, the archive is on Drive</div><div class="item__hint">Look for it in <a class="lnk" href="https://drive.google.com/drive/recent" target="_blank">Google Drive → Recent</a>. Uploads go through <a class="lnk" href="https://rclone.org/drive/" target="_blank">rclone</a>.</div></div></div>
     <div class="item" data-key="dr-restore"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Restore test passed, RESTORE.md is written</div></div></div>
     <div class="item" data-key="dr-night"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The next morning a Telegram report arrived</div></div></div>
   </div>
@@ -289,7 +289,7 @@ At the end report: script path, schedule, archive size, run time, and what the r
 <div class="section">
   <div class="section__header"><div class="section__num">04</div><div class="section__title">Copy 2: your computer every day</div></div>
   <div class="section__card">
-    <div class="info-block">Your computer picks up the fresh archive by itself once a day. Run this prompt in Claude Code on the computer that will keep the copies.</div>
+    <div class="info-block">Your computer picks up the fresh archive by itself once a day. Run this prompt in Claude Code on the computer that will keep the copies. On a Mac the schedule is set with launchd, on Windows with <a class="lnk" href="https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-start-page" target="_blank">Task Scheduler</a>.</div>
     <div class="code-block"><span class="code-block__label">Prompt B · daily copy to this computer</span><div class="code-block__scroll" id="prompt-pc">Set up a daily copy of my server backups to this computer. Show me the plan first and wait for my OK. Never print secrets in the chat. Delete nothing outside the backup folder.
 
 My server already makes a nightly encrypted backup (a .gpg archive) and uploads it to Google Drive.
@@ -332,32 +332,90 @@ The archives are encrypted. Don't try to open them and don't ask for the passphr
 
 <!-- 06 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">06</div><div class="section__title">Restore or move to a new server</div></div>
+  <div class="section__header"><div class="section__num">06</div><div class="section__title">Connect Claude Code to the new server</div></div>
   <div class="section__card">
-    <div class="info-block">The same steps work when the old server died and when you simply move to another provider. Rent a new server with <strong>Ubuntu 24.04</strong> and your SSH key, then run the prompt.</div>
-    <div class="code-block"><span class="code-block__label">Prompt D · restore on a new server</span><div class="code-block__scroll" id="prompt-restore">Restore my server from an encrypted backup onto a NEW server. For anything about OpenClaw use the openclaw-docs skill; don't invent commands. Before each step that changes something, tell me what you will do. Never print secrets in the chat.
+    <div class="info-block">Rent a new server with <strong>Ubuntu 24.04</strong>, for example on <a class="lnk" href="https://www.netcup.com/en" target="_blank">netcup</a>. The provider sends you its IP address and root password. Before any migration, Claude Code must reach the new server <strong>by SSH key only</strong>. The prompt below sets this up step by step. It is the same setup you did for your first server, now with the short name new-server.</div>
+    <div class="code-block"><span class="code-block__label">Prompt D · SSH key for the new server</span><div class="code-block__scroll" id="prompt-ssh">Hi! I just got a new server. Its IP address: &lt;IP of the new server&gt;
+Help me connect to it with an SSH key, without a password. The short name (alias) must be new-server.
 
-I will give you: the new server's IP, where the archive is (Google Drive, a file on this computer or a portable disk), and RESTORE.md if I have it.
+Give me a step-by-step plan and walk me through it, keeping in mind:
+- I may already have an SSH key from my first server; reuse it if it exists;
+- ~/.ssh/config may already exist: add to it, never overwrite it;
+- the connection must work here in Claude Code and from any terminal on my computer with one short command: ssh new-server.
 
-1. Connect to the new server with my SSH key. Check: Ubuntu 24.04, free disk space at least 3 times the archive size.
+The plan must cover:
+- Check whether I already have an SSH key in ~/.ssh/.
+- If not, generate a new ed25519 key and explain in plain words what the private key, the public key and the passphrase are.
+- Copy the public key to the server with ssh-copy-id, entering the root password once in my terminal. On Windows, where ssh-copy-id is missing, give me the equivalent command.
+- Add the alias to ~/.ssh/config: Host new-server, HostName, User root, IdentityFile.
+- Check that ssh new-server connects without a password, and that you can run ssh new-server hostname from here.
+- Basic hardening: turn off password login in /etc/ssh/sshd_config, with a second terminal kept open in case something goes wrong. Check the config with sshd -t before reloading.
+
+IMPORTANT:
+- Explain every step in simple words: what we do and why.
+- After each step wait for my confirmation before going on.
+- If I make a mistake, for example paste a command in the wrong place, correct it and explain what went wrong.
+- Never ask me to paste the root password or the private key into the chat. I type the password only in my terminal.</div><button class="btn-copy" onclick="copyBlock('prompt-ssh',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="ssh-alias"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">ssh new-server connects without a password</div><div class="item__hint">Check it in a normal terminal, not only in Claude Code.</div></div></div>
+    <div class="item" data-key="ssh-cc"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code runs commands on the new server</div><div class="item__hint">Ask it: “run ssh new-server hostname”. It must answer with the server name.</div></div></div>
+    <div class="item" data-key="ssh-hard"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Password login on the new server is turned off</div></div></div>
+    <div class="note note--warn"><span class="note__icon">⚠️</span><div><strong>Don’t start the migration before all three boxes are ticked.</strong> The restore prompt works only through ssh new-server.</div></div>
+  </div>
+</div>
+
+<!-- 07 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">07</div><div class="section__title">Restore or move to the new server</div></div>
+  <div class="section__card">
+    <div class="info-block">The same steps work when the old server died and when you simply move to another provider. Claude Code restores everything and finishes with a check table.</div>
+    <div class="code-block"><span class="code-block__label">Prompt E · restore on the new server</span><div class="code-block__scroll" id="prompt-restore">Restore my server from an encrypted backup onto a NEW server. For anything about OpenClaw use the openclaw-docs skill; don't invent commands. Before each step that changes something, tell me what you will do. Never print secrets in the chat.
+
+The new server is reachable with: ssh new-server (key login is already set up). If it asks for a password, stop and tell me.
+I will tell you where the archive is (Google Drive, a file on this computer or a portable disk) and give you RESTORE.md if I have it.
+
+1. Connect with ssh new-server. Check: Ubuntu 24.04, free disk space at least 3 times the archive size.
 2. Put the archive on the new server: upload it from this computer with scp, or download it from Google Drive with rclone. Compare the size with the original.
-3. Ask me to create /root/.backup-passphrase on the new server myself: I open a terminal, ssh in and paste the passphrase from Google Password Manager. Mode 600. You never see it.
+3. Ask me to create /root/.backup-passphrase on the new server myself: I open a terminal, run ssh new-server and paste the passphrase from Google Password Manager. Mode 600. You never see it.
 4. Decrypt with gpg and unpack into /root/restore, not over the system.
-5. Read the manifest: OpenClaw version, plugin list, Node version, Docker containers. Install the same OpenClaw version, Node and Docker if it was there.
+5. Read the manifest: OpenClaw version, plugin list, Node version, Docker containers. Install the same OpenClaw version, Node, and Docker if it was there.
 6. Return files to their places: ~/.openclaw, project folders, .env files, ~/.google_workspace_mcp, systemd units. For every SQLite database use its hot copy from the dumps, not the raw file. Restore Postgres or MySQL dumps if present. Before overwriting any file, save a dated copy.
-7. SSH and firewall settings go last: check the config with sshd -t and make sure my key login still works before reloading.
+7. SSH and firewall settings go last: check the config with sshd -t and make sure ssh new-server still works before reloading.
 8. Reinstall the OpenClaw plugins from the manifest list.
 9. Make sure the Gateway on the old server is stopped: two servers with the same Telegram bot fight over messages.
-10. Run openclaw doctor, start the Gateway, then check openclaw gateway status, openclaw health and openclaw mcp doctor --probe.
+10. Run openclaw doctor and start the Gateway.
 11. Turn the nightly backup back on for this server: timer, watchdog, Telegram report.
-12. Report: what was restored, what failed, what I should check by hand.
+12. Final check. Show me a table "check / result / proof", one row each:
+   a. OpenClaw version equals the manifest; openclaw doctor has no errors; openclaw gateway status and openclaw health are OK.
+   b. openclaw models status: the ChatGPT sign-in is usable.
+   c. openclaw mcp doctor --probe: every MCP server from the old server connects, GoogleWorkspace included.
+   d. openclaw automations list: the same scheduled jobs as before, with next run times.
+   e. Every bot and project from the manifest runs: systemctl --failed is empty, Docker containers are up.
+   f. Databases: row counts match the dumps; every SQLite file passes integrity_check.
+   g. .env files and token files are in place with mode 600.
+   h. Security: firewall on with the same rules as before, SSH password login off, Gateway listens only on 127.0.0.1, no new open ports.
+   i. The time zone matches the old server.
+   j. Nightly backup: the timer is in systemctl list-timers, one manual run uploaded, the Telegram report arrived.
+13. Tell me what to check by hand in Telegram, and what failed or needs my decision.
 
 If I think the old server was hacked, after the restore help me change the Telegram bot token in @BotFather, the Gateway token and other keys, following the docs.</div><button class="btn-copy" onclick="copyBlock('prompt-restore',this)">📋 Copy prompt</button></div>
     <div class="item" data-key="rs-open"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The passphrase opened the archive</div></div></div>
-    <div class="item" data-key="rs-agent"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The agent answers in Telegram and remembers past conversations</div></div></div>
-    <div class="item" data-key="rs-google"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Google tools and your bots work on the new server</div><div class="item__hint">Ask the agent “show my last 3 emails” and send each bot one test message.</div></div></div>
-    <div class="item" data-key="rs-backup"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The nightly backup runs on the new server</div></div></div>
-    <div class="item" data-key="rs-old"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The old server is deleted after a week of quiet work</div></div></div>
+    <div class="item" data-key="rs-table"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code showed the final check table with no failed rows</div></div></div>
+  </div>
+</div>
+
+<!-- 08 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">08</div><div class="section__title">Check after the migration</div></div>
+  <div class="section__card">
+    <div class="info-block">Tick each line only when you see it yourself. Claude Code has already checked the server in step 12 of prompt E, these are the checks that need your eyes.</div>
+    <div class="item" data-key="ck-agent"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The agent answers in Telegram and remembers older conversations</div><div class="item__hint">Ask it about something you discussed before the move.</div></div></div>
+    <div class="item" data-key="ck-gpt"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The agent uses your ChatGPT subscription</div><div class="item__hint">Send /status in the chat with the agent: it shows the model and the account.</div></div></div>
+    <div class="item" data-key="ck-google"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Google works on the new server</div><div class="item__hint">Ask the agent “show my last 3 emails”.</div></div></div>
+    <div class="item" data-key="ck-jobs"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Scheduled jobs are in place</div><div class="item__hint">Reminders, digests and the update alert arrive at their usual time the next day.</div></div></div>
+    <div class="item" data-key="ck-bots"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Every bot answers a test message</div></div></div>
+    <div class="item" data-key="ck-backup"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The next morning the backup report arrived from the new server</div></div></div>
+    <div class="item" data-key="ck-alias"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The alias my-server points to the new server</div><div class="item__hint">Ask Claude Code to change HostName for my-server in ~/.ssh/config to the new IP. Then your old prompts with ssh my-server keep working.</div></div></div>
+    <div class="item" data-key="ck-old"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The old server is deleted after a week of quiet work</div><div class="item__hint">Until then its Gateway stays stopped.</div></div></div>
     <div class="note note--green"><span class="note__icon">📅</span><div><strong>Once a month</strong> ask Claude Code to restore last night’s archive into a test folder on the server and compare it with the live data. That’s how you know the backup still works.</div></div>
   </div>
 </div>
