@@ -147,11 +147,11 @@
   <h1 class="header__title">Google Workspace MCP: <span>connect and disconnect</span></h1>
   <ul class="header__topics">
     <li>One Google key for Claude Code on your computer and your OpenClaw agent on the server</li>
-    <li>Publishing the app so the sign-in doesn’t expire every 7 days</li>
+    <li>Three free pages on GitHub and publishing the app, so the sign-in doesn’t expire every 7 days</li>
     <li>How to disconnect fully or switch to another Google account</li>
     <li>Ready prompts: copy, paste into Claude Code, follow</li>
   </ul>
-  <div class="header__time">⏳ About 45 minutes</div>
+  <div class="header__time">⏳ About 1 hour</div>
 </div>
 
 <div class="progress-wrap">
@@ -169,12 +169,13 @@
     <div class="info-block">Google Workspace MCP gives an AI tool access to your Gmail, Calendar, Drive, Docs and Sheets. You create <strong>one key</strong> in Google Cloud, sign in once on your computer, and then copy that sign-in to the server. The server has no browser, so it can’t sign in by itself.</div>
     <table class="data-table">
       <tr><th>Step</th><th>Where</th></tr>
-      <tr><td><strong>1. Key</strong></td><td>Google Cloud Console, once</td></tr>
-      <tr><td><strong>2. Publish the app</strong></td><td>Google Auth Platform, once</td></tr>
-      <tr><td><strong>3. Claude Code</strong></td><td>Your computer, prompt 1</td></tr>
-      <tr><td><strong>4. OpenClaw</strong></td><td>Your server, prompt 2</td></tr>
+      <tr><td><strong>1. Key</strong></td><td>Google Cloud Console</td></tr>
+      <tr><td><strong>2. Three pages</strong></td><td>GitHub, free</td></tr>
+      <tr><td><strong>3. Branding and publishing</strong></td><td>Google Auth Platform</td></tr>
+      <tr><td><strong>4. Claude Code</strong></td><td>Your computer, prompt B</td></tr>
+      <tr><td><strong>5. OpenClaw</strong></td><td>Your server, prompt C</td></tr>
     </table>
-    <div class="note note--info"><span class="note__icon">💡</span><div>Do the steps in this order. Step 4 reuses the sign-in from step 3.</div></div>
+    <div class="note note--info"><span class="note__icon">💡</span><div>Do the steps in this order. Steps 1–3 are done once. Step 5 reuses the sign-in from step 4.</div></div>
   </div>
 </div>
 
@@ -182,21 +183,23 @@
 <div class="section">
   <div class="section__header"><div class="section__num">01</div><div class="section__title">Google Cloud: create the key</div></div>
   <div class="section__card">
-    <div class="info-block">Open <a class="lnk" href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a> with the Google account you want to connect.</div>
-    <div class="item" data-key="gc-project"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Create a new project</div><div class="item__hint">Any name, for example “my-assistant”.</div></div></div>
-    <div class="item" data-key="gc-apis"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Enable 10 APIs in APIs &amp; Services → Library</div><div class="item__hint">Gmail, Google Calendar, Google Drive, Google Docs, Google Sheets, Google Slides, Google Forms, Google Tasks, People, Apps Script. Search each name and press Enable.</div></div></div>
-    <div class="item" data-key="gc-auth"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Google Auth Platform → Get started → External</div><div class="item__hint">App name: anything. Support email and contact email: your Gmail.</div></div></div>
-    <div class="item" data-key="gc-testuser"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Audience → Test users → add your Gmail</div></div></div>
-    <div class="item" data-key="gc-client"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Clients → Create client → Desktop app → Download JSON</div><div class="item__hint">Rename the file to client_secret.json and keep it in its own folder outside your projects, for example ~/secrets/google.</div></div></div>
+    <div class="info-block">Sign in to Google with the account you want to connect, then open each link below in the same browser.</div>
+    <div class="item" data-key="gc-project"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Create a new project</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/projectcreate" target="_blank">Create a project</a>. Any name, for example “my-assistant”. Press Create and make sure the new project is selected at the top of the page.</div></div></div>
+    <div class="item" data-key="gc-apis"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Enable 10 APIs</div><div class="item__hint">Open each link and press Enable: <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=gmail.googleapis.com" target="_blank">Gmail</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=calendar-json.googleapis.com" target="_blank">Calendar</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=drive.googleapis.com" target="_blank">Drive</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=docs.googleapis.com" target="_blank">Docs</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=sheets.googleapis.com" target="_blank">Sheets</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=slides.googleapis.com" target="_blank">Slides</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=forms.googleapis.com" target="_blank">Forms</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=tasks.googleapis.com" target="_blank">Tasks</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=people.googleapis.com" target="_blank">People</a>, <a class="lnk" href="https://console.cloud.google.com/flows/enableapi?apiid=script.googleapis.com" target="_blank">Apps Script</a>.</div></div></div>
+    <div class="item" data-key="gc-script"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Turn on the Apps Script API for your account</div><div class="item__hint">One switch in <a class="lnk" href="https://script.google.com/home/usersettings" target="_blank">Apps Script settings</a>: Google Apps Script API → On.</div></div></div>
+    <div class="item" data-key="gc-auth"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Start Google Auth Platform</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/auth/overview" target="_blank">Google Auth Platform</a> and press Get started. App name: anything. User support email: your Gmail. Audience: External. Contact email: your Gmail.</div></div></div>
+    <div class="item" data-key="gc-testuser"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Add yourself as a test user</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/auth/audience" target="_blank">Audience</a> → Test users → Add users → your Gmail → Save.</div></div></div>
+    <div class="item" data-key="gc-client"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Create the key file</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/auth/clients" target="_blank">Clients</a> → Create client → Application type: Desktop app → Create → Download JSON. Rename the file to client_secret.json and keep it in its own folder outside your projects, for example Documents/google-mcp.</div></div></div>
     <div class="note note--warn"><span class="note__icon">⚠️</span><div><strong>This file is a key.</strong> Don’t send it in a chat, don’t put it in GitHub and don’t keep it inside a project folder.</div></div>
   </div>
 </div>
 
 <!-- 02 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">02</div><div class="section__title">Publish the app so the sign-in lasts</div></div>
+  <div class="section__header"><div class="section__num">02</div><div class="section__title">Three free pages on GitHub</div></div>
   <div class="section__card">
-    <div class="info-block">While the app is in <strong>Testing</strong>, Google ends your sign-in every 7 days and the agent loses your mail. In <strong>Production</strong> the sign-in stays. To publish, Google needs a home page, a privacy policy and terms. Claude Code makes all three for you on free GitHub Pages.</div>
+    <div class="info-block">Google now asks for a home page, a privacy policy and terms of service before it lets you publish the app. Until they are filled in Branding, the Publish app button stays grey. You can host all three pages for free on GitHub Pages. Your site address will be <strong>USER.github.io</strong>, where USER is your GitHub username.</div>
+    <div class="info-block"><strong>Way 1, quick:</strong> Claude Code makes the site for you. Your GitHub must be connected to Claude Code.</div>
     <div class="code-block"><span class="code-block__label">Prompt A · GitHub Pages for branding</span><div class="code-block__scroll" id="prompt-pages">Create my GitHub Pages site for Google OAuth branding. My GitHub is already connected to you (gh CLI or GitHub MCP).
 
 1. Find my GitHub username. Below it is USER. Ask me which email to show as the contact.
@@ -212,26 +215,75 @@
    Application privacy policy link: https://USER.github.io/privacy.html
    Application terms of service link: https://USER.github.io/terms.html
    Authorized domain: USER.github.io</div><button class="btn-copy" onclick="copyBlock('prompt-pages',this)">📋 Copy prompt</button></div>
-    <table class="data-table">
-      <tr><th>Branding field</th><th>What to enter</th></tr>
-      <tr><td><strong>App name</strong></td><td>Anything you like</td></tr>
-      <tr><td><strong>User support email</strong></td><td>Your Gmail</td></tr>
-      <tr><td><strong>App logo</strong></td><td>Leave empty</td></tr>
-      <tr><td><strong>Home page, privacy policy, terms</strong></td><td>The three links from the prompt</td></tr>
-      <tr><td><strong>Authorized domain</strong></td><td>USER.github.io, without https:// and without a slash at the end</td></tr>
-      <tr><td><strong>Developer contact</strong></td><td>Your Gmail</td></tr>
-    </table>
-    <div class="note note--warn"><span class="note__icon">🚫</span><div><strong>Don’t upload a logo.</strong> Google says it right on the page: once there’s a logo, the app must pass verification before it can leave Testing.</div></div>
-    <div class="note note--info"><span class="note__icon">💡</span><div><strong>“Your branding is not being shown” or “Branding verification issues”.</strong> Press Cancel. This only affects how the app name looks on the sign-in screen. Everything still works.</div></div>
-    <div class="item" data-key="br-pages"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Three pages open and Branding is saved</div></div></div>
-    <div class="item" data-key="br-publish"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Audience → Publish app → status “In production”</div><div class="item__hint">“0 users / 100 user cap” is normal.</div></div></div>
-    <div class="item" data-key="br-relogin"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Signed in to Google again after publishing</div><div class="item__hint">Only if you signed in while the app was in Testing: that old sign-in still dies after 7 days. Use prompt D in section 05, then sign in and copy the new sign-in to the server.</div></div></div>
+    <div class="info-block"><strong>Way 2, by hand in the browser:</strong> about 10 minutes.</div>
+    <div class="item" data-key="gh-login"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Sign in to GitHub and find your username</div><div class="item__hint">Open <a class="lnk" href="https://github.com/" target="_blank">github.com</a>. Your username is shown when you click your avatar in the top right corner. Below it is USER.</div></div></div>
+    <div class="item" data-key="gh-repo"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Create the repository USER.github.io</div><div class="item__hint">Open <a class="lnk" href="https://github.com/new" target="_blank">New repository</a>. Repository name: exactly USER.github.io, for example anna-smith.github.io. Choose Public, tick Add a README, press Create repository.</div></div></div>
+    <div class="item" data-key="gh-files"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Add three files</div><div class="item__hint">In the new repository press Add file → Create new file. Name: index.html. Paste the template below and replace YOUR-EMAIL. Press Commit changes. Do the same for privacy.html and terms.html.</div></div></div>
+    <div class="code-block"><span class="code-block__label">Template · index.html</span><div class="code-block__scroll" id="tpl-index">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;My Assistant&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;My Assistant&lt;/h1&gt;
+&lt;p&gt;A personal assistant app that connects my own Google account to my AI tools. It is not a commercial service.&lt;/p&gt;
+&lt;p&gt;&lt;a href="privacy.html"&gt;Privacy policy&lt;/a&gt; | &lt;a href="terms.html"&gt;Terms of service&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Contact: YOUR-EMAIL&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div><button class="btn-copy" onclick="copyBlock('tpl-index',this)">📋 Copy</button></div>
+    <div class="code-block"><span class="code-block__label">Template · privacy.html</span><div class="code-block__scroll" id="tpl-privacy">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;Privacy policy&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Privacy policy&lt;/h1&gt;
+&lt;p&gt;My Assistant accesses only my own Google data, and only at my request.&lt;/p&gt;
+&lt;p&gt;The data is processed by the AI tools I use, such as Anthropic Claude, on my behalf.&lt;/p&gt;
+&lt;p&gt;Nothing is sold or shared with third parties.&lt;/p&gt;
+&lt;p&gt;Contact: YOUR-EMAIL&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div><button class="btn-copy" onclick="copyBlock('tpl-privacy',this)">📋 Copy</button></div>
+    <div class="code-block"><span class="code-block__label">Template · terms.html</span><div class="code-block__scroll" id="tpl-terms">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;Terms of service&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Terms of service&lt;/h1&gt;
+&lt;p&gt;My Assistant is for personal, non-commercial use only.&lt;/p&gt;
+&lt;p&gt;It is provided as is, without any warranty.&lt;/p&gt;
+&lt;p&gt;Contact: YOUR-EMAIL&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div><button class="btn-copy" onclick="copyBlock('tpl-terms',this)">📋 Copy</button></div>
+    <div class="item" data-key="gh-pages"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Check that GitHub Pages is on</div><div class="item__hint">In the repository open Settings → Pages. Source: Deploy from a branch. Branch: main, folder / (root). Press Save if you changed anything.</div></div></div>
+    <div class="item" data-key="gh-check"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Open the three pages</div><div class="item__hint">Wait 1–10 minutes, then open https://USER.github.io/, https://USER.github.io/privacy.html and https://USER.github.io/terms.html. All three must open. Progress is visible in the Actions tab of the repository.</div></div></div>
+    <div class="note note--info"><span class="note__icon">💡</span><div>Use the same app name on the home page and in Branding. In the templates it is “My Assistant”.</div></div>
   </div>
 </div>
 
 <!-- 03 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">03</div><div class="section__title">Connect to Claude Code</div></div>
+  <div class="section__header"><div class="section__num">03</div><div class="section__title">Branding and publishing</div></div>
+  <div class="section__card">
+    <div class="info-block">While the app is in <strong>Testing</strong>, Google ends your sign-in every 7 days and the agent loses your mail. In <strong>Production</strong> the sign-in stays.</div>
+    <div class="item" data-key="br-fill"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Fill in Branding and press Save</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/auth/branding" target="_blank">Branding</a> and fill in the fields from the table.</div></div></div>
+    <table class="data-table">
+      <tr><th>Branding field</th><th>What to enter</th></tr>
+      <tr><td><strong>App name</strong></td><td>The name from your home page, for example My Assistant</td></tr>
+      <tr><td><strong>User support email</strong></td><td>Your Gmail</td></tr>
+      <tr><td><strong>App logo</strong></td><td>Leave empty</td></tr>
+      <tr><td><strong>Application home page</strong></td><td>https://USER.github.io/</td></tr>
+      <tr><td><strong>Application privacy policy link</strong></td><td>https://USER.github.io/privacy.html</td></tr>
+      <tr><td><strong>Application terms of service link</strong></td><td>https://USER.github.io/terms.html</td></tr>
+      <tr><td><strong>Authorized domains</strong></td><td>Add domain → USER.github.io, without https:// and without a slash at the end</td></tr>
+      <tr><td><strong>Developer contact information</strong></td><td>Your Gmail</td></tr>
+    </table>
+    <div class="note note--warn"><span class="note__icon">🚫</span><div><strong>Don’t upload a logo.</strong> Google says it right on the page: once there’s a logo, the app must pass verification before it can leave Testing.</div></div>
+    <div class="note note--info"><span class="note__icon">💡</span><div><strong>“Your branding is not being shown” or “Branding verification issues”.</strong> Press Cancel. This only affects how the app name looks on the sign-in screen. Everything still works.</div></div>
+    <div class="item" data-key="br-publish"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Publish the app</div><div class="item__hint">Open <a class="lnk" href="https://console.cloud.google.com/auth/audience" target="_blank">Audience</a> → Publish app → Confirm. The status changes to “In production”. “0 users / 100 user cap” is normal.</div></div></div>
+    <div class="item" data-key="br-relogin"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Sign in to Google again</div><div class="item__hint">Only if you already signed in while the app was in Testing: that old sign-in still ends after 7 days. Ask Claude Code: “Delete my Google sign-in in ~/.google_workspace_mcp/credentials and sign me in again.” Then run prompt C once more to copy the new sign-in to the server.</div></div></div>
+    <div class="note note--green"><span class="note__icon">✅</span><div>The screen “Google hasn’t verified this app” stays after publishing. That is normal for a personal app: Google’s verification is only for services with outside users.</div></div>
+  </div>
+</div>
+
+<!-- 04 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">04</div><div class="section__title">Connect to Claude Code</div></div>
   <div class="section__card">
     <div class="info-block">Paste the prompt into Claude Code on your computer. Replace the text in angle brackets with your path to client_secret.json.</div>
     <div class="code-block"><span class="code-block__label">Prompt B · Claude Code</span><div class="code-block__scroll" id="prompt-cc">Connect Google Workspace MCP to Claude Code globally (user scope), so it works in every session.
@@ -255,9 +307,9 @@ Then tell me to restart Claude Code and ask "show my last 3 emails" to sign in w
   </div>
 </div>
 
-<!-- 04 -->
+<!-- 05 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">04</div><div class="section__title">Connect to OpenClaw on the server</div></div>
+  <div class="section__header"><div class="section__num">05</div><div class="section__title">Connect to OpenClaw on the server</div></div>
   <div class="section__card">
     <div class="info-block">This prompt copies your key and sign-in from the computer to the server and adds Google to your main agent. Replace &lt;my Gmail&gt; in two places.</div>
     <div class="code-block"><span class="code-block__label">Prompt C · OpenClaw on the server</span><div class="code-block__scroll" id="prompt-oc">Connect Google Workspace MCP to my OpenClaw main agent on my server. Use the openclaw-docs skill; don't invent commands or flags.
@@ -279,9 +331,9 @@ Never show tokens or keys in the chat. Don't open any ports.</div><button class=
   </div>
 </div>
 
-<!-- 05 -->
+<!-- 06 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">05</div><div class="section__title">Disconnect or switch accounts</div></div>
+  <div class="section__header"><div class="section__num">06</div><div class="section__title">Disconnect or switch accounts</div></div>
   <div class="section__card">
     <div class="info-block">Signed in with the wrong account, or want to remove access? The access lives in four places. Close all four.</div>
     <table class="data-table">
@@ -289,7 +341,7 @@ Never show tokens or keys in the chat. Don't open any ports.</div><button class=
       <tr><td><strong>1. Claude Code</strong></td><td>Remove the server and delete the sign-in files on your computer</td></tr>
       <tr><td><strong>2. OpenClaw</strong></td><td>Remove the server from the agent and delete the sign-in files on the server</td></tr>
       <tr><td><strong>3. Your Google account</strong></td><td>Remove the app’s access, so old sign-ins stop working everywhere</td></tr>
-      <tr><td><strong>4. Google Cloud</strong></td><td>Delete the client or the whole project. Only if you won’t connect again</td></tr>
+      <tr><td><strong>4. Google Cloud</strong></td><td>Delete the key or the whole project. Only if you won’t connect again</td></tr>
     </table>
     <div class="info-block">Places 1 and 2 are covered by one prompt.</div>
     <div class="code-block"><span class="code-block__label">Prompt D · disconnect</span><div class="code-block__scroll" id="prompt-off">Disconnect Google Workspace MCP from Claude Code on this computer and from my OpenClaw agent on my server. For OpenClaw use the openclaw-docs skill; don't invent commands. Show me the plan first and wait for my OK. Never print the contents of token or key files.
@@ -308,14 +360,14 @@ If my nightly backup uploads to Google Drive with this sign-in, warn me: it will
 At the end remind me to remove the app's access at https://myaccount.google.com/permissions.</div><button class="btn-copy" onclick="copyBlock('prompt-off',this)">📋 Copy prompt</button></div>
     <div class="item" data-key="off-tools"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code and OpenClaw no longer list Google tools</div></div></div>
     <div class="item" data-key="off-google"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">App access removed in your Google account</div><div class="item__hint">Open <a class="lnk" href="https://myaccount.google.com/permissions" target="_blank">myaccount.google.com/permissions</a>, find your app name, remove all access. Do it in the account that was connected by mistake.</div></div></div>
-    <div class="item" data-key="off-console"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Optional: client or project deleted in Google Cloud</div><div class="item__hint">Google Auth Platform → Clients → delete. Or IAM &amp; Admin → Settings → Shut down for the whole project. Skip this if you plan to connect again.</div></div></div>
-    <div class="note note--green"><span class="note__icon">🔄</span><div><strong>Switching to another account.</strong> Run prompt D, remove access in the wrong account, then in Claude Code ask “show my last 3 emails” and sign in with the right account. After that run prompt C again with the new Gmail. If the app is still in Testing, add the new Gmail to Test users first.</div></div>
+    <div class="item" data-key="off-console"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Optional: client or project deleted in Google Cloud</div><div class="item__hint">Only the key: open <a class="lnk" href="https://console.cloud.google.com/auth/clients" target="_blank">Clients</a>, click your client → Delete. The whole project: open <a class="lnk" href="https://console.cloud.google.com/iam-admin/settings" target="_blank">Project settings</a> → Shut down, type the project ID → Shut down. Google deletes it for good after 30 days. Skip this if you plan to connect again.</div></div></div>
+    <div class="note note--green"><span class="note__icon">🔄</span><div><strong>Switching to another account.</strong> Run prompt D, remove access in the wrong account, then in Claude Code ask “show my last 3 emails” and sign in with the right account. After that run prompt C again with the new Gmail. If the app is still in Testing, first add the new Gmail in <a class="lnk" href="https://console.cloud.google.com/auth/audience" target="_blank">Audience</a> → Test users.</div></div>
   </div>
 </div>
 
-<!-- 06 -->
+<!-- 07 -->
 <div class="section">
-  <div class="section__header"><div class="section__num">06</div><div class="section__title">Safety</div></div>
+  <div class="section__header"><div class="section__num">07</div><div class="section__title">Safety</div></div>
   <div class="section__card">
     <div class="info-block"><strong>The sign-in files open your mail.</strong> Anyone who has client_secret.json and the credentials folder can read your Gmail. Never put them in a chat, in GitHub or in a screenshot.</div>
     <div class="info-block"><strong>An agent with mail is the “lethal trifecta”.</strong> It reads your private data, reads emails from strangers and can send messages out. One email with hidden instructions is enough to trick it. That’s why the agent sends, forwards and deletes only after your “OK”.</div>
