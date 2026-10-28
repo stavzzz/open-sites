@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw updates</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0a0a0f; --bg-card:#12121a; --bg-card-hover:#181825;
+    --border:#1e1e2e; --border-accent:#2a2a3e;
+    --text-primary:#e8e6f0; --text-secondary:#8b879e; --text-muted:#5a5670;
+    --accent:#7c5bf5; --accent-glow:#9d7cff; --accent-soft:rgba(124,91,245,0.12);
+    --green:#34d399; --green-glow:#6ee7b7; --green-soft:rgba(52,211,153,0.1);
+    --amber:#fbbf24; --amber-soft:rgba(251,191,36,0.1);
+    --red-soft:rgba(248,113,113,0.1); --red:#f87171;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Onest',sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(124,91,245,0.04) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(52,211,153,0.03) 0%,transparent 50%);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:40px 20px 80px;}
+  .header{text-align:center;margin-bottom:26px;}
+  .header__badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;animation:fadeDown .6s ease both;}
+  .header__title{font-size:clamp(30px,5vw,45px);font-weight:800;line-height:1.15;letter-spacing:-0.5px;margin-bottom:20px;animation:fadeDown .6s ease .1s both;}
+  .header__title span{background:linear-gradient(135deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .header__topics{list-style:none;display:flex;flex-direction:column;gap:7px;max-width:600px;margin:0 auto;animation:fadeDown .6s ease .2s both;}
+  .header__topics li{font-size:17px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:8px;text-align:left;}
+  .header__topics li::before{content:'→';color:var(--accent);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:14px;margin-top:3px;}
+  .progress-wrap{background:rgba(18,18,26,0.92);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:36px;position:sticky;top:12px;z-index:10;backdrop-filter:blur(16px);animation:fadeDown .6s ease .3s both;}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .progress-label{font-size:16px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+  .progress-count{font-family:'JetBrains Mono',monospace;font-size:17.5px;font-weight:700;color:var(--accent-glow);}
+  .progress-bar{width:100%;height:8px;background:var(--border);border-radius:100px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:100px;transition:width .5s cubic-bezier(.34,1.56,.64,1);width:0%;}
+  .section{margin-bottom:28px;}
+  .section__header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-left:2px;}
+  .section__num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);background:var(--accent-soft);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;}
+  .section__title{font-size:20px;font-weight:700;letter-spacing:-0.2px;line-height:1.35;}
+  .section__card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .3s;}
+  .section__card:hover{border-color:var(--border-accent);}
+  .item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+  .item:last-child{border-bottom:none;}
+  .item:hover{background:var(--bg-card-hover);}
+  .item.checked .item__text{color:var(--text-muted);text-decoration:line-through;}
+  .item__check{position:relative;width:22px;height:22px;flex-shrink:0;margin-top:1px;pointer-events:auto;cursor:pointer;}
+  .item__check input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2;}
+  .item__check .cm{width:22px;height:22px;border:2px solid var(--border-accent);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check .cm svg{width:12px;height:12px;opacity:0;transform:scale(0);transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check input:checked + .cm{background:var(--green);border-color:var(--green);}
+  .item__check input:checked + .cm svg{opacity:1;transform:scale(1);}
+  .item__body{flex:1;min-width:0;pointer-events:none;user-select:text;}
+  .item__body a,.item__body .lnk,.item__body .btn-copy,.item__body .cmd-copy,.item__body .btn-dl{pointer-events:auto;}
+  .item__text{font-size:18px;font-weight:500;color:var(--text-primary);transition:all .3s;}
+  .item__hint{font-size:16px;color:var(--text-secondary);margin-top:5px;line-height:1.65;}
+  .item__hint strong{color:var(--text-primary);}
+  .lnk{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-family:'JetBrains Mono',monospace;color:var(--accent-glow);text-decoration:none;transition:color .2s;word-break:break-all;}
+  .lnk:hover{color:#bba4ff;text-decoration:underline;}
+  .note{display:flex;align-items:flex-start;gap:10px;padding:14px 20px;font-size:16px;color:var(--text-secondary);line-height:1.65;border-bottom:1px solid var(--border);}
+  .note:last-child{border-bottom:none;}
+  .note--warn{background:var(--amber-soft);color:var(--amber);}
+  .note--info{background:var(--accent-soft);}
+  .note--alert{background:var(--red-soft);color:var(--red);}
+  .note--green{background:var(--green-soft);color:var(--green-glow);}
+  .note__icon{flex-shrink:0;font-size:19px;}
+  .note strong{color:inherit;}
+  .info-block{padding:14px 20px;border-bottom:1px solid var(--border);font-size:17px;color:var(--text-secondary);line-height:1.7;}
+  .info-block:last-child{border-bottom:none;}
+  .info-block strong{color:var(--text-primary);font-weight:600;}
+  .mono{font-family:'JetBrains Mono',monospace;color:var(--accent-glow);font-size:15px;}
+  .cmd-copy{background:rgba(0,0,0,0.35);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;margin:10px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .cmd-copy__text{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.6;word-break:break-all;flex:1;white-space:pre-wrap;}
+  .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--border-accent);border-radius:10px;padding:16px 20px;margin:12px 20px;}
+  .code-block__label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:block;}
+  .code-block__scroll{max-height:320px;overflow-y:auto;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+  .code-block__scroll::-webkit-scrollbar{width:9px;height:9px;}
+  .code-block__scroll::-webkit-scrollbar-thumb{background:var(--border-accent);border-radius:9px;}
+  .code-block .btn-copy{margin-top:12px;}
+  .btn-copy{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.3);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+  .btn-copy:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .btn-copy.copied{color:var(--green);background:var(--green-soft);border-color:rgba(52,211,153,0.3);}
+  .cmd-copy .btn-copy{padding:5px 12px;font-size:12.5px;}
+  .btn-dl{display:inline-flex;align-items:center;gap:7px;font-family:'Onest',sans-serif;font-size:16px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.35);padding:9px 18px;border-radius:10px;text-decoration:none;transition:all .2s;cursor:pointer;margin:0 20px 14px;}
+  .dl-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .dl-row:last-of-type{border-bottom:1px solid var(--border);}
+  .dl-row__label{font-size:18px;display:flex;align-items:center;}
+  .dl-row .btn-dl{margin:0;flex-shrink:0;}
+  @media(max-width:480px){.dl-row{flex-direction:column;align-items:flex-start;gap:10px;}}
+  .btn-dl:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .os-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;margin-left:8px;vertical-align:middle;}
+  .os-tag--mac{color:var(--green-glow);background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);}
+  .os-tag--win{color:#38bdf8;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);}
+  .data-table{width:100%;border-collapse:collapse;font-size:16px;}
+  .data-table th{text-align:left;padding:11px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);border-bottom:1px solid var(--border);}
+  .data-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;line-height:1.6;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table td:first-child{width:38%;}
+  .section-divider{text-align:center;margin:48px 0 32px;padding:0 20px;}
+  .section-divider__line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin-bottom:20px;}
+  .section-divider__title{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--accent-glow);text-transform:uppercase;letter-spacing:3px;}
+  .footer{text-align:center;margin-top:48px;}
+  .footer__done{display:none;background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);border-radius:var(--radius);padding:32px 24px;margin-bottom:24px;}
+  .footer__done.visible{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .footer__done-emoji{font-size:60px;margin-bottom:10px;}
+  .footer__done-text{font-size:27.5px;font-weight:800;color:var(--green);margin-bottom:6px;}
+  .footer__done-sub{font-size:19px;color:var(--text-secondary);}
+  .footer__final{background:linear-gradient(135deg,rgba(124,91,245,0.08),rgba(52,211,153,0.08));border:1px solid rgba(124,91,245,0.25);border-radius:var(--radius);padding:34px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+  .footer__final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(124,91,245,0.12),transparent 50%),radial-gradient(circle at 80% 100%,rgba(52,211,153,0.12),transparent 50%);pointer-events:none;}
+  .footer__final-emoji{font-size:67.5px;margin-bottom:12px;line-height:1;position:relative;}
+  .footer__final-text{font-size:30px;font-weight:800;background:linear-gradient(90deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-0.4px;position:relative;}
+  .footer__final-sub{font-size:19px;color:var(--text-secondary);line-height:1.6;max-width:700px;margin:0 auto;position:relative;}
+  .footer__contact{font-size:17.5px;color:var(--text-secondary);margin-bottom:20px;}
+  .tg{color:#2dd4bf;font-weight:700;text-decoration:underline;text-decoration-color:rgba(45,212,191,0.4);text-underline-offset:2px;transition:color .2s;}
+  .tg:hover{color:#5eead4;}
+  .btn-reset{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:15px;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-reset:hover{border-color:var(--red);color:var(--red);}
+  #confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+  @media (max-width:480px){
+    .wrapper{padding:28px 14px 60px;}
+    .item,.note,.info-block{padding:12px 16px;}
+    .cmd-copy,.code-block{margin-left:14px;margin-right:14px;}
+    .btn-dl{margin-left:14px;margin-right:14px;}
+    .data-table th,.data-table td{padding:10px 14px;}
+    .data-table td:first-child{width:auto;}
+    .progress-wrap{padding:16px 18px;top:8px;}
+    .header__title{font-size:26.5px;}
+  }
+  .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .reveal{opacity:0;transform:translateY(16px);}
+  .reveal.is-in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s ease;}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal.is-in{opacity:1;transform:none;transition:none;}}
+  @media print{.reveal{opacity:1;transform:none;}}
+@media (max-width:600px){.data-table th{display:none}.data-table tr{display:block;border-bottom:1px solid var(--border)}.data-table tr:last-child{border-bottom:none}.data-table td{display:block;width:auto!important;border-bottom:none;padding:6px 16px}.data-table td:first-child{padding-top:14px}.data-table td:last-child{padding-bottom:14px}.data-table td+td::before{content:'→ ';color:var(--accent)}}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div class="wrapper">
+
+<div class="header">
+  <div class="header__badge">OpenClaw · Updates</div>
+  <h1 class="header__title">OpenClaw: update alerts <span>and the ChatGPT subscription</span></h1>
+  <ul class="header__topics">
+    <li>Your main agent tells you in Telegram when a new version is out</li>
+    <li>A safe update in three steps: backup, update, check</li>
+    <li>How to disconnect the agent from ChatGPT or switch to another account</li>
+  </ul>
+  <div class="header__time">⏳ About 30 minutes</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Checklist</span>
+    <span class="progress-count" id="progressCount">0 / 0</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- 00 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">00</div><div class="section__title">How the alerts work</div></div>
+  <div class="section__card">
+    <div class="info-block">OpenClaw already checks for a new version once a day, but it shows the result only in the console. We add a small daily job: the main agent looks at that result and writes to you in Telegram only when there’s something new.</div>
+    <table class="data-table">
+      <tr><th>Who</th><th>Does what</th></tr>
+      <tr><td><strong>The agent</strong></td><td>Checks every day, tells you the new version, your version and what changed</td></tr>
+      <tr><td><strong>You</strong></td><td>Decide when to update and run the safe-update prompt</td></tr>
+    </table>
+    <div class="note note--warn"><span class="note__icon">⚠️</span><div><strong>The agent never updates by itself.</strong> An update restarts the Gateway, and the agent goes offline for a few minutes. Do it when you have time to check the result, after a fresh backup.</div></div>
+  </div>
+</div>
+
+<!-- 01 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">01</div><div class="section__title">Set up the alerts</div></div>
+  <div class="section__card">
+    <div class="info-block">Paste the prompt into Claude Code on your computer. It connects to the server and creates the daily job.</div>
+    <div class="code-block"><span class="code-block__label">Prompt A · daily update alert</span><div class="code-block__scroll" id="prompt-alert">Set up daily OpenClaw update alerts from my main agent on my server. Use the openclaw-docs skill; don't invent commands or flags. Show me the plan and wait for my OK. Never show tokens in the chat.
+
+Goal: once a day my main agent checks for a new OpenClaw version. If there is one, it messages me in Telegram: the new version, my current version and 3-5 short points about what changed (from https://docs.openclaw.ai/releases). If nothing is new, it stays silent. It never updates or restarts anything by itself.
+
+1. ssh to my server. Show openclaw --version and openclaw update status. Check that automatic updates are off (update.auto.enabled). If they are on, tell me and ask before changing anything.
+2. Create a recurring automation for the main agent with openclaw automations create (check openclaw automations --help first): every day at 10:00 in my time zone (ask me which), isolated session, delivered to me in Telegram as the owner (--announce --channel telegram --delivery-target owner). If owner delivery isn't set up, use --to with my Telegram ID.
+3. The job's instruction for the agent: run openclaw update status --json. If no newer version is available, reply NO_REPLY. If there is one, send the message described above and end it with "To update, run the safe-update prompt in Claude Code." Never run openclaw update.
+4. If the agent can't run that command inside the job, tell me why and suggest the simplest fix from the docs.
+5. Run the job once now and show me the result and the run history.</div><button class="btn-copy" onclick="copyBlock('prompt-alert',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="al-auto"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Automatic updates are off</div></div></div>
+    <div class="item" data-key="al-job"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The daily job is created and the test run passed</div><div class="item__hint">If you’re already on the latest version, the test run stays silent. That’s correct.</div></div></div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">02</div><div class="section__title">Update safely when the alert comes</div></div>
+  <div class="section__card">
+    <table class="data-table">
+      <tr><th>Step</th><th>Why</th></tr>
+      <tr><td><strong>1. Backup</strong></td><td>A verified copy of the agent is your way back if the update breaks something</td></tr>
+      <tr><td><strong>2. Update</strong></td><td>First a preview of what will change, then the update itself</td></tr>
+      <tr><td><strong>3. Check</strong></td><td>Doctor, Gateway status, MCP servers and a test message to the agent</td></tr>
+    </table>
+    <div class="code-block"><span class="code-block__label">Prompt B · safe update</span><div class="code-block__scroll" id="prompt-update">Update OpenClaw on my server safely. Use the openclaw-docs skill; don't invent commands. If anything fails, stop and ask me.
+
+1. ssh to my server. Show openclaw --version and openclaw update status.
+2. Backup first: openclaw backup create --output ~/Backups/openclaw --verify (create the folder with mode 700 if needed). Confirm the archive is verified. If my nightly server backup exists, check that last night's run succeeded.
+3. Preview: openclaw update --dry-run. Tell me in plain words what will change and wait for my OK.
+4. Update: openclaw update.
+5. Check: openclaw --version, openclaw doctor, openclaw gateway status, openclaw health, openclaw mcp doctor --probe. Then tell me to send my agent a test message in Telegram.
+6. If something broke, show me the error and follow the update troubleshooting page in the docs. Don't improvise fixes. The backup from step 2 is the way back.</div><button class="btn-copy" onclick="copyBlock('prompt-update',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="up-backup"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Verified backup made before the update</div></div></div>
+    <div class="item" data-key="up-check"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">After the update doctor is clean and the agent answers</div></div></div>
+  </div>
+</div>
+
+<!-- 03 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">03</div><div class="section__title">Disconnect the agent from ChatGPT</div></div>
+  <div class="section__card">
+    <div class="info-block">Your agent uses your ChatGPT subscription as its model. The server keeps a saved sign-in to your ChatGPT account. Remove it and the agent has no model.</div>
+    <div class="note note--alert"><span class="note__icon">🚨</span><div><strong>Without a model the agent stops answering.</strong> The ready-made bots from the course use the same subscription through the Gateway, so they stop too. If you only want another account, switch instead of disconnecting.</div></div>
+    <div class="code-block"><span class="code-block__label">Prompt C · disconnect or switch ChatGPT</span><div class="code-block__scroll" id="prompt-chatgpt">Disconnect my OpenClaw agent on my server from my ChatGPT subscription, or switch it to another ChatGPT account (I'll say which). Use the openclaw-docs skill; don't invent commands. Show me the plan and wait for my OK. Never print tokens.
+
+1. ssh to my server. Run openclaw models auth list --provider openai and show me the saved profiles: ids and accounts only. Tell me which agents and bots use them.
+2. Warn me what stops working without this subscription and whether another model provider is set up as a fallback.
+3. To disconnect: openclaw models auth logout &lt;profileId&gt; --yes for each profile I choose.
+4. To switch accounts: openclaw models auth login --provider openai --device-code --force. Give me the link and the code from the output; I'll approve it in my browser with the right ChatGPT account.
+5. Check in the docs whether the Gateway must be stopped for these commands, and stop and start it if needed. Then show openclaw models auth list --provider openai and openclaw gateway status, and tell me to send my agent a test message.</div><button class="btn-copy" onclick="copyBlock('prompt-chatgpt',this)">📋 Copy prompt</button></div>
+    <div class="info-block"><strong>On the OpenAI side.</strong> If you think the server was hacked, or you connected the wrong account: open ChatGPT → Settings → Security. Remove OpenClaw from connected apps if it’s listed, press “Log out of all devices”, then change the ChatGPT password.</div>
+    <div class="item" data-key="gpt-done"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The profile list shows only the account you want</div></div></div>
+    <div class="item" data-key="gpt-test"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">After a switch the agent answers your test message</div></div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer__done" id="doneBlock"><div class="footer__done-emoji">🔔</div><div class="footer__done-text">Alerts are on!</div><div class="footer__done-sub">You’ll hear about new versions and update on your terms.</div></div>
+  <div class="footer__final"><div class="footer__final-emoji">🧭</div><div class="footer__final-text">The agent tells you, you decide</div><div class="footer__final-sub">Updates and account changes happen only when you say so, with a backup ready.</div></div>
+  <div class="footer__contact">Questions? Message <a href="https://t.me/stavzzz" target="_blank" class="tg">@stavzzz</a> on Telegram</div>
+  <button class="btn-reset" onclick="resetProgress()">Reset progress</button>
+</div>
+
+</div>
+<script>
+const C=document.getElementById('confetti-canvas'),ctx=C.getContext('2d');
+let particles=[],confettiActive=false;
+function resizeCanvas(){C.width=window.innerWidth;C.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+const COLORS=['#7c5bf5','#9d7cff','#34d399','#6ee7b7','#fbbf24','#f87171','#fb7185','#38bdf8','#a78bfa','#4ade80'];
+function rand(a,b){return Math.random()*(b-a)+a;}
+function createBurst(x,y,count){for(let i=0;i<count;i++){const angle=rand(0,Math.PI*2),speed=rand(4,14),size=rand(4,10);particles.push({x,y,vx:Math.cos(angle)*speed+rand(-2,2),vy:Math.sin(angle)*speed*-0.8-rand(2,6),size,color:COLORS[Math.floor(Math.random()*COLORS.length)],rotation:rand(0,Math.PI*2),rotSpeed:rand(-0.2,0.2),gravity:rand(0.12,0.25),friction:rand(0.97,0.995),opacity:1,fadeSpeed:rand(0.005,0.015),shape:Math.random()>0.4?'rect':'circle'});}}
+function launchConfetti(){if(confettiActive)return;confettiActive=true;particles=[];const W=C.width,H=C.height;[[W*.5,H*.3,120],[W*.15,H*.2,80],[W*.85,H*.2,80],[W*.5,H*.1,100],[W*.3,H*.5,60],[W*.7,H*.5,60]].forEach(([x,y,c],i)=>{setTimeout(()=>createBurst(x,y,c),i*150)});animate();setTimeout(()=>{confettiActive=false},6000);}
+function animate(){ctx.clearRect(0,0,C.width,C.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.vx*=p.friction;p.vy*=p.friction;p.vy+=p.gravity;p.x+=p.vx;p.y+=p.vy;p.rotation+=p.rotSpeed;p.opacity-=p.fadeSpeed;if(p.opacity<=0){particles.splice(i,1);continue}ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation);ctx.globalAlpha=p.opacity;ctx.fillStyle=p.color;if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2)}else{ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill()}ctx.restore();}if(particles.length>0||confettiActive){requestAnimationFrame(animate)}else{ctx.clearRect(0,0,C.width,C.height);}}
+function copyBlock(id,btn){const text=document.getElementById(id).textContent;navigator.clipboard.writeText(text).then(()=>{const orig=btn.innerHTML;btn.classList.add('copied');btn.innerHTML='✅ Copied!';setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);});}
+const STORAGE_KEY='openclaw_updates_v1';
+const items=document.querySelectorAll('.item[data-key]');
+const totalCount=items.length;let wasComplete=false;
+function loadState(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');let c=0;items.forEach(it=>{const cb=it.querySelector('input');if(s[it.dataset.key]){cb.checked=true;it.classList.add('checked');c++}});wasComplete=c===totalCount}catch(e){}updateProgress(false);}
+function saveState(){const s={};items.forEach(it=>{s[it.dataset.key]=it.querySelector('input').checked});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s))}catch(e){}}
+function updateProgress(cc=true){let c=0;items.forEach(it=>{if(it.querySelector('input').checked)c++});document.getElementById('progressCount').textContent=c+' / '+totalCount;document.getElementById('progressFill').style.width=(totalCount>0?(c/totalCount)*100:0)+'%';const d=document.getElementById('doneBlock');if(c===totalCount&&totalCount>0){d.classList.add('visible');if(cc&&!wasComplete)launchConfetti();wasComplete=true}else{d.classList.remove('visible');wasComplete=false;}}
+items.forEach(it=>{const cb=it.querySelector('input');it.addEventListener('click',function(e){if(e.target.closest('a')||e.target.closest('.btn-copy'))return;if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});cb.addEventListener('change',function(){it.classList.toggle('checked',this.checked);saveState();updateProgress(true);});});
+function resetProgress(){if(!confirm('Reset all progress?'))return;items.forEach(it=>{it.querySelector('input').checked=false;it.classList.remove('checked')});wasComplete=false;saveState();updateProgress(false);}
+loadState();
+</script><script>
+// Плавное появление блоков по мере скролла. Класс вешает сам скрипт:
+// если JS отключён, страница обычная — прятать контент стилями нельзя.
+// Проверяем положение блока, а не события пересечения: при прыжке в конец
+// страницы (Cmd+End, ссылка-якорь) наблюдатель пропускал бы блоки, и они
+// остались бы невидимыми.
+(function(){
+  var sel='.section,.module,.event,.stage,.card,.footer';
+  var els=Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+    if(el.parentElement && el.parentElement.closest('.reveal')) return false;  // вложенные не прячем дважды
+    if(getComputedStyle(el).position!=='static') return false;                 // липкий прогресс-бар не трогаем
+    el.classList.add('reveal'); return true;
+  });
+  if(!els.length) return;
+  var ticking=false;
+  function sweep(){
+    ticking=false;
+    var edge=window.innerHeight-60;
+    for(var i=els.length-1;i>=0;i--){
+      if(els[i].getBoundingClientRect().top<edge){ els[i].classList.add('is-in'); els.splice(i,1); }
+    }
+    if(!els.length){ window.removeEventListener('scroll',onMove); window.removeEventListener('resize',onMove); }
+  }
+  function onMove(){ if(!ticking){ ticking=true; requestAnimationFrame(sweep); } }
+  window.addEventListener('scroll',onMove,{passive:true});
+  window.addEventListener('resize',onMove);
+  requestAnimationFrame(sweep);   // первый экран проявляется тоже плавно
+})();
+</script>
+</body>
+</html>
