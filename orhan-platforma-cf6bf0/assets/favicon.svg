@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 108 108">
+  <title>AI Garage</title>
+  <defs>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#80cc9c"/>
+      <stop offset="0.5" stop-color="#4b9874"/>
+      <stop offset="1" stop-color="#24483b"/>
+    </linearGradient>
+  </defs>
+  <path fill="#23262c" d="M0 0h108v108H0z"/>
+  <g fill="url(#green)">
+    <path d="M29 74 52 35Q54 32 56 35L79 74H68L54 50 40 74Z"/>
+    <path d="M79 34h9v10h-9zM79 49h9v25h-9z"/>
+  </g>
+</svg>
