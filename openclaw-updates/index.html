@@ -165,7 +165,7 @@
 <div class="section">
   <div class="section__header"><div class="section__num">00</div><div class="section__title">How the alerts work</div></div>
   <div class="section__card">
-    <div class="info-block">OpenClaw already checks for a new version once a day, but it shows the result only in the console. We add a small daily job: the main agent looks at that result and writes to you in Telegram only when there’s something new.</div>
+    <div class="info-block">OpenClaw already checks for a new version once a day, but it shows the result only in the console. Release notes: <a class="lnk" href="https://docs.openclaw.ai/releases" target="_blank">docs.openclaw.ai/releases</a> and <a class="lnk" href="https://github.com/openclaw/openclaw/releases" target="_blank">GitHub releases</a>. We add a small daily job: the main agent looks at that result and writes to you in Telegram only when there’s something new.</div>
     <table class="data-table">
       <tr><th>Who</th><th>Does what</th></tr>
       <tr><td><strong>The agent</strong></td><td>Checks every day, tells you the new version, your version and what changed</td></tr>
@@ -227,12 +227,21 @@ Goal: once a day my main agent checks for a new OpenClaw version. If there is on
 
 1. ssh to my server. Run openclaw models auth list --provider openai and show me the saved profiles: ids and accounts only. Tell me which agents and bots use them.
 2. Warn me what stops working without this subscription and whether another model provider is set up as a fallback.
-3. To disconnect: openclaw models auth logout &lt;profileId&gt; --yes for each profile I choose.
-4. To switch accounts: openclaw models auth login --provider openai --device-code --force. Give me the link and the code from the output; I'll approve it in my browser with the right ChatGPT account.
-5. Check in the docs whether the Gateway must be stopped for these commands, and stop and start it if needed. Then show openclaw models auth list --provider openai and openclaw gateway status, and tell me to send my agent a test message.</div><button class="btn-copy" onclick="copyBlock('prompt-chatgpt',this)">📋 Copy prompt</button></div>
-    <div class="info-block"><strong>On the OpenAI side.</strong> If you think the server was hacked, or you connected the wrong account: open ChatGPT → Settings → Security. Remove OpenClaw from connected apps if it’s listed, press “Log out of all devices”, then change the ChatGPT password.</div>
-    <div class="item" data-key="gpt-done"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The profile list shows only the account you want</div></div></div>
-    <div class="item" data-key="gpt-test"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">After a switch the agent answers your test message</div></div></div>
+3. Check in the docs whether the Gateway must be stopped for the next commands, and stop it if needed.
+4. To disconnect: openclaw models auth logout &lt;profileId&gt; --yes for each profile I choose.
+5. To switch accounts: openclaw models auth login --provider openai --device-code --force. Give me the link and the code from the output; I'll approve it in my browser with the right ChatGPT account.
+6. Start the Gateway again if you stopped it.
+7. Prove the result. Show me a table "check / result / proof":
+   a. openclaw models auth list --provider openai: no profiles left, or only the new account.
+   b. openclaw models status: the auth overview shows no other OpenAI credential. Look for OPENAI_API_KEY or CODEX_API_KEY in env files and config too. If one is there, ask me before removing it: the agent could keep working through it and bill the API.
+   c. The Codex harness setting appServer.homeScope: if it is "user", the agent uses the separate Codex login in ~/.codex. Check that login with the Codex CLI (see codex --help) and sign it out too.
+   d. No leftover Codex sign-in files (auth.json) under ~/.openclaw and ~/.codex. List the paths only, never print the contents.
+   e. openclaw gateway status is OK.
+8. Tell me to send my agent a test message and then /status. After a disconnect the agent must not answer with ChatGPT. After a switch /status must show the new account.</div><button class="btn-copy" onclick="copyBlock('prompt-chatgpt',this)">📋 Copy prompt</button></div>
+    <div class="info-block"><strong>On the OpenAI side.</strong> If you think the server was hacked, or you connected the wrong account: open <a class="lnk" href="https://chatgpt.com/#settings/Security" target="_blank">ChatGPT → Settings → Security</a>. Remove OpenClaw from connected apps if it’s listed, press “Log out of all devices”, then change the ChatGPT password.</div>
+    <div class="item" data-key="gpt-table"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code’s check table has no failed rows</div><div class="item__hint">No OpenAI profiles or keys are left on the server, or only the new account.</div></div></div>
+    <div class="item" data-key="gpt-agent"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">The test message proves it</div><div class="item__hint">After a disconnect the agent no longer answers with ChatGPT. After a switch /status in the chat shows the new account.</div></div></div>
+    <div class="item" data-key="gpt-openai"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Old sessions are closed on the OpenAI side</div><div class="item__hint">Only if the server may be hacked or the wrong account was connected.</div></div></div>
   </div>
 </div>
 
