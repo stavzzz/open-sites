@@ -106,7 +106,7 @@
   .lib{display:block;width:100%;border-collapse:collapse;}
   .lib thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
   .lib tbody,.lib tr,.lib th,.lib td{display:block;}
-  .lib tbody.day{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
+  .lib tbody.day{scroll-margin-top:calc(var(--bar-h) + 12px);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
   .lib th,.lib td{text-align:left;vertical-align:top;}
   .c-day{padding:16px;background:var(--bg-card-hover);border-bottom:1px solid var(--border);}
   .blk-row{display:flex!important;flex-direction:column;}
@@ -423,8 +423,12 @@
     goDay(a.dataset.day);
   }));
 
-  if (/^#day-\d+$/.test(location.hash)) requestAnimationFrame(() => goDay(location.hash.slice(5), false));
-  else spy();
+  // opened with #day-N: the browser jumps to the anchor on load, then we put the day below the bar
+  if (/^#day-\d+$/.test(location.hash)) {
+    const n = location.hash.slice(5);
+    goDay(n, false);
+    addEventListener('load', () => setTimeout(() => goDay(n, false), 50), { once: true });
+  } else spy();
 })();
 </script>
 </body>
