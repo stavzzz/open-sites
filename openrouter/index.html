@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenRouter: fallback model</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔀</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0a0a0f; --bg-card:#12121a; --bg-card-hover:#181825;
+    --border:#1e1e2e; --border-accent:#2a2a3e;
+    --text-primary:#e8e6f0; --text-secondary:#8b879e; --text-muted:#5a5670;
+    --accent:#7c5bf5; --accent-glow:#9d7cff; --accent-soft:rgba(124,91,245,0.12);
+    --green:#34d399; --green-glow:#6ee7b7; --green-soft:rgba(52,211,153,0.1);
+    --amber:#fbbf24; --amber-soft:rgba(251,191,36,0.1);
+    --red-soft:rgba(248,113,113,0.1); --red:#f87171;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Onest',sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.65;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(124,91,245,0.04) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(52,211,153,0.03) 0%,transparent 50%);pointer-events:none;z-index:0;}
+  .wrapper{position:relative;z-index:1;max-width:850px;margin:0 auto;padding:40px 20px 80px;}
+  .header{text-align:center;margin-bottom:26px;}
+  .header__badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.2);padding:6px 16px;border-radius:100px;margin-bottom:24px;animation:fadeDown .6s ease both;}
+  .header__title{font-size:clamp(30px,5vw,45px);font-weight:800;line-height:1.15;letter-spacing:-0.5px;margin-bottom:20px;animation:fadeDown .6s ease .1s both;}
+  .header__title span{background:linear-gradient(135deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .header__topics{list-style:none;display:flex;flex-direction:column;gap:7px;max-width:600px;margin:0 auto;animation:fadeDown .6s ease .2s both;}
+  .header__topics li{font-size:17px;color:var(--text-secondary);display:flex;align-items:flex-start;gap:8px;text-align:left;}
+  .header__topics li::before{content:'→';color:var(--accent);flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:14px;margin-top:3px;}
+  .progress-wrap{background:rgba(18,18,26,0.92);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:36px;position:sticky;top:12px;z-index:10;backdrop-filter:blur(16px);animation:fadeDown .6s ease .3s both;}
+  .progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .progress-label{font-size:16px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+  .progress-count{font-family:'JetBrains Mono',monospace;font-size:17.5px;font-weight:700;color:var(--accent-glow);}
+  .progress-bar{width:100%;height:8px;background:var(--border);border-radius:100px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:100px;transition:width .5s cubic-bezier(.34,1.56,.64,1);width:0%;}
+  .section{margin-bottom:28px;}
+  .section__header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-left:2px;}
+  .section__num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);background:var(--accent-soft);width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;flex-shrink:0;}
+  .section__title{font-size:20px;font-weight:700;letter-spacing:-0.2px;line-height:1.35;}
+  .section__card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .3s;}
+  .section__card:hover{border-color:var(--border-accent);}
+  .item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+  .item:last-child{border-bottom:none;}
+  .item:hover{background:var(--bg-card-hover);}
+  .item.checked .item__text{color:var(--text-muted);text-decoration:line-through;}
+  .item__check{position:relative;width:22px;height:22px;flex-shrink:0;margin-top:1px;pointer-events:auto;cursor:pointer;}
+  .item__check input{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;z-index:2;}
+  .item__check .cm{width:22px;height:22px;border:2px solid var(--border-accent);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check .cm svg{width:12px;height:12px;opacity:0;transform:scale(0);transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+  .item__check input:checked + .cm{background:var(--green);border-color:var(--green);}
+  .item__check input:checked + .cm svg{opacity:1;transform:scale(1);}
+  .item__body{flex:1;min-width:0;pointer-events:none;user-select:text;}
+  .item__body a,.item__body .lnk,.item__body .btn-copy,.item__body .cmd-copy,.item__body .btn-dl{pointer-events:auto;}
+  .item__text{font-size:18px;font-weight:500;color:var(--text-primary);transition:all .3s;}
+  .item__hint{font-size:16px;color:var(--text-secondary);margin-top:5px;line-height:1.65;}
+  .item__hint strong{color:var(--text-primary);}
+  .lnk{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-family:'JetBrains Mono',monospace;color:var(--accent-glow);text-decoration:none;transition:color .2s;word-break:break-all;}
+  .lnk:hover{color:#bba4ff;text-decoration:underline;}
+  .note{display:flex;align-items:flex-start;gap:10px;padding:14px 20px;font-size:16px;color:var(--text-secondary);line-height:1.65;border-bottom:1px solid var(--border);}
+  .note:last-child{border-bottom:none;}
+  .note--warn{background:var(--amber-soft);color:var(--amber);}
+  .note--info{background:var(--accent-soft);}
+  .note--alert{background:var(--red-soft);color:var(--red);}
+  .note--green{background:var(--green-soft);color:var(--green-glow);}
+  .note__icon{flex-shrink:0;font-size:19px;}
+  .note strong{color:inherit;}
+  .info-block{padding:14px 20px;border-bottom:1px solid var(--border);font-size:17px;color:var(--text-secondary);line-height:1.7;}
+  .info-block:last-child{border-bottom:none;}
+  .info-block strong{color:var(--text-primary);font-weight:600;}
+  .mono{font-family:'JetBrains Mono',monospace;color:var(--accent-glow);font-size:15px;}
+  .cmd-copy{background:rgba(0,0,0,0.35);border:1px solid var(--border-accent);border-radius:8px;padding:10px 14px;margin:10px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+  .cmd-copy__text{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.6;word-break:break-all;flex:1;white-space:pre-wrap;}
+  .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--border-accent);border-radius:10px;padding:16px 20px;margin:12px 20px;}
+  .code-block__label{font-size:12.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;display:block;}
+  .code-block__scroll{max-height:320px;overflow-y:auto;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--green-glow);line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+  .code-block__scroll::-webkit-scrollbar{width:9px;height:9px;}
+  .code-block__scroll::-webkit-scrollbar-thumb{background:var(--border-accent);border-radius:9px;}
+  .code-block .btn-copy{margin-top:12px;}
+  .btn-copy{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.3);padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:1px;}
+  .btn-copy:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .btn-copy.copied{color:var(--green);background:var(--green-soft);border-color:rgba(52,211,153,0.3);}
+  .cmd-copy .btn-copy{padding:5px 12px;font-size:12.5px;}
+  .btn-dl{display:inline-flex;align-items:center;gap:7px;font-family:'Onest',sans-serif;font-size:16px;font-weight:600;color:var(--accent-glow);background:var(--accent-soft);border:1px solid rgba(124,91,245,0.35);padding:9px 18px;border-radius:10px;text-decoration:none;transition:all .2s;cursor:pointer;margin:0 20px 14px;}
+  .dl-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border);}
+  .dl-row:last-of-type{border-bottom:1px solid var(--border);}
+  .dl-row__label{font-size:18px;display:flex;align-items:center;}
+  .dl-row .btn-dl{margin:0;flex-shrink:0;}
+  @media(max-width:480px){.dl-row{flex-direction:column;align-items:flex-start;gap:10px;}}
+  .btn-dl:hover{background:rgba(124,91,245,0.2);border-color:var(--accent);}
+  .os-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px;margin-left:8px;vertical-align:middle;}
+  .os-tag--mac{color:var(--green-glow);background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);}
+  .os-tag--win{color:#38bdf8;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);}
+  .data-table{width:100%;border-collapse:collapse;font-size:16px;}
+  .data-table th{text-align:left;padding:11px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);border-bottom:1px solid var(--border);}
+  .data-table td{padding:12px 20px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top;line-height:1.6;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table td:first-child{width:38%;}
+  .section-divider{text-align:center;margin:48px 0 32px;padding:0 20px;}
+  .section-divider__line{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin-bottom:20px;}
+  .section-divider__title{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--accent-glow);text-transform:uppercase;letter-spacing:3px;}
+  .footer{text-align:center;margin-top:48px;}
+  .footer__done{display:none;background:var(--green-soft);border:1px solid rgba(52,211,153,0.25);border-radius:var(--radius);padding:32px 24px;margin-bottom:24px;}
+  .footer__done.visible{display:block;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;}
+  .footer__done-emoji{font-size:60px;margin-bottom:10px;}
+  .footer__done-text{font-size:27.5px;font-weight:800;color:var(--green);margin-bottom:6px;}
+  .footer__done-sub{font-size:19px;color:var(--text-secondary);}
+  .footer__final{background:linear-gradient(135deg,rgba(124,91,245,0.08),rgba(52,211,153,0.08));border:1px solid rgba(124,91,245,0.25);border-radius:var(--radius);padding:34px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+  .footer__final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(124,91,245,0.12),transparent 50%),radial-gradient(circle at 80% 100%,rgba(52,211,153,0.12),transparent 50%);pointer-events:none;}
+  .footer__final-emoji{font-size:67.5px;margin-bottom:12px;line-height:1;position:relative;}
+  .footer__final-text{font-size:30px;font-weight:800;background:linear-gradient(90deg,var(--accent-glow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-0.4px;position:relative;}
+  .footer__final-sub{font-size:19px;color:var(--text-secondary);line-height:1.6;max-width:700px;margin:0 auto;position:relative;}
+  .footer__contact{font-size:17.5px;color:var(--text-secondary);margin-bottom:20px;}
+  .tg{color:#2dd4bf;font-weight:700;text-decoration:underline;text-decoration-color:rgba(45,212,191,0.4);text-underline-offset:2px;transition:color .2s;}
+  .tg:hover{color:#5eead4;}
+  .btn-reset{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:15px;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-reset:hover{border-color:var(--red);color:var(--red);}
+  #confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+  @media (max-width:480px){
+    .wrapper{padding:28px 14px 60px;}
+    .item,.note,.info-block{padding:12px 16px;}
+    .cmd-copy,.code-block{margin-left:14px;margin-right:14px;}
+    .btn-dl{margin-left:14px;margin-right:14px;}
+    .data-table th,.data-table td{padding:10px 14px;}
+    .data-table td:first-child{width:auto;}
+    .progress-wrap{padding:16px 18px;top:8px;}
+    .header__title{font-size:26.5px;}
+  }
+  .header__time{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1;color:var(--text-muted);border:1px solid var(--border);padding:10px 18px;border-radius:100px;animation:fadeDown .6s ease .35s both;}
+  .reveal{opacity:0;transform:translateY(16px);}
+  .reveal.is-in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s ease;}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal.is-in{opacity:1;transform:none;transition:none;}}
+  @media print{.reveal{opacity:1;transform:none;}}
+@media (max-width:600px){.data-table th{display:none}.data-table tr{display:block;border-bottom:1px solid var(--border)}.data-table tr:last-child{border-bottom:none}.data-table td{display:block;width:auto!important;border-bottom:none;padding:6px 16px}.data-table td:first-child{padding-top:14px}.data-table td:last-child{padding-bottom:14px}.data-table td+td::before{content:'→ ';color:var(--accent)}}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div class="wrapper">
+
+<div class="header">
+  <div class="header__badge">OpenRouter · Fallback model</div>
+  <h1 class="header__title">OpenRouter: one key <span>for hundreds of models</span></h1>
+  <ul class="header__topics">
+    <li>What OpenRouter is and why your agents need a fallback model</li>
+    <li>Account, credits and an API key, set up safely</li>
+    <li>How to pick a model and connect it to OpenClaw as a fallback</li>
+  </ul>
+  <div class="header__time">⏳ About 30 minutes</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Checklist</span>
+    <span class="progress-count" id="progressCount">0 / 0</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- 00 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">00</div><div class="section__title">What OpenRouter is</div></div>
+  <div class="section__card">
+    <div class="info-block">Think of a food delivery app: one order brings you salad from one restaurant and pasta from another. <a class="lnk" href="https://openrouter.ai" target="_blank">OpenRouter</a> works the same way for AI. One account and one API key give you models from many providers: OpenAI, Anthropic, Google, DeepSeek, Qwen and others.</div>
+    <table class="data-table">
+      <tr><th>Term</th><th>What it means</th></tr>
+      <tr><td><strong>Credits</strong></td><td>Prepaid balance in US dollars. Paid models take from it with every request, free models don’t.</td></tr>
+      <tr><td><strong>API key</strong></td><td>The secret your agent uses to call models on your account</td></tr>
+      <tr><td><strong>Token</strong></td><td>A small piece of text. Models read and write in tokens, and prices are per million tokens.</td></tr>
+      <tr><td><strong>Input and output</strong></td><td>Input is what you send to the model, output is its reply. They are priced separately.</td></tr>
+      <tr><td><strong>Context</strong></td><td>How much text the model can take in at once, counted in tokens</td></tr>
+      <tr><td><strong>Model ID</strong></td><td>The exact model name, for example deepseek/deepseek-v4.1-flash</td></tr>
+      <tr><td><strong>Fallback model</strong></td><td>A backup model your agent switches to when the main one stops working</td></tr>
+    </table>
+    <div class="note note--info"><span class="note__icon">💡</span><div><strong>Why you need a fallback.</strong> Your main agent runs on your ChatGPT subscription. If a payment fails or the subscription ends, the agent and the course bots stop answering. With a fallback model, OpenClaw switches to it on its own and your agents keep working until you renew.</div></div>
+  </div>
+</div>
+
+<!-- 01 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">01</div><div class="section__title">Create an account and protect it</div></div>
+  <div class="section__card">
+    <div class="info-block">Sign up at <a class="lnk" href="https://openrouter.ai" target="_blank">openrouter.ai</a>. You can use your Google account. Then turn on two-factor authentication in your account settings: your credits and keys live in this account, so treat it like a bank login.</div>
+    <div class="item" data-key="or-account"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Account created</div></div></div>
+    <div class="item" data-key="or-2fa"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Two-factor authentication is on</div></div></div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">02</div><div class="section__title">Add credits</div></div>
+  <div class="section__card">
+    <div class="info-block">Open <a class="lnk" href="https://openrouter.ai/settings/credits" target="_blank">Settings → Credits</a> and add $15–20. That is enough for a cheap fallback model, and it also raises your limits on free models.</div>
+    <table class="data-table">
+      <tr><th>Credits bought in total</th><th>Free models allow</th></tr>
+      <tr><td><strong>Less than $10</strong></td><td>50 requests a day, 20 a minute</td></tr>
+      <tr><td><strong>$10 or more</strong></td><td>1,000 requests a day, 20 a minute</td></tr>
+    </table>
+    <div class="info-block">The limit depends on how much you have <strong>bought over time</strong>, not on your current balance. Source: <a class="lnk" href="https://openrouter.ai/docs/api-reference/limits" target="_blank">OpenRouter rate limits</a>.</div>
+    <div class="note note--warn"><span class="note__icon">⚠️</span><div><strong>Check the price before you pick a model.</strong> A budget model costs cents per million tokens. The most expensive ones cost $120–180 per million output tokens and can empty a $20 balance fast.</div></div>
+    <div class="note note--alert"><span class="note__icon">🚨</span><div><strong>Don’t let the balance go below zero.</strong> With a negative balance you may get errors even on free models. Adding credits fixes it.</div></div>
+    <div class="item" data-key="or-credits"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">$15–20 in credits added</div></div></div>
+  </div>
+</div>
+
+<!-- 03 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">03</div><div class="section__title">Create an API key</div></div>
+  <div class="section__card">
+    <div class="info-block">Open <a class="lnk" href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a> and create a key. Name it after where it will live, for example “OpenClaw server”, and set a credit limit, for example $10. OpenRouter recommends a limit on every key: if the key leaks, nobody can spend more than that.</div>
+    <div class="note note--info"><span class="note__icon">💡</span><div><strong>You need a regular API key.</strong> The separate “Management keys” page is for managing keys from code. Those keys can’t call models, so your agent can’t use them.</div></div>
+    <div class="note note--alert"><span class="note__icon">🚨</span><div><strong>The key is a secret.</strong> Don’t paste it into chats, screenshots or documents, and that includes the Claude Code chat. In step 05 you type it straight into the server.</div></div>
+    <div class="item" data-key="or-key"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">API key created with a credit limit</div></div></div>
+  </div>
+</div>
+
+<!-- 04 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">04</div><div class="section__title">Pick a fallback model</div></div>
+  <div class="section__card">
+    <div class="info-block"><strong>How to look for a model:</strong></div>
+    <table class="data-table">
+      <tr><th>Step</th><th>What you do</th></tr>
+      <tr><td><strong>1. Open the catalog</strong></td><td>Go to <a class="lnk" href="https://openrouter.ai/models" target="_blank">openrouter.ai/models</a></td></tr>
+      <tr><td><strong>2. Filter</strong></td><td>In the filters on the left, set the context size you need and choose free or paid</td></tr>
+      <tr><td><strong>3. Sort</strong></td><td>Sort by release date to see the newest models first</td></tr>
+      <tr><td><strong>4. Open a model</strong></td><td>Its page shows the price, uptime, meaning how reliably it’s available, and benchmarks, meaning scores on comparison tests</td></tr>
+      <tr><td><strong>5. Compare and try</strong></td><td>Compare puts two models side by side. You can also try a model in a chat on the site before you choose it.</td></tr>
+    </table>
+    <table class="data-table">
+      <tr><th>Option</th><th>When to choose it</th></tr>
+      <tr><td><strong>DeepSeek V4.1 Flash</strong></td><td>Our pick for a fallback. Cheap, takes up to about 1 million tokens of context and can use tools, so your agents keep working with them. About $0.05 for input and $0.57 for output per million tokens. ID: deepseek/deepseek-v4.1-flash</td></tr>
+      <tr><td><strong>Free models</strong></td><td>Their IDs end in :free. They cost nothing but have the daily limits from step 02, and the list changes often.</td></tr>
+      <tr><td><strong>Auto Router</strong></td><td>ID openrouter/auto. OpenRouter picks a model for each request. No extra fee, you pay the chosen model’s price.</td></tr>
+    </table>
+    <div class="info-block"><strong>Example from the lesson.</strong> We compared DeepSeek V4.1 Flash with a Qwen Max model. Qwen also understands video, but it cost about 12 times more. Choose a model that fits your agents’ tasks. On the lesson, DeepSeek was recommended as a low-cost fallback.</div>
+    <div class="info-block">Prices on 9 November 2026: <a class="lnk" href="https://openrouter.ai/deepseek/deepseek-v4.1-flash" target="_blank">DeepSeek V4.1 Flash</a>, <a class="lnk" href="https://openrouter.ai/docs/features/model-routing" target="_blank">Auto Router</a>. Not sure which model fits? Give Claude Code the link to the <a class="lnk" href="https://openrouter.ai/docs/quickstart" target="_blank">OpenRouter docs</a>, describe your task and ask it to compare models by price, speed and quality.</div>
+    <div class="item" data-key="or-model"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Fallback model chosen, its ID copied</div><div class="item__hint">Agents need a model that can use tools. If you pick something other than DeepSeek V4.1 Flash, ask Claude Code to check that for your model ID.</div></div></div>
+  </div>
+</div>
+
+<!-- 05 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">05</div><div class="section__title">Connect it to OpenClaw as a fallback</div></div>
+  <div class="section__card">
+    <div class="info-block">Paste the prompt into Claude Code on your computer. It checks your server and adds the model to the fallback list. Your ChatGPT subscription stays the main model. You type the key yourself in a terminal on the server, so it never goes into the chat. How it works: <a class="lnk" href="https://docs.openclaw.ai/providers/openrouter" target="_blank">OpenClaw and OpenRouter</a>, <a class="lnk" href="https://docs.openclaw.ai/concepts/model-failover" target="_blank">model failover</a>.</div>
+    <div class="code-block"><span class="code-block__label">Prompt · OpenRouter fallback for my agents</span><div class="code-block__scroll" id="prompt-fallback">Connect OpenRouter to OpenClaw on my server as a fallback model for my agents. Use the openclaw-docs skill; don't invent commands or config keys. Show me the plan and wait for my OK.
+
+Never ask me to paste my OpenRouter API key into this chat, and never print it.
+
+Goal: my main model stays my ChatGPT subscription. If it stops working, my agents switch to the OpenRouter model I chose.
+
+1. Ask me for the model ID I chose on OpenRouter. If I have no preference, suggest deepseek/deepseek-v4.1-flash. Find the matching OpenClaw model ref in the docs before adding it: regular models look like openrouter/deepseek/deepseek-v4.1-flash, the Auto Router is openrouter/auto.
+2. ssh to my server. Show openclaw models status and openclaw models fallbacks list. Tell me my current primary model.
+3. Don't run openclaw onboard or anything else that changes my primary model or replaces my settings. If the docs don't confirm a safe way, stop and tell me.
+4. Tell me to open my own terminal, ssh to the server and run: openclaw models auth paste-api-key --provider openrouter. I'll paste the key at its hidden prompt. Wait until I say it's done.
+5. Add the fallback: openclaw models fallbacks add &lt;the OpenClaw model ref from step 1&gt;
+6. Check each of my agents: an agent with its own model.fallbacks, or fallbacks: [], ignores the default list. Tell me which agents are like that and ask before changing them.
+7. Don't run openclaw models scan with probing: it replaces the whole fallback list.
+8. Prove the result. Show me a table "check / result / proof": the primary model is unchanged, the fallback list contains my model, openclaw models status --probe --probe-provider openrouter makes a real request and returns ok, openclaw gateway status is OK. For the probe, show which model it used. Mark the model check as passed only if the successful request used my chosen model; otherwise report it as unverified. Show results only, never the key.</div><button class="btn-copy" onclick="copyBlock('prompt-fallback',this)">📋 Copy prompt</button></div>
+    <div class="item" data-key="or-saved"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">I typed the key in the server terminal, not in a chat</div></div></div>
+    <div class="item" data-key="or-table"><div class="item__check"><input type="checkbox"><span class="cm"><svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></span></div><div class="item__body"><div class="item__text">Claude Code’s check table has no failed rows</div><div class="item__hint">The primary model is still ChatGPT, the fallback list shows your OpenRouter model, and the OpenRouter check passed.</div></div></div>
+  </div>
+</div>
+
+<!-- 06 -->
+<div class="section">
+  <div class="section__header"><div class="section__num">06</div><div class="section__title">Bonus: OpenRouter in Claude Code</div></div>
+  <div class="section__card">
+    <div class="info-block">You can also use OpenRouter in Claude Code. When a task needs a model Claude doesn’t have, for example generating an image, Claude Code can call one through OpenRouter. Ask Claude Code how to connect your key without sharing it in a chat or publishing it on GitHub.</div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer__done" id="doneBlock"><div class="footer__done-emoji">🛟</div><div class="footer__done-text">Your agents have a backup!</div><div class="footer__done-sub">If ChatGPT stops, OpenRouter takes over.</div></div>
+  <div class="footer__final"><div class="footer__final-emoji">🔑</div><div class="footer__final-text">One key, hundreds of models</div><div class="footer__final-sub">Keep a credit limit on every key and check the price before you switch models.</div></div>
+  <div class="footer__contact">Questions? Message <a href="https://t.me/stavzzz" target="_blank" class="tg">@stavzzz</a> on Telegram</div>
+  <button class="btn-reset" onclick="resetProgress()">Reset progress</button>
+</div>
+
+</div>
+<script>
+const C=document.getElementById('confetti-canvas'),ctx=C.getContext('2d');
+let particles=[],confettiActive=false;
+function resizeCanvas(){C.width=window.innerWidth;C.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+const COLORS=['#7c5bf5','#9d7cff','#34d399','#6ee7b7','#fbbf24','#f87171','#fb7185','#38bdf8','#a78bfa','#4ade80'];
+function rand(a,b){return Math.random()*(b-a)+a;}
+function createBurst(x,y,count){for(let i=0;i<count;i++){const angle=rand(0,Math.PI*2),speed=rand(4,14),size=rand(4,10);particles.push({x,y,vx:Math.cos(angle)*speed+rand(-2,2),vy:Math.sin(angle)*speed*-0.8-rand(2,6),size,color:COLORS[Math.floor(Math.random()*COLORS.length)],rotation:rand(0,Math.PI*2),rotSpeed:rand(-0.2,0.2),gravity:rand(0.12,0.25),friction:rand(0.97,0.995),opacity:1,fadeSpeed:rand(0.005,0.015),shape:Math.random()>0.4?'rect':'circle'});}}
+function launchConfetti(){if(confettiActive)return;confettiActive=true;particles=[];const W=C.width,H=C.height;[[W*.5,H*.3,120],[W*.15,H*.2,80],[W*.85,H*.2,80],[W*.5,H*.1,100],[W*.3,H*.5,60],[W*.7,H*.5,60]].forEach(([x,y,c],i)=>{setTimeout(()=>createBurst(x,y,c),i*150)});animate();setTimeout(()=>{confettiActive=false},6000);}
+function animate(){ctx.clearRect(0,0,C.width,C.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.vx*=p.friction;p.vy*=p.friction;p.vy+=p.gravity;p.x+=p.vx;p.y+=p.vy;p.rotation+=p.rotSpeed;p.opacity-=p.fadeSpeed;if(p.opacity<=0){particles.splice(i,1);continue}ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rotation);ctx.globalAlpha=p.opacity;ctx.fillStyle=p.color;if(p.shape==='rect'){ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2)}else{ctx.beginPath();ctx.arc(0,0,p.size/2,0,Math.PI*2);ctx.fill()}ctx.restore();}if(particles.length>0||confettiActive){requestAnimationFrame(animate)}else{ctx.clearRect(0,0,C.width,C.height);}}
+function copyBlock(id,btn){const text=document.getElementById(id).textContent;navigator.clipboard.writeText(text).then(()=>{const orig=btn.innerHTML;btn.classList.add('copied');btn.innerHTML='✅ Copied!';setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=orig;},2000);});}
+const STORAGE_KEY='openrouter_v1';
+const items=document.querySelectorAll('.item[data-key]');
+const totalCount=items.length;let wasComplete=false;
+function loadState(){try{const s=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');let c=0;items.forEach(it=>{const cb=it.querySelector('input');if(s[it.dataset.key]){cb.checked=true;it.classList.add('checked');c++}});wasComplete=c===totalCount}catch(e){}updateProgress(false);}
+function saveState(){const s={};items.forEach(it=>{s[it.dataset.key]=it.querySelector('input').checked});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s))}catch(e){}}
+function updateProgress(cc=true){let c=0;items.forEach(it=>{if(it.querySelector('input').checked)c++});document.getElementById('progressCount').textContent=c+' / '+totalCount;document.getElementById('progressFill').style.width=(totalCount>0?(c/totalCount)*100:0)+'%';const d=document.getElementById('doneBlock');if(c===totalCount&&totalCount>0){d.classList.add('visible');if(cc&&!wasComplete)launchConfetti();wasComplete=true}else{d.classList.remove('visible');wasComplete=false;}}
+items.forEach(it=>{const cb=it.querySelector('input');it.addEventListener('click',function(e){if(e.target.closest('a')||e.target.closest('.btn-copy'))return;if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});cb.addEventListener('change',function(){it.classList.toggle('checked',this.checked);saveState();updateProgress(true);});});
+function resetProgress(){if(!confirm('Reset all progress?'))return;items.forEach(it=>{it.querySelector('input').checked=false;it.classList.remove('checked')});wasComplete=false;saveState();updateProgress(false);}
+loadState();
+</script><script>
+// Плавное появление блоков по мере скролла. Класс вешает сам скрипт:
+// если JS отключён, страница обычная — прятать контент стилями нельзя.
+// Проверяем положение блока, а не события пересечения: при прыжке в конец
+// страницы (Cmd+End, ссылка-якорь) наблюдатель пропускал бы блоки, и они
+// остались бы невидимыми.
+(function(){
+  var sel='.section,.module,.event,.stage,.card,.footer';
+  var els=Array.prototype.slice.call(document.querySelectorAll(sel)).filter(function(el){
+    if(el.parentElement && el.parentElement.closest('.reveal')) return false;  // вложенные не прячем дважды
+    if(getComputedStyle(el).position!=='static') return false;                 // липкий прогресс-бар не трогаем
+    el.classList.add('reveal'); return true;
+  });
+  if(!els.length) return;
+  var ticking=false;
+  function sweep(){
+    ticking=false;
+    var edge=window.innerHeight-60;
+    for(var i=els.length-1;i>=0;i--){
+      if(els[i].getBoundingClientRect().top<edge){ els[i].classList.add('is-in'); els.splice(i,1); }
+    }
+    if(!els.length){ window.removeEventListener('scroll',onMove); window.removeEventListener('resize',onMove); }
+  }
+  function onMove(){ if(!ticking){ ticking=true; requestAnimationFrame(sweep); } }
+  window.addEventListener('scroll',onMove,{passive:true});
+  window.addEventListener('resize',onMove);
+  requestAnimationFrame(sweep);   // первый экран проявляется тоже плавно
+})();
+</script>
+</body>
+</html>
