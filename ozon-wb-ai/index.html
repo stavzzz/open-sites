@@ -120,15 +120,6 @@ figcaption{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);margi
 .row p{color:var(--ink-soft);font-size:14.5px;max-width:64ch}
 .rows.plain .row{grid-template-columns:1fr}
 
-/* панель действия */
-.panel{background:var(--accent-soft);border:1px solid var(--accent-dim);border-radius:12px;padding:24px 26px;display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:48px}
-.panel h3{font-size:17px;font-weight:700;margin-bottom:4px}
-.panel p{color:var(--ink-soft);font-size:14.5px;max-width:58ch}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 22px;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;background:var(--accent);color:var(--on-accent);transition:filter .3s var(--ease),transform .3s var(--ease)}
-.btn svg{width:18px;height:18px}
-.btn:hover{filter:brightness(1.08)}
-.btn:active{transform:translateY(1px)}
-
 main section:last-child{border-bottom:0}
 
 /* появление при прокрутке; без скриптов всё видно сразу */
@@ -138,7 +129,7 @@ main section:last-child{border-bottom:0}
   html{scroll-behavior:auto}
   .js .rv{opacity:1;transform:none}
   .thesis span{color:var(--ink);transition:none}
-  .card,.btn{transition:none}
+  .card{transition:none}
 }
 
 @media (max-width:1000px){
@@ -153,7 +144,6 @@ main section:last-child{border-bottom:0}
   .group{margin-top:40px}
   .row{grid-template-columns:1fr;gap:6px}
   .proof{grid-template-columns:1fr;gap:8px}
-  .panel{flex-direction:column;align-items:stretch}.panel .btn{width:100%}
 }
 @media print{.js .rv{opacity:1;transform:none}.thesis span{color:var(--ink)}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
@@ -273,11 +263,6 @@ main section:last-child{border-bottom:0}
     <div class="row rv"><div><h4>Продажи помощник не гарантирует</h4><p>Он экономит время и не даёт пропустить важное. Спрос зависит от товара и цены.</p></div></div>
     <div class="row rv"><div><h4>С поставщиками договариваетесь вы</h4><p>Помощник подготовит заявку. Переговоры и проверка качества товара остаются на вас.</p></div></div>
     <div class="row rv"><div><h4>Товар нужно упаковать и отвезти</h4><p>Приёмкой, упаковкой и отгрузкой на склад занимаются люди.</p></div></div>
-  </div>
-  <div class="panel rv">
-    <div><h3>Следующий шаг</h3>
-      <p>Расскажите, какой инструмент планируете продавать и с какой площадки начинаете. Предложим, с каких задач начать.</p></div>
-    <a class="btn" href="https://t.me/stavzzz" target="_blank" rel="noopener"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M227.32,28.68a16,16,0,0,0-15.66-4.08l-.15,0L19.57,82.84a16,16,0,0,0-2.49,29.8L102,154l41.3,84.87A15.86,15.86,0,0,0,157.74,248q.69,0,1.38-.06a15.88,15.88,0,0,0,14-11.51l58.2-191.94c0-.05,0-.1,0-.15A16,16,0,0,0,227.32,28.68ZM157.83,231.85l-.05.14,0-.07-40.06-82.3,48-48a8,8,0,0,0-11.31-11.31l-48,48L24.08,98.25l-.07,0,.14,0L216,40Z"/></svg>Написать в Telegram</a>
   </div>
 </div></section>
 
